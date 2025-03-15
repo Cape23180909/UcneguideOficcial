@@ -137,6 +137,8 @@
     <Compile Include="Menu.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Models\Carreras.vb" />
+    <Compile Include="Models\Facultades.vb" />
     <Compile Include="Models\Parametro.vb" />
     <Compile Include="Models\Usuario.vb" />
     <Compile Include="Models\Usuariosapi.vb" />
