@@ -99,23 +99,43 @@ Public Class Menu
         ResizeElements()
     End Sub
 
-    ' Método para crear tarjetas con texto dentro del icono
+
+
     Private Sub CreateCard(ByRef card As Panel, ByRef img As PictureBox, ByRef lbl As Label, image As Image, text As String)
         card = New Panel With {
-            .Size = New Size(250, 250),
-            .BackColor = Color.White,
-            .Margin = New Padding(50, 0, 50, 0)
-        }
+        .Size = New Size(250, 250),
+        .BackColor = Color.White,
+        .Margin = New Padding(50, 0, 50, 0)
+    }
         flowPanel.Controls.Add(card)
 
         img = New PictureBox With {
-            .Size = New Size(250, 250),
-            .SizeMode = PictureBoxSizeMode.StretchImage,
-            .Image = AddTextToImage(image, text)
-        }
+        .Size = New Size(250, 250),
+        .SizeMode = PictureBoxSizeMode.StretchImage,
+        .Image = AddTextToImage(image, text)
+    }
         AddMouseHoverEffects(img)
+
+        ' Evento Click para abrir el formulario correspondiente
+        AddHandler img.Click, Sub(sender, e)
+                                  Select Case text
+                                      Case "Facultades"
+                                          Dim formFacultades As New GestionarFacultades()
+                                          formFacultades.Show()
+                                      Case "Sugerencias"
+                                          Dim formSugerencias As New GestionarSugerencias()
+                                          formSugerencias.Show()
+                                      Case "Maestros"
+                                          Dim formDocentes As New GestionarDocentes()
+                                          formDocentes.Show()
+                                  End Select
+                              End Sub
+
+
+
         card.Controls.Add(img)
     End Sub
+
 
     ' Método para agregar texto a la imagen
     Private Function AddTextToImage(originalImage As Image, text As String) As Image

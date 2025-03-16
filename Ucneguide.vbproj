@@ -131,6 +131,24 @@
     <Compile Include="BienvenidaForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GestionarDocentes.Designer.vb">
+      <DependentUpon>GestionarDocentes.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GestionarDocentes.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GestionarFacultades.Designer.vb">
+      <DependentUpon>GestionarFacultades.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GestionarFacultades.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GestionarSugerencias.Designer.vb">
+      <DependentUpon>GestionarSugerencias.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GestionarSugerencias.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GestionUsuariosForm.Designer.vb">
       <DependentUpon>GestionUsuariosForm.vb</DependentUpon>
     </Compile>
@@ -144,7 +162,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Models\Carreras.vb" />
+    <Compile Include="Models\Docente.vb" />
     <Compile Include="Models\Facultades.vb" />
+    <Compile Include="Models\Facultadesapi.vb" />
     <Compile Include="Models\Parametro.vb" />
     <Compile Include="Models\Usuario.vb" />
     <Compile Include="Models\Usuariosapi.vb" />
@@ -171,11 +191,20 @@
     <EmbeddedResource Include="BienvenidaForm.resx">
       <DependentUpon>BienvenidaForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GestionarDocentes.resx">
+      <DependentUpon>GestionarDocentes.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GestionarFacultades.resx">
+      <DependentUpon>GestionarFacultades.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GestionUsuariosForm.resx">
       <DependentUpon>GestionUsuariosForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Menu.resx">
       <DependentUpon>Menu.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\Facultades.resx">
+      <DependentUpon>Facultades.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
