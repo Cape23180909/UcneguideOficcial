@@ -125,16 +125,16 @@
     <Compile Include="BarraCarga1.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="BienvenidaForm.Designer.vb">
+      <DependentUpon>BienvenidaForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="BienvenidaForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GestionUsuariosForm.Designer.vb">
       <DependentUpon>GestionUsuariosForm.vb</DependentUpon>
     </Compile>
     <Compile Include="GestionUsuariosForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Menu.Designer.vb">
-      <DependentUpon>Menu.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Menu.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Models\Carreras.vb" />
@@ -162,11 +162,11 @@
     <EmbeddedResource Include="BarraCarga1.resx">
       <DependentUpon>BarraCarga1.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BienvenidaForm.resx">
+      <DependentUpon>BienvenidaForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GestionUsuariosForm.resx">
       <DependentUpon>GestionUsuariosForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Menu.resx">
-      <DependentUpon>Menu.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -188,7 +188,14 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\Facultad.png" />
+    <Content Include="Resources\Inicio.png" />
+    <Content Include="Resources\Maestro.png" />
+    <Content Include="Resources\Salir.png" />
+    <Content Include="Resources\sugerencia.png" />
+    <Content Include="Resources\Usuarios.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\guia-turistico 3.png" />
   </ItemGroup>

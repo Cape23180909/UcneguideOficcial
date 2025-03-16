@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class Menu
+Partial Class BienvenidaForm
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -24,13 +24,13 @@ Partial Class Menu
     Private Sub InitializeComponent()
         Me.SuspendLayout()
         '
-        'Menu
+        'BienvenidaForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
-        Me.Name = "Menu"
-        Me.Text = "Menu"
+        Me.Name = "BienvenidaForm"
+        Me.Text = "BienvenidaForm"
         Me.ResumeLayout(False)
 
     End Sub
