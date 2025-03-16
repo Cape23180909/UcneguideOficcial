@@ -137,6 +137,12 @@
     <Compile Include="GestionUsuariosForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Menu.Designer.vb">
+      <DependentUpon>Menu.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Menu.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Models\Carreras.vb" />
     <Compile Include="Models\Facultades.vb" />
     <Compile Include="Models\Parametro.vb" />
@@ -167,6 +173,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GestionUsuariosForm.resx">
       <DependentUpon>GestionUsuariosForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Menu.resx">
+      <DependentUpon>Menu.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
