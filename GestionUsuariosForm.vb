@@ -132,9 +132,15 @@ Public Class LoginForm
                     If usuarios IsNot Nothing Then
                         Dim usuarioValido = usuarios.FirstOrDefault(Function(u) u.email = txtEmail.Text.Trim() AndAlso u.password = txtPassword.Text.Trim())
                         If usuarioValido IsNot Nothing Then
+                            ' Guardar datos en sesión
+                            UserSession.CarreraId = usuarioValido.carreraId
+                            UserSession.FacultadId = usuarioValido.facultadId
+                            UserSession.NombreUsuario = usuarioValido.nombre
+                            UserSession.EmailUsuario = usuarioValido.email
+
+                            Dim bienvenidaForm As New BienvenidaForm()
+                            bienvenidaForm.Show()
                             MessageBox.Show("Inicio de sesión exitoso", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                            Dim BienvenidaForm As New BienvenidaForm()
-                            BienvenidaForm.Show()
                             Me.Hide()
                         Else
                             MessageBox.Show("Credenciales incorrectas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

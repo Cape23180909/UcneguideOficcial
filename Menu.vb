@@ -61,6 +61,7 @@ Public Class Menu
         }
         btnUser.Image = LoadImage("C:\\Ucneguide\\Resources\\Usuarios.png")
         AddMouseHoverEffects(btnUser)
+        AddHandler btnUser.Click, AddressOf btnUser_Click
         topPanel.Controls.Add(btnUser)
 
         ' Panel para tarjetas
@@ -74,7 +75,7 @@ Public Class Menu
         Me.Controls.Add(flowPanel)
 
         ' Crear tarjetas
-        CreateCard(cardFacultades, imgFacultades, lblFacultades, LoadImage("C:\\Ucneguide\\Resources\\Facultad.png"), "Facultades")
+        CreateCard(cardFacultades, imgFacultades, lblFacultades, LoadImage("C:\\Ucneguide\\Resources\\Facultad.png"), "Asignaturas")
         CreateCard(cardSugerencias, imgSugerencias, lblSugerencias, LoadImage("C:\\Ucneguide\\Resources\\Sugerencia.png"), "Sugerencias")
         CreateCard(cardMaestros, imgMaestros, lblMaestros, LoadImage("C:\\Ucneguide\\Resources\\Maestro.png"), "Maestros")
 
@@ -100,6 +101,11 @@ Public Class Menu
     End Sub
 
 
+    ' Evento para manejar el clic en el icono de usuario
+    Private Sub btnUser_Click(sender As Object, e As EventArgs)
+        Dim perfilForm As New ActualizarPerfil()
+        perfilForm.ShowDialog()
+    End Sub
 
     Private Sub CreateCard(ByRef card As Panel, ByRef img As PictureBox, ByRef lbl As Label, image As Image, text As String)
         card = New Panel With {
@@ -116,12 +122,13 @@ Public Class Menu
     }
         AddMouseHoverEffects(img)
 
+
         ' Evento Click para abrir el formulario correspondiente
         AddHandler img.Click, Sub(sender, e)
                                   Select Case text
-                                      Case "Facultades"
-                                          Dim formFacultades As New GestionarFacultades()
-                                          formFacultades.Show()
+                                      Case "Asignaturas"
+                                          Dim gestionAsignaturas As New GestionarAsignaturas(UserSession.CarreraId)
+                                          gestionAsignaturas.Show()
                                       Case "Sugerencias"
                                           Dim formSugerencias As New GestionarSugerencias()
                                           formSugerencias.Show()
@@ -130,7 +137,6 @@ Public Class Menu
                                           formDocentes.Show()
                                   End Select
                               End Sub
-
 
 
         card.Controls.Add(img)

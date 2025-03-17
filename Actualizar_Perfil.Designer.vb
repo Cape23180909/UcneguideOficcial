@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class GestionarFacultades
+Partial Class Actualizar_Perfil
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -24,13 +24,13 @@ Partial Class GestionarFacultades
     Private Sub InitializeComponent()
         Me.SuspendLayout()
         '
-        'Facultades
+        'Actualizar_Perfil
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
-        Me.Name = "Facultades"
-        Me.Text = "Facultades"
+        Me.Name = "Actualizar_Perfil"
+        Me.Text = "Actualizar_Perfil"
         Me.ResumeLayout(False)
 
     End Sub

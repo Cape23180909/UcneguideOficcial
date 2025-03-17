@@ -119,6 +119,12 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actualizar_Perfil.Designer.vb">
+      <DependentUpon>Actualizar_Perfil.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Actualizar_Perfil.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="BarraCarga1.Designer.vb">
       <DependentUpon>BarraCarga1.vb</DependentUpon>
     </Compile>
@@ -131,16 +137,16 @@
     <Compile Include="BienvenidaForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GestionarAsignaturas.Designer.vb">
+      <DependentUpon>GestionarAsignaturas.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GestionarAsignaturas.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GestionarDocentes.Designer.vb">
       <DependentUpon>GestionarDocentes.vb</DependentUpon>
     </Compile>
     <Compile Include="GestionarDocentes.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GestionarFacultades.Designer.vb">
-      <DependentUpon>GestionarFacultades.vb</DependentUpon>
-    </Compile>
-    <Compile Include="GestionarFacultades.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GestionarSugerencias.Designer.vb">
@@ -161,6 +167,7 @@
     <Compile Include="Menu.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Models\Asignaturas.vb" />
     <Compile Include="Models\Carreras.vb" />
     <Compile Include="Models\Docente.vb" />
     <Compile Include="Models\Facultades.vb" />
@@ -185,17 +192,20 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Actualizar_Perfil.resx">
+      <DependentUpon>Actualizar_Perfil.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BarraCarga1.resx">
       <DependentUpon>BarraCarga1.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BienvenidaForm.resx">
       <DependentUpon>BienvenidaForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GestionarAsignaturas.resx">
+      <DependentUpon>GestionarAsignaturas.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GestionarDocentes.resx">
       <DependentUpon>GestionarDocentes.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GestionarFacultades.resx">
-      <DependentUpon>GestionarFacultades.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GestionUsuariosForm.resx">
       <DependentUpon>GestionUsuariosForm.vb</DependentUpon>
