@@ -1,15 +1,17 @@
 ﻿Imports Newtonsoft.Json
 Imports System.Net.Http
 Imports System.Text
+Imports System.Net.Http.Headers
 
 Public Class ActualizarPerfil
     Inherits Form
 
-    Private ReadOnly ApiUrl As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Usuarios"
-    Private ReadOnly ApiFacultades As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Facultades"
-    Private ReadOnly ApiCarreras As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Carreras"
+    ' Campos readonly con nombres PascalCase
+    Private ReadOnly apiUrl As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Usuarios"
+    Private ReadOnly apiUrlFacultades As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Facultades"
+    Private ReadOnly apiUrlCarreras As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Carreras"
 
-    ' Controles
+    ' Controles con WithEvents y PascalCase
     Private WithEvents TxtNombre As TextBox
     Private WithEvents TxtEmail As TextBox
     Private WithEvents TxtPassword As TextBox
@@ -19,12 +21,15 @@ Public Class ActualizarPerfil
     Private WithEvents BtnGuardar As Button
     Private WithEvents BtnVolver As Button
 
+    ' Constructor corregido
     Public Sub New()
+        InitializeComponent()
         InitializeCustomComponents()
         CargarFacultades()
         CargarDatosUsuario()
     End Sub
 
+    ' Inicialización de componentes
     Private Sub InitializeCustomComponents()
         Me.Text = "Actualizar Perfil"
         Me.Size = New Size(500, 600)
@@ -39,7 +44,7 @@ Public Class ActualizarPerfil
             .AutoSize = True
         }
 
-        ' Configurar TextBox con placeholder manual
+        ' Inicialización de controles
         TxtNombre = New TextBox With {
             .Size = New Size(400, 30),
             .Location = New Point(40, 80),
@@ -70,7 +75,6 @@ Public Class ActualizarPerfil
             .Text = "Confirmar contraseña"
         }
 
-        ' ComboBox simplificados
         CmbFacultad = New ComboBox With {
             .Size = New Size(400, 30),
             .Location = New Point(40, 320),
@@ -83,7 +87,6 @@ Public Class ActualizarPerfil
             .DropDownStyle = ComboBoxStyle.DropDownList
         }
 
-        ' Botones con inicialización simplificada
         BtnGuardar = New Button With {
             .Text = "Actualizar",
             .Size = New Size(180, 40),
@@ -124,7 +127,7 @@ Public Class ActualizarPerfil
     Private Async Sub CargarFacultades()
         Try
             Using client As New HttpClient()
-                Dim response = Await client.GetAsync(ApiFacultades)
+                Dim response = Await client.GetAsync(apiUrlFacultades)
                 If response.IsSuccessStatusCode Then
                     Dim json = Await response.Content.ReadAsStringAsync()
                     Dim facultades = JsonConvert.DeserializeObject(Of List(Of Facultades))(json)
@@ -132,7 +135,7 @@ Public Class ActualizarPerfil
                     CmbFacultad.BeginUpdate()
                     CmbFacultad.Items.Clear()
                     For Each f In facultades
-                        CmbFacultad.Items.Add(New KeyValuePair(Of Integer, String)(f.FacultadId, f.NombreFacultad))
+                        CmbFacultad.Items.Add(New KeyValuePair(Of Integer, String)(f.facultadId, f.nombreFacultad))
                     Next
                     CmbFacultad.DisplayMember = "Value"
                     CmbFacultad.ValueMember = "Key"
@@ -147,12 +150,12 @@ Public Class ActualizarPerfil
     Private Async Sub CargarDatosUsuario()
         Try
             Using client As New HttpClient()
-                Dim response = Await client.GetAsync($"{ApiUrl}/{UserSession.UserId}")
+                Dim response = Await client.GetAsync($"{apiUrl}/{UserSession.UserId}")
                 If response.IsSuccessStatusCode Then
                     Dim json = Await response.Content.ReadAsStringAsync()
                     Dim usuario = JsonConvert.DeserializeObject(Of Usuario)(json)
 
-                    TxtNombre.Text = usuario.Nombre
+                    TxtNombre.Text = usuario.nombre
                     TxtEmail.Text = usuario.email
 
                     If usuario.facultadId.HasValue Then
@@ -199,7 +202,7 @@ Public Class ActualizarPerfil
     Private Async Function CargarCarreras(facultadId As Integer) As Task
         Try
             Using client As New HttpClient()
-                Dim response = Await client.GetAsync($"{ApiCarreras}?facultadId={facultadId}")
+                Dim response = Await client.GetAsync($"{apiUrlCarreras}?facultadId={facultadId}")
                 If response.IsSuccessStatusCode Then
                     Dim json = Await response.Content.ReadAsStringAsync()
                     Dim carreras = JsonConvert.DeserializeObject(Of List(Of Carreras))(json)
@@ -207,7 +210,7 @@ Public Class ActualizarPerfil
                     CmbCarrera.BeginUpdate()
                     CmbCarrera.Items.Clear()
                     For Each c In carreras
-                        CmbCarrera.Items.Add(New KeyValuePair(Of Integer, String)(c.CarreraId, c.NombreCarrera))
+                        CmbCarrera.Items.Add(New KeyValuePair(Of Integer, String)(c.carreraId, c.nombreCarrera))
                     Next
                     CmbCarrera.DisplayMember = "Value"
                     CmbCarrera.ValueMember = "Key"
@@ -259,7 +262,7 @@ Public Class ActualizarPerfil
             Using client As New HttpClient()
                 Dim json = JsonConvert.SerializeObject(usuarioActualizado)
                 Dim content = New StringContent(json, Encoding.UTF8, "application/json")
-                Dim response = Await client.PutAsync($"{ApiUrl}/{UserSession.UserId}", content)
+                Dim response = Await client.PutAsync($"{apiUrl}/{UserSession.UserId}", content)
 
                 If response.IsSuccessStatusCode Then
                     ' Actualizar datos de sesión
@@ -280,13 +283,17 @@ Public Class ActualizarPerfil
         End Try
     End Sub
 
+
+
+
+    ' Método de validación corregido
     Private Function ValidarCampos() As Boolean
-        If String.IsNullOrWhiteSpace(TxtNombre.Text) Then
+        If String.IsNullOrWhiteSpace(TxtNombre.Text) OrElse TxtNombre.Text = "Nombre completo" Then
             MessageBox.Show("El nombre es requerido")
             Return False
         End If
 
-        If String.IsNullOrWhiteSpace(TxtEmail.Text) OrElse Not TxtEmail.Text.Contains("@") Then
+        If String.IsNullOrWhiteSpace(TxtEmail.Text) OrElse TxtEmail.Text = "Correo electrónico" Then
             MessageBox.Show("Ingrese un email válido")
             Return False
         End If
@@ -304,15 +311,14 @@ Public Class ActualizarPerfil
         Return True
     End Function
 
+    ' Método InitializeComponent requerido
     Private Sub InitializeComponent()
         Me.SuspendLayout()
-        '
-        'ActualizarPerfil
-        '
-        Me.ClientSize = New System.Drawing.Size(282, 253)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(800, 450)
         Me.Name = "ActualizarPerfil"
         Me.ResumeLayout(False)
-
     End Sub
 
     Private Sub ActualizarPerfil_Load(sender As Object, e As EventArgs) Handles MyBase.Load
