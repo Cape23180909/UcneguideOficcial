@@ -5,15 +5,16 @@ Imports System.Threading.Tasks
 Public Class GestionarAsignaturas
     Inherits Form
 
+
     Private ReadOnly apiUrlAsignaturas As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Asignaturas"
     Private ReadOnly apiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
     Private ReadOnly apiUrlCarreras As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Carreras"
 
     Private WithEvents dgvAsignaturas As DataGridView
     Private topPanel As Panel
+    Private iconoPictureBox As PictureBox
     Private ReadOnly _carreraId As Integer
 
-    ' Constructor
     Public Sub New(carreraId As Integer)
         _carreraId = carreraId
         InitializeComponents()
@@ -21,56 +22,91 @@ Public Class GestionarAsignaturas
     End Sub
 
     Private Async Sub InitializeComponents()
+        ' Configuración principal del formulario
         Me.WindowState = FormWindowState.Maximized
         Me.StartPosition = FormStartPosition.CenterScreen
+        Me.FormBorderStyle = FormBorderStyle.None
 
-        ' Cargar nombre de carrera en UserSession antes de mostrar el formulario
+        ' Cargar datos iniciales
         Await CargarSesionUsuario()
 
         ' Panel superior
+        CrearPanelSuperior()
+
+        ' Borde amarillo
+        Dim bottomBorder As New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
+
+        ' Configurar DataGridView
+        ConfigurarDataGridView()
+
+        ' Agregar controles al formulario
+        Me.Controls.Add(dgvAsignaturas)
+        Me.Controls.Add(bottomBorder)
+        Me.Controls.Add(topPanel)
+    End Sub
+
+    Private Sub CrearPanelSuperior()
         topPanel = New Panel With {
             .Dock = DockStyle.Top,
             .Height = 100,
             .BackColor = ColorTranslator.FromHtml("#074788")
         }
 
-        ' 3. Cabecera informativa (verificar sesión)
-        Dim headerText = If(UserSession.Nombre IsNot Nothing,
-                   $"Nombre de Usuario: {UserSession.Nombre}" & vbCrLf &
-                   $"Carrera: {UserSession.nombreCarrera}",
-                   "Carrera no especificada")
+        ' Icono
+        iconoPictureBox = New PictureBox With {
+            .Image = My.Resources.guia_turistico_3, ' Asegurar tener este recurso
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(80, 80),
+            .Location = New Point(20, 10),
+            .Anchor = AnchorStyles.Left
+        }
+        topPanel.Controls.Add(iconoPictureBox)
 
+        ' Texto informativo
         Dim lblHeader = New Label With {
-            .Text = headerText,
+            .Text = ObtenerTextoEncabezado(),
             .Font = New Font("Arial", 12, FontStyle.Bold),
             .ForeColor = Color.White,
-            .Dock = DockStyle.Bottom,
-            .Height = 60,
-            .TextAlign = ContentAlignment.MiddleCenter
+            .Size = New Size(600, 60),
+            .Location = New Point(120, 20),
+            .TextAlign = ContentAlignment.MiddleLeft
         }
         topPanel.Controls.Add(lblHeader)
+    End Sub
 
-        ' DataGridView
+    Private Function ObtenerTextoEncabezado() As String
+        Return If(UserSession.Nombre IsNot Nothing,
+            $"Usuario: {UserSession.Nombre}" & vbCrLf &
+            $"Carrera: {UserSession.nombreCarrera}",
+            "Carrera no especificada")
+    End Function
+
+    Private Sub ConfigurarDataGridView()
         dgvAsignaturas = New DataGridView With {
             .Dock = DockStyle.Fill,
             .AllowUserToAddRows = False,
             .AllowUserToDeleteRows = False,
             .ReadOnly = True,
-            .AutoGenerateColumns = False
+            .AutoGenerateColumns = False,
+            .SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+            .BackgroundColor = Color.White,
+            .BorderStyle = BorderStyle.None
         }
 
-        ' Agregar columnas
+        ' Columnas
         dgvAsignaturas.Columns.AddRange({
             New DataGridViewTextBoxColumn With {.DataPropertyName = "AsignaturaId", .HeaderText = "AsignaturaId", .Width = 50},
             New DataGridViewTextBoxColumn With {.DataPropertyName = "CodigoAsignatura", .HeaderText = "CodigoAsignatura", .Width = 120},
             New DataGridViewTextBoxColumn With {.DataPropertyName = "NombreAsignatura", .HeaderText = "NombreAsignatura", .Width = 250},
+            New DataGridViewTextBoxColumn With {.DataPropertyName = "DescripcionAsignatura", .HeaderText = "DescripcionAsignatura", .Width = 250},
             New DataGridViewTextBoxColumn With {.DataPropertyName = "NombreDocenteCompleto", .HeaderText = "NombreDocenteCompleto", .Width = 200},
             New DataGridViewTextBoxColumn With {.DataPropertyName = "NombreCarrera", .HeaderText = "NombreCarrera", .Width = 200}
         })
-
-        ' Agregar controles
-        Me.Controls.Add(dgvAsignaturas)
-        Me.Controls.Add(topPanel)
     End Sub
 
     Private Async Sub GestionarAsignaturas_Load(sender As Object, e As EventArgs) Handles MyBase.Load
