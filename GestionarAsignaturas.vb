@@ -6,42 +6,39 @@ Public Class GestionarAsignaturas
     Inherits Form
 
     Private ReadOnly apiUrlAsignaturas As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Asignaturas"
+    Private ReadOnly apiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
+    Private ReadOnly apiUrlCarreras As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Carreras"
+
     Private WithEvents dgvAsignaturas As DataGridView
     Private topPanel As Panel
-    Private iconoPictureBox As PictureBox
     Private ReadOnly _carreraId As Integer
 
-    ' Constructor para el diseñador
-    Public Sub New()
-        Me.New(-1)
-    End Sub
-
-    ' Constructor principal
+    ' Constructor
     Public Sub New(carreraId As Integer)
         _carreraId = carreraId
         InitializeComponents()
         Me.Text = $"Asignaturas - CarreraId: {_carreraId}"
     End Sub
 
-    Private Sub InitializeComponents()
-        Me.Size = New Size(800, 600)
+    Private Async Sub InitializeComponents()
+        Me.WindowState = FormWindowState.Maximized
         Me.StartPosition = FormStartPosition.CenterScreen
 
-        ' 1. Inicializar controles PRIMERO
-        dgvAsignaturas = New DataGridView()
-        topPanel = New Panel()
-        iconoPictureBox = New PictureBox()
+        ' Cargar nombre de carrera en UserSession antes de mostrar el formulario
+        Await CargarSesionUsuario()
 
-        ' 2. Configurar panel superior
-        topPanel.Dock = DockStyle.Top
-        topPanel.Height = 180
-        topPanel.BackColor = ColorTranslator.FromHtml("#074788")
+        ' Panel superior
+        topPanel = New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 100,
+            .BackColor = ColorTranslator.FromHtml("#074788")
+        }
 
         ' 3. Cabecera informativa (verificar sesión)
-        Dim headerText = If(UserSession.NombreUsuario IsNot Nothing,
-                          $"Bienvenido: {UserSession.NombreUsuario}" & vbCrLf &
-                          $"Carrera: {UserSession.CarreraId}",
-                          "Carrera no especificada")
+        Dim headerText = If(UserSession.Nombre IsNot Nothing,
+                   $"Nombre de Usuario: {UserSession.Nombre}" & vbCrLf &
+                   $"Carrera: {UserSession.nombreCarrera}",
+                   "Carrera no especificada")
 
         Dim lblHeader = New Label With {
             .Text = headerText,
@@ -53,28 +50,25 @@ Public Class GestionarAsignaturas
         }
         topPanel.Controls.Add(lblHeader)
 
-        ' 4. Configurar DataGridView
-        dgvAsignaturas.Dock = DockStyle.Fill
-        dgvAsignaturas.AllowUserToAddRows = False
-        dgvAsignaturas.AllowUserToDeleteRows = False
-        dgvAsignaturas.ReadOnly = True
-        dgvAsignaturas.AutoGenerateColumns = False
+        ' DataGridView
+        dgvAsignaturas = New DataGridView With {
+            .Dock = DockStyle.Fill,
+            .AllowUserToAddRows = False,
+            .AllowUserToDeleteRows = False,
+            .ReadOnly = True,
+            .AutoGenerateColumns = False
+        }
 
-        ' 5. Añadir columnas
+        ' Agregar columnas
         dgvAsignaturas.Columns.AddRange({
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "asignaturaId", .HeaderText = "asignaturaId", .Width = 50},
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "CodigoAsignatura", .HeaderText = "CodigoAsignatura", .Width = 120},
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "NombreAsignatura", .HeaderText = "NombreAsignatura", .Width = 250},
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "DocenteId", .HeaderText = "DocenteId", .Width = 100},
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "CarreraId", .HeaderText = "CarreraId", .Width = 100}
+            New DataGridViewTextBoxColumn With {.DataPropertyName = "AsignaturaId", .HeaderText = "AsignaturaId", .Width = 50},
+            New DataGridViewTextBoxColumn With {.DataPropertyName = "CodigoAsignatura", .HeaderText = "CodigoAsignatura", .Width = 120},
+            New DataGridViewTextBoxColumn With {.DataPropertyName = "NombreAsignatura", .HeaderText = "NombreAsignatura", .Width = 250},
+            New DataGridViewTextBoxColumn With {.DataPropertyName = "NombreDocenteCompleto", .HeaderText = "NombreDocenteCompleto", .Width = 200},
+            New DataGridViewTextBoxColumn With {.DataPropertyName = "NombreCarrera", .HeaderText = "NombreCarrera", .Width = 200}
         })
 
-        ' 6. Añadir controles al formulario EN ORDEN CORRECTO
+        ' Agregar controles
         Me.Controls.Add(dgvAsignaturas)
         Me.Controls.Add(topPanel)
     End Sub
@@ -85,10 +79,30 @@ Public Class GestionarAsignaturas
             Me.Close()
             Return
         End If
-
         Await CargarAsignaturas()
     End Sub
 
+    ' Cargar nombre de carrera en la sesión
+    Private Async Function CargarSesionUsuario() As Task
+        If _carreraId > 0 Then
+            UserSession.nombreCarrera = Await ObtenerNombreCarrera(_carreraId)
+        End If
+    End Function
+
+    ' Obtener el nombre de la carrera desde la API
+    Private Async Function ObtenerNombreCarrera(carreraId As Integer) As Task(Of String)
+        Try
+            Using client As New HttpClient()
+                Dim response = Await client.GetStringAsync($"{apiUrlCarreras}/{carreraId}")
+                Dim carrera As Carreras = JsonConvert.DeserializeObject(Of Carreras)(response)
+                Return If(carrera IsNot Nothing, carrera.nombreCarrera, "Desconocido")
+            End Using
+        Catch
+            Return "Desconocido"
+        End Try
+    End Function
+
+    ' Cargar asignaturas con docentes y nombres de carrera
     Private Async Function CargarAsignaturas() As Task
         Try
             Using client As New HttpClient()
@@ -99,10 +113,12 @@ Public Class GestionarAsignaturas
                     Dim jsonResponse As String = Await response.Content.ReadAsStringAsync()
                     Dim asignaturas As List(Of Asignaturas) = JsonConvert.DeserializeObject(Of List(Of Asignaturas))(jsonResponse)
 
+                    ' Asignar nombres de docentes y carreras
+                    Await AsignarNombres(asignaturas)
+
+                    ' Actualizar el DataGridView
                     If InvokeRequired Then
-                        Invoke(Sub()
-                                   ActualizarGrid(asignaturas)
-                               End Sub)
+                        Invoke(Sub() ActualizarGrid(asignaturas))
                     Else
                         ActualizarGrid(asignaturas)
                     End If
@@ -115,12 +131,34 @@ Public Class GestionarAsignaturas
         End Try
     End Function
 
+    ' Asignar nombres de docentes y carreras a las asignaturas
+    Private Async Function AsignarNombres(asignaturas As List(Of Asignaturas)) As Task
+        Try
+            Using client As New HttpClient()
+                ' Obtener lista de docentes
+                Dim docentesResponse = Await client.GetStringAsync(apiUrlDocentes)
+                Dim docentes As List(Of Docente) = JsonConvert.DeserializeObject(Of List(Of Docente))(docentesResponse)
+
+                ' Obtener lista de carreras
+                Dim carrerasResponse = Await client.GetStringAsync(apiUrlCarreras)
+                Dim carreras As List(Of Carreras) = JsonConvert.DeserializeObject(Of List(Of Carreras))(carrerasResponse)
+
+                ' Asignar nombres completos a las asignaturas
+                For Each asignatura In asignaturas
+                    Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = asignatura.DocenteId)
+                    asignatura.NombreDocenteCompleto = If(docente IsNot Nothing, $"{docente.nombre} {docente.apellido}", "Desconocido")
+
+                    ' Asignar nombre de carrera basado en la lista obtenida
+                    Dim carrera = carreras.FirstOrDefault(Function(c) c.carreraId = asignatura.CarreraId)
+                    asignatura.nombreCarrera = If(carrera IsNot Nothing, carrera.nombreCarrera, "Desconocido")
+                Next
+            End Using
+        Catch ex As Exception
+            MessageBox.Show($"Error obteniendo nombres: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Function
+
     Private Sub ActualizarGrid(asignaturas As List(Of Asignaturas))
-        If asignaturas?.Any() Then
-            dgvAsignaturas.DataSource = asignaturas
-        Else
-            MessageBox.Show("No hay asignaturas disponibles", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Me.Close()
-        End If
+        dgvAsignaturas.DataSource = asignaturas
     End Sub
 End Class

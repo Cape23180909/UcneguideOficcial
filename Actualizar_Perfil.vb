@@ -263,8 +263,8 @@ Public Class ActualizarPerfil
 
                 If response.IsSuccessStatusCode Then
                     ' Actualizar datos de sesión
-                    UserSession.NombreUsuario = usuarioActualizado.Nombre
-                    UserSession.EmailUsuario = usuarioActualizado.Email
+                    UserSession.Nombre = usuarioActualizado.Nombre
+                    UserSession.Email = usuarioActualizado.Email
                     UserSession.FacultadId = usuarioActualizado.FacultadId
                     UserSession.CarreraId = usuarioActualizado.CarreraId
 

@@ -4,6 +4,8 @@
     Public Property NombreAsignatura As String
     Public Property DocenteId As Integer
     Public Property CarreraId As Integer
+    Public Property NombreDocenteCompleto As String
+    Public Property nombreCarrera As String
     Public Property AsignaturaDetalle As List(Of AsignaturaDetalle)
 
     Public Sub New()

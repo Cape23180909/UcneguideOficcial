@@ -1,4 +1,5 @@
 ﻿Public Class Usuario
+    Friend token As String
     Public Property usuarioId As Integer
     Public Property nombre As String
     Public Property carreraId As Integer?
@@ -7,10 +8,14 @@
     Public Property password As String
 End Class
 
-Public Module UserSession
-    Public Property UserId As Integer
-    Public Property CarreraId As Integer
-    Public Property FacultadId As Integer
-    Public Property NombreUsuario As String
-    Public Property EmailUsuario As String
-End Module
+Public Class UserSession
+    Friend Shared nombreCarrera As String
+    Public Shared Property UserId As Integer
+    Public Shared Property Nombre As String
+    Public Shared Property Email As String
+    Public Shared Property FacultadId As Integer?
+    Public Shared Property CarreraId As Integer?
+
+End Class
+
+

@@ -135,8 +135,8 @@ Public Class LoginForm
                             ' Guardar datos en sesión
                             UserSession.CarreraId = usuarioValido.carreraId
                             UserSession.FacultadId = usuarioValido.facultadId
-                            UserSession.NombreUsuario = usuarioValido.nombre
-                            UserSession.EmailUsuario = usuarioValido.email
+                            UserSession.Nombre = usuarioValido.nombre
+                            UserSession.Email = usuarioValido.email
 
                             Dim bienvenidaForm As New BienvenidaForm()
                             bienvenidaForm.Show()
@@ -152,6 +152,7 @@ Public Class LoginForm
             MessageBox.Show("Error de conexión: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
 
     Private Sub Placeholder_Enter(sender As Object, e As EventArgs)
         Dim txt = CType(sender, TextBox)
