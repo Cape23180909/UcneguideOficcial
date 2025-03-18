@@ -147,7 +147,14 @@ Public Class ActualizarPerfil
         End Try
     End Sub
 
+
+
     Private Async Sub CargarDatosUsuario()
+        If UserSession.UserId <= 0 Then
+            MessageBox.Show("Error: No hay un usuario autenticado.")
+            Return
+        End If
+
         Try
             Using client As New HttpClient()
                 Dim response = Await client.GetAsync($"{apiUrl}/{UserSession.UserId}")
@@ -155,21 +162,34 @@ Public Class ActualizarPerfil
                     Dim json = Await response.Content.ReadAsStringAsync()
                     Dim usuario = JsonConvert.DeserializeObject(Of Usuario)(json)
 
+                    ' Llenar los campos con la información del usuario autenticado
                     TxtNombre.Text = usuario.nombre
                     TxtEmail.Text = usuario.email
+                    TxtPassword.Text = ""
+                    TxtConfirmPassword.Text = ""
 
+                    ' Guardar en sesión
+                    UserSession.Nombre = usuario.nombre
+                    UserSession.Email = usuario.email
+                    UserSession.FacultadId = usuario.facultadId
+                    UserSession.CarreraId = usuario.carreraId
+
+                    ' Seleccionar Facultad y Carrera
                     If usuario.facultadId.HasValue Then
                         Await SeleccionarFacultad(usuario.facultadId.Value)
                         If usuario.carreraId.HasValue Then
                             Await SeleccionarCarrera(usuario.carreraId.Value)
                         End If
                     End If
+                Else
+                    MessageBox.Show("No se pudo obtener la información del usuario")
                 End If
             End Using
         Catch ex As Exception
             MessageBox.Show("Error cargando datos del usuario: " & ex.Message)
         End Try
     End Sub
+
 
     Private Async Function SeleccionarFacultad(facultadId As Integer) As Task
         For Each item In CmbFacultad.Items
@@ -321,7 +341,8 @@ Public Class ActualizarPerfil
         Me.ResumeLayout(False)
     End Sub
 
-    Private Sub ActualizarPerfil_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+    Private Sub ActualizarPerfil_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        CargarDatosUsuario()
     End Sub
 End Class
