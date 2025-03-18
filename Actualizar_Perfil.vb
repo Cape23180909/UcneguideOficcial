@@ -174,7 +174,7 @@ Public Class ActualizarPerfil
                     UserSession.FacultadId = usuario.facultadId
                     UserSession.CarreraId = usuario.carreraId
 
-                    ' Seleccionar Facultad y Carrera
+                    ' Seleccionar Facultad y Carrera si existen
                     If usuario.facultadId.HasValue Then
                         Await SeleccionarFacultad(usuario.facultadId.Value)
                         If usuario.carreraId.HasValue Then
@@ -189,6 +189,8 @@ Public Class ActualizarPerfil
             MessageBox.Show("Error cargando datos del usuario: " & ex.Message)
         End Try
     End Sub
+
+
 
 
     Private Async Function SeleccionarFacultad(facultadId As Integer) As Task
