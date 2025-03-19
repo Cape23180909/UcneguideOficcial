@@ -18,7 +18,8 @@ Public Class ActualizarPerfil
     Private WithEvents CmbCarrera As New ComboBox()
     Private WithEvents BtnGuardar As New Button()
     Private WithEvents BtnVolver As New Button()
-
+    Private topPanel As Panel
+    Private iconoPictureBox As PictureBox
     Public Sub New()
         InitializeComponent()
         InitializeCustomComponents()
@@ -28,38 +29,113 @@ Public Class ActualizarPerfil
 
     Private Sub InitializeCustomComponents()
         Me.Text = "Actualizar Perfil"
-        Me.Size = New Size(500, 600)
+        Me.Size = New Size(800, 600) ' Aumentamos ligeramente la altura
         Me.BackColor = Color.White
         Me.StartPosition = FormStartPosition.CenterScreen
 
-        Dim lblTitulo As New Label With {
-            .Text = "Actualizar Perfil",
-            .Font = New Font("Arial", 18, FontStyle.Bold),
-            .Location = New Point(20, 20),
-            .AutoSize = True
+        ' Panel superior con diseño unificado
+        topPanel = New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 100,
+            .BackColor = ColorTranslator.FromHtml("#074788")
         }
 
-        TxtNombre.SetBounds(40, 80, 400, 30)
-        TxtEmail.SetBounds(40, 140, 400, 30)
-        TxtPassword.SetBounds(40, 200, 400, 30)
-        TxtConfirmPassword.SetBounds(40, 260, 400, 30)
-        CmbFacultad.SetBounds(40, 320, 400, 30)
-        CmbCarrera.SetBounds(40, 380, 400, 30)
-        BtnGuardar.SetBounds(40, 440, 180, 40)
-        BtnVolver.SetBounds(260, 440, 180, 40)
+        ' Línea decorativa amarilla
+        Dim bottomBorder As New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
 
+        ' Icono interactivo
+        iconoPictureBox = New PictureBox With {
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(70, 70),
+            .Location = New Point(20, 15),
+            .Cursor = Cursors.Hand
+        }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
+        topPanel.Controls.Add(iconoPictureBox)
+
+        ' Título del formulario
+        Dim lblTitulo As New Label With {
+            .Text = "Actualizar Perfil",
+            .Font = New Font("Arial", 16, FontStyle.Bold),
+            .ForeColor = Color.White,
+            .AutoSize = True,
+            .Location = New Point(100, 35)
+        }
+        topPanel.Controls.Add(lblTitulo)
+
+        ' Contenedor principal para controles
+        Dim mainContainer As New Panel With {
+            .Dock = DockStyle.Fill,
+            .AutoScroll = True
+        }
+
+        ' Configuración de controles con posiciones relativas
+        Dim yPosition As Integer = 20
+        Dim controlHeight As Integer = 30
+        Dim margin As Integer = 40
+
+        Dim AddControl = Sub(ctrl As Control, labelText As String)
+                             ctrl.Location = New Point(40, yPosition)
+                             ctrl.Size = New Size(400, controlHeight)
+                             mainContainer.Controls.Add(New Label With {
+                                 .Text = labelText,
+                                 .Location = New Point(40, yPosition - 20),
+                                 .Font = New Font("Arial", 9)
+                             })
+                             mainContainer.Controls.Add(ctrl)
+                             yPosition += margin + controlHeight
+                         End Sub
+
+        AddControl(TxtNombre, "Nombre:")
+        AddControl(TxtEmail, "Email:")
+        AddControl(TxtPassword, "Contraseña:")
+        AddControl(TxtConfirmPassword, "Confirmar Contraseña:")
+        AddControl(CmbFacultad, "Facultad:")
+        AddControl(CmbCarrera, "Carrera:")
+
+        ' Configuración de botones
         BtnGuardar.Text = "Actualizar"
         BtnVolver.Text = "Volver"
+        BtnGuardar.Size = New Size(120, 40)
+        BtnVolver.Size = New Size(120, 40)
+
         BtnGuardar.BackColor = ColorTranslator.FromHtml("#074788")
         BtnGuardar.ForeColor = Color.White
         BtnVolver.BackColor = ColorTranslator.FromHtml("#F7D917")
         BtnVolver.ForeColor = Color.Black
 
+        ' Posicionamiento de botones
+        BtnGuardar.Location = New Point(100, yPosition + 20)
+        BtnVolver.Location = New Point(260, yPosition + 20)
+
+        ' Efectos hover para botones
+        For Each btn As Button In {BtnGuardar, BtnVolver}
+            AddHandler btn.MouseEnter, Sub(sender, e)
+                                           CType(sender, Button).BackColor = ColorTranslator.FromHtml("#0A5AA8")
+                                           CType(sender, Button).FlatStyle = FlatStyle.Flat
+                                       End Sub
+            AddHandler btn.MouseLeave, Sub(sender, e)
+                                           CType(sender, Button).BackColor = If(btn.Text = "Volver", ColorTranslator.FromHtml("#F7D917"), ColorTranslator.FromHtml("#074788"))
+                                       End Sub
+        Next
+
         AddHandler BtnGuardar.Click, AddressOf BtnGuardar_Click
         AddHandler BtnVolver.Click, Sub(s, e) Me.Close()
 
-        Me.Controls.AddRange({lblTitulo, TxtNombre, TxtEmail, TxtPassword, TxtConfirmPassword, CmbFacultad, CmbCarrera, BtnGuardar, BtnVolver})
+        mainContainer.Controls.Add(BtnGuardar)
+        mainContainer.Controls.Add(BtnVolver)
+
+        ' Agregar todos los paneles al formulario
+        Me.Controls.Add(mainContainer)
+        Me.Controls.Add(bottomBorder)
+        Me.Controls.Add(topPanel)
     End Sub
+
 
     Private Async Sub CargarFacultades()
         Try

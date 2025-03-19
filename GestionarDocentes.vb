@@ -33,14 +33,17 @@ Public Class GestionarDocentes
             .BackColor = ColorTranslator.FromHtml("#F7D917")
         }
 
-        ' Icono en el panel superior
+
+        topPanel.Controls.Add(iconoPictureBox)
         iconoPictureBox = New PictureBox With {
             .Image = My.Resources.guia_turistico_3,
             .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(80, 80),
-            .Location = New Point(20, 10),
-            .Anchor = AnchorStyles.Left
+            .Size = New Size(90, 90),
+            .Location = New Point(25, 15),
+            .Anchor = AnchorStyles.Left,
+            .Cursor = Cursors.Hand ' Cambia el cursor al pasar sobre el icono
         }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
         topPanel.Controls.Add(iconoPictureBox)
 
         ' DataGridView para docentes
