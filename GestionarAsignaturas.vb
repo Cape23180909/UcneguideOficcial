@@ -2,6 +2,7 @@
 Imports Newtonsoft.Json
 Imports System.Threading.Tasks
 Imports System.ComponentModel
+Imports System.Security
 Public Class GestionarAsignaturas
     Inherits Form
 
@@ -92,16 +93,17 @@ Public Class GestionarAsignaturas
         .Dock = DockStyle.Top,
         .Height = 120,
         .BackColor = ColorTranslator.FromHtml("#074788")
-    }
+}
 
-        ' Icono principal
         iconoPictureBox = New PictureBox With {
-        .Image = My.Resources.guia_turistico_3,
-        .SizeMode = PictureBoxSizeMode.Zoom,
-        .Size = New Size(90, 90),
-        .Location = New Point(25, 15),
-        .Anchor = AnchorStyles.Left
-    }
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(90, 90),
+            .Location = New Point(25, 15),
+            .Anchor = AnchorStyles.Left,
+            .Cursor = Cursors.Hand ' Cambia el cursor al pasar sobre el icono
+        }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
         topPanel.Controls.Add(iconoPictureBox)
 
         ' Panel de información con sombra
@@ -355,7 +357,7 @@ Public Class GestionarAsignaturas
 
                 ' Asignar nombres completos a las asignaturas
                 For Each asignatura In asignaturas
-                    Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = asignatura.DocenteId)
+                    Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = asignatura.docenteId)
                     asignatura.NombreDocenteCompleto = If(docente IsNot Nothing, $"{docente.nombre} {docente.apellido}", "Desconocido")
 
                     ' Asignar nombre de carrera basado en la lista obtenida

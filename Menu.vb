@@ -34,14 +34,16 @@ Public Class Menu
         }
         Me.Controls.Add(topPanel)
 
-        ' Icono de menú (botón de regreso)
+        ' Icono de menú (botón de regreso) modificado
         btnBack = New PictureBox With {
             .Size = New Size(40, 40),
             .SizeMode = PictureBoxSizeMode.StretchImage,
-            .Location = New Point(10, 20)
+            .Location = New Point(10, 20),
+            .Cursor = Cursors.Hand
         }
         btnBack.Image = LoadImage("C:\\Ucneguide\\Resources\\guia-turistico 3.png")
         AddMouseHoverEffects(btnBack)
+        AddHandler btnBack.Click, AddressOf BtnBack_Click ' Nuevo evento
         topPanel.Controls.Add(btnBack)
 
         ' Título del menú
@@ -87,15 +89,7 @@ Public Class Menu
         }
         Me.Controls.Add(bottomPanel)
 
-        ' Botón de regreso
-        Dim btnRegreso As New PictureBox With {
-            .Size = New Size(40, 40),
-            .SizeMode = PictureBoxSizeMode.StretchImage
-        }
-        btnRegreso.Image = LoadImage("C:\\Ucneguide\\Resources\\Salir.png")
-        AddMouseHoverEffects(btnRegreso)
-        AddHandler btnRegreso.Click, AddressOf BtnRegreso_Click
-        bottomPanel.Controls.Add(btnRegreso)
+
 
         ResizeElements()
     End Sub
@@ -165,16 +159,14 @@ Public Class Menu
         AddHandler picBox.MouseLeave, Sub(sender, e) picBox.Size = New Size(picBox.Width - 10, picBox.Height - 10)
     End Sub
 
-    ' Método para organizar los elementos
+    ' Modificar el método ResizeElements eliminando la referencia al panel inferior
     Private Sub ResizeElements()
         btnUser.Location = New Point(topPanel.Width - btnUser.Width - 10, (topPanel.Height - btnUser.Height) \ 2)
-        bottomPanel.Controls(0).Location = New Point(10, 5)
     End Sub
 
-    ' Evento de clic para el botón de regreso
-    Private Sub BtnRegreso_Click(sender As Object, e As EventArgs)
-        Dim bienvenidaForm As New BienvenidaForm()
-        bienvenidaForm.Show()
+    Private Sub BtnBack_Click(sender As Object, e As EventArgs)
+        Dim loginForm As New LoginForm()
+        loginForm.Show()
         Me.Close()
     End Sub
 
