@@ -87,6 +87,14 @@ Public Class BienvenidaForm
         ResizeElements()
     End Sub
 
+
+
+    Private Sub IrAMenu(sender As Object, e As EventArgs)
+        Dim menuForm As New Menu()
+        menuForm.Show()
+        Me.Close()
+    End Sub
+
     ' Método para dibujar el ícono dentro de un círculo azul
     Private Sub DrawCircularIcon(pb As PictureBox)
         Dim bmp As New Bitmap(pb.Width, pb.Height)

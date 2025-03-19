@@ -132,15 +132,17 @@ Public Class LoginForm
                     If usuarios IsNot Nothing Then
                         Dim usuarioValido = usuarios.FirstOrDefault(Function(u) u.email = txtEmail.Text.Trim() AndAlso u.password = txtPassword.Text.Trim())
                         If usuarioValido IsNot Nothing Then
-                            ' Guardar datos en sesión
-                            UserSession.CarreraId = usuarioValido.carreraId
-                            UserSession.FacultadId = usuarioValido.facultadId
-                            UserSession.Nombre = usuarioValido.nombre
-                            UserSession.Email = usuarioValido.email
+                            ' Guardar TODOS los datos en sesión
+                            UserSession.usuarioId = usuarioValido.usuarioId
+                            UserSession.nombre = usuarioValido.nombre
+                            UserSession.email = usuarioValido.email
+                            UserSession.facultadId = usuarioValido.facultadId
+                            UserSession.carreraId = usuarioValido.carreraId
+                            UserSession.Token = usuarioValido.token
 
+                            ' Abrir BienvenidaForm
                             Dim bienvenidaForm As New BienvenidaForm()
                             bienvenidaForm.Show()
-                            MessageBox.Show("Inicio de sesión exitoso", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information)
                             Me.Hide()
                         Else
                             MessageBox.Show("Credenciales incorrectas", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

@@ -1,10 +1,17 @@
-﻿Public Class Asignaturas
+﻿Imports Newtonsoft.Json
+Public Class Asignaturas
+    <JsonProperty("AsignaturaId")>
     Public Property asignaturaId As Integer
-    Public Property CodigoAsignatura As String
-    Public Property NombreAsignatura As String
+    <JsonProperty("CodigoAsignatura")>
+    Public Property codigoAsignatura As String
+    <JsonProperty("NombreAsignatura")>
+    Public Property nombreAsignatura As String
+    <JsonProperty("DescripcionAsignatura")>
     Public Property descripcionAsignatura As String
-    Public Property DocenteId As Integer
-    Public Property CarreraId As Integer
+    <JsonProperty("DocenteId")>
+    Public Property docenteId As Integer
+    <JsonProperty("CarreraId")>
+    Public Property carreraId As Integer
     Public Property NombreDocenteCompleto As String
     Public Property nombreCarrera As String
     Public Property AsignaturaDetalle As List(Of AsignaturaDetalle)

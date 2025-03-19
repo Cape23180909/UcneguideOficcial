@@ -1,21 +1,33 @@
-﻿Public Class Usuario
-    Friend token As String
-    Public Property usuarioId As Integer
-    Public Property nombre As String
-    Public Property carreraId As Integer?
-    Public Property facultadId As Integer?
-    Public Property email As String
-    Public Property password As String
-End Class
+﻿Imports Newtonsoft.Json
 
+
+
+' Clase UserSession corregida (debe estar en archivo aparte)
 Public Class UserSession
-    Friend Shared nombreCarrera As String
-    Public Shared Property UserId As Integer = 1 ' Simulación de sesión, reemplázalo con el ID real del usuario autenticado
-    Public Shared Property Nombre As String
-    Public Shared Property Email As String
-    Public Shared Property FacultadId As Integer?
-    Public Shared Property CarreraId As Integer?
+    Public Shared Property usuarioId As Integer? = Nothing
+    Public Shared Property nombre As String
+    Public Shared Property carreraId As Integer?
+    Public Shared Property facultadId As Integer?
+    Public Shared Property email As String
+    Public Property password As String
     Public Shared Property Token As String
+    Public Shared Property nombreCarrera As String
 End Class
 
+' Clase Usuario con atributos JsonProperty
+Public Class Usuario
+    <JsonProperty("usuarioId")>
+    Public Property usuarioId As Integer
+    <JsonProperty("nombre")>
+    Public Property nombre As String
+    <JsonProperty("email")>
+    Public Property email As String
+    <JsonProperty("password")>
+    Public Property password As String
+    <JsonProperty("facultadId")>
+    Public Property facultadId As Integer?
+    <JsonProperty("carreraId")>
+    Public Property carreraId As Integer?
+    Public Property token As String
+End Class
 
