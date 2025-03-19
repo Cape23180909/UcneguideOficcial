@@ -90,7 +90,7 @@ Public Class GestionarAsignaturas
     Private Sub CrearPanelSuperior()
         topPanel = New Panel With {
         .Dock = DockStyle.Top,
-        .Height = 120,  ' Aumentamos la altura para mejor visualización
+        .Height = 120,
         .BackColor = ColorTranslator.FromHtml("#074788")
     }
 
@@ -120,8 +120,6 @@ Public Class GestionarAsignaturas
         .AutoSize = True
     }
 
-
-
         ' Icono de carrera
         Dim iconoCarrera As New PictureBox With {
         .Image = SystemIcons.Shield.ToBitmap(),
@@ -131,9 +129,9 @@ Public Class GestionarAsignaturas
         .Margin = New Padding(0, 0, 10, 0)
     }
 
-        ' Etiquetas mejoradas
+        ' Etiqueta modificada para mostrar "Usuario: NOMBRE"
         Dim lblUsuario As New Label With {
-        .Text = UserSession.nombre.ToUpper(),
+        .Text = "Usuario: " & UserSession.nombre.ToUpper(), ' Texto modificado aquí
         .Font = New Font("Segoe UI", 12, FontStyle.Bold),
         .ForeColor = Color.White,
         .TextAlign = ContentAlignment.MiddleLeft,
@@ -142,9 +140,9 @@ Public Class GestionarAsignaturas
     }
 
         Dim lblCarrera As New Label With {
-        .Text = UserSession.nombreCarrera,
-        .Font = New Font("Segoe UI", 11, FontStyle.Italic),
-        .ForeColor = Color.LightGoldenrodYellow,
+        .Text = "nombreCarrera: " & UserSession.nombreCarrera.ToUpper(), ' Texto modificado aquí
+        .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+        .ForeColor = Color.White,
         .TextAlign = ContentAlignment.MiddleLeft,
         .Dock = DockStyle.Fill,
         .AutoSize = True
@@ -153,7 +151,6 @@ Public Class GestionarAsignaturas
         ' Configurar layout
         mainContainer.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 40))
         mainContainer.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
-
 
         mainContainer.Controls.Add(lblUsuario, 1, 0)
         mainContainer.Controls.Add(iconoCarrera, 0, 1)
