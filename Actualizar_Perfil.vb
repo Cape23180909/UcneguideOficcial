@@ -29,18 +29,18 @@ Public Class ActualizarPerfil
 
     Private Sub InitializeCustomComponents()
         Me.Text = "Actualizar Perfil"
-        Me.Size = New Size(800, 600) ' Aumentamos ligeramente la altura
+        Me.Size = New Size(800, 600)
         Me.BackColor = Color.White
         Me.StartPosition = FormStartPosition.CenterScreen
+        Me.FormBorderStyle = FormBorderStyle.FixedDialog
 
-        ' Panel superior con diseño unificado
+        ' Panel superior centrado
         topPanel = New Panel With {
             .Dock = DockStyle.Top,
             .Height = 100,
             .BackColor = ColorTranslator.FromHtml("#074788")
         }
 
-        ' Línea decorativa amarilla
         Dim bottomBorder As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 5,
@@ -49,48 +49,72 @@ Public Class ActualizarPerfil
 
         ' Icono interactivo
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
-            .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(70, 70),
-            .Location = New Point(20, 15),
-            .Cursor = Cursors.Hand
-        }
-        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
-        topPanel.Controls.Add(iconoPictureBox)
+    .Image = My.Resources.guia_turistico_3,
+    .SizeMode = PictureBoxSizeMode.Zoom,
+    .Size = New Size(70, 70),
+    .Location = New Point(20, 15),
+    .Cursor = Cursors.Hand
+}
 
-        ' Título del formulario
+        ' Título al lado del icono con alineación vertical
         Dim lblTitulo As New Label With {
-            .Text = "Actualizar Perfil",
-            .Font = New Font("Arial", 16, FontStyle.Bold),
-            .ForeColor = Color.White,
-            .AutoSize = True,
-            .Location = New Point(100, 35)
-        }
+    .Text = "Actualizar Perfil",
+    .Font = New Font("Arial", 16, FontStyle.Bold),
+    .ForeColor = Color.White,
+    .AutoSize = True,
+    .TextAlign = ContentAlignment.MiddleLeft  ' Alineación vertical
+}
+
+        ' Posicionamiento relativo al icono
+        lblTitulo.Location = New Point(
+    iconoPictureBox.Right + 10,  ' 10px de margen del icono
+    iconoPictureBox.Top + (iconoPictureBox.Height - lblTitulo.Height) \ 2  ' Centrado vertical
+)
+
+        topPanel.Controls.Add(iconoPictureBox)
         topPanel.Controls.Add(lblTitulo)
 
-        ' Contenedor principal para controles
+        ' Contenedor principal con scroll
         Dim mainContainer As New Panel With {
             .Dock = DockStyle.Fill,
-            .AutoScroll = True
+            .AutoScroll = True,
+            .Padding = New Padding(0, 20, 0, 20)
         }
 
-        ' Configuración de controles con posiciones relativas
-        Dim yPosition As Integer = 20
+        ' Panel de contenido centrado
+        Dim contentPanel As New Panel With {
+            .AutoSize = True,
+            .Width = 500,
+            .Anchor = AnchorStyles.None
+        }
+
+        ' Posicionamiento central
+        contentPanel.Location = New Point(
+            (mainContainer.Width - contentPanel.Width) \ 2,
+            (mainContainer.Height - contentPanel.Height) \ 2)
+
+        ' Configuración de controles
+        Dim yPosition As Integer = 0
+        Dim controlWidth As Integer = 400
         Dim controlHeight As Integer = 30
-        Dim margin As Integer = 40
+        Dim margin As Integer = 30
 
         Dim AddControl = Sub(ctrl As Control, labelText As String)
-                             ctrl.Location = New Point(40, yPosition)
-                             ctrl.Size = New Size(400, controlHeight)
-                             mainContainer.Controls.Add(New Label With {
+                             Dim lbl = New Label With {
                                  .Text = labelText,
-                                 .Location = New Point(40, yPosition - 20),
-                                 .Font = New Font("Arial", 9)
-                             })
-                             mainContainer.Controls.Add(ctrl)
-                             yPosition += margin + controlHeight
+                                 .Font = New Font("Arial", 9),
+                                 .Location = New Point(0, yPosition),
+                                 .AutoSize = True
+                             }
+                             contentPanel.Controls.Add(lbl)
+
+                             ctrl.Location = New Point(0, yPosition + 20)
+                             ctrl.Size = New Size(controlWidth, controlHeight)
+                             contentPanel.Controls.Add(ctrl)
+                             yPosition += margin + controlHeight + 20
                          End Sub
 
+        ' Agregar controles centrados
         AddControl(TxtNombre, "Nombre:")
         AddControl(TxtEmail, "Email:")
         AddControl(TxtPassword, "Contraseña:")
@@ -98,39 +122,50 @@ Public Class ActualizarPerfil
         AddControl(CmbFacultad, "Facultad:")
         AddControl(CmbCarrera, "Carrera:")
 
-        ' Configuración de botones
+        ' Configuración de botones centrados
+        Dim buttonPanel As New Panel With {
+            .Size = New Size(controlWidth, 50),
+            .Location = New Point(0, yPosition + 20)
+        }
+
         BtnGuardar.Text = "Actualizar"
         BtnVolver.Text = "Volver"
         BtnGuardar.Size = New Size(120, 40)
         BtnVolver.Size = New Size(120, 40)
+
+        BtnGuardar.Location = New Point(0, 0)
+        BtnVolver.Location = New Point(controlWidth - BtnVolver.Width, 0)
+
+        ' Estilos y eventos de botones
+        For Each btn As Button In {BtnGuardar, BtnVolver}
+            btn.Font = New Font("Arial", 10, FontStyle.Bold)
+            btn.FlatStyle = FlatStyle.Flat
+            btn.FlatAppearance.BorderSize = 0
+        Next
 
         BtnGuardar.BackColor = ColorTranslator.FromHtml("#074788")
         BtnGuardar.ForeColor = Color.White
         BtnVolver.BackColor = ColorTranslator.FromHtml("#F7D917")
         BtnVolver.ForeColor = Color.Black
 
-        ' Posicionamiento de botones
-        BtnGuardar.Location = New Point(100, yPosition + 20)
-        BtnVolver.Location = New Point(260, yPosition + 20)
+        buttonPanel.Controls.Add(BtnGuardar)
+        buttonPanel.Controls.Add(BtnVolver)
+        contentPanel.Controls.Add(buttonPanel)
 
-        ' Efectos hover para botones
-        For Each btn As Button In {BtnGuardar, BtnVolver}
-            AddHandler btn.MouseEnter, Sub(sender, e)
-                                           CType(sender, Button).BackColor = ColorTranslator.FromHtml("#0A5AA8")
-                                           CType(sender, Button).FlatStyle = FlatStyle.Flat
-                                       End Sub
-            AddHandler btn.MouseLeave, Sub(sender, e)
-                                           CType(sender, Button).BackColor = If(btn.Text = "Volver", ColorTranslator.FromHtml("#F7D917"), ColorTranslator.FromHtml("#074788"))
-                                       End Sub
-        Next
-
+        ' Manejo de eventos
         AddHandler BtnGuardar.Click, AddressOf BtnGuardar_Click
         AddHandler BtnVolver.Click, Sub(s, e) Me.Close()
 
-        mainContainer.Controls.Add(BtnGuardar)
-        mainContainer.Controls.Add(BtnVolver)
+        ' Ajustar tamaño del panel de contenido
+        contentPanel.Height = buttonPanel.Bottom + 20
 
-        ' Agregar todos los paneles al formulario
+        ' Centrar dinámicamente al redimensionar
+        AddHandler mainContainer.SizeChanged, Sub(s, e)
+                                                  contentPanel.Left = (mainContainer.Width - contentPanel.Width) \ 2
+                                                  contentPanel.Top = Math.Max(20, (mainContainer.Height - contentPanel.Height) \ 2)
+                                              End Sub
+
+        mainContainer.Controls.Add(contentPanel)
         Me.Controls.Add(mainContainer)
         Me.Controls.Add(bottomBorder)
         Me.Controls.Add(topPanel)
