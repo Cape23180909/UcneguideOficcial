@@ -20,6 +20,8 @@ Public Class ActualizarPerfil
     Private WithEvents BtnVolver As New Button()
     Private topPanel As Panel
     Private iconoPictureBox As PictureBox
+
+
     Public Sub New()
         InitializeComponent()
         InitializeCustomComponents()
@@ -67,8 +69,8 @@ Public Class ActualizarPerfil
 
         ' Posicionamiento relativo al icono
         lblTitulo.Location = New Point(
-    iconoPictureBox.Right + 10,  ' 10px de margen del icono
-    iconoPictureBox.Top + (iconoPictureBox.Height - lblTitulo.Height) \ 2  ' Centrado vertical
+    iconoPictureBox.Right + 10,
+    iconoPictureBox.Top + (iconoPictureBox.Height - lblTitulo.Height) \ 2
 )
 
         topPanel.Controls.Add(iconoPictureBox)
