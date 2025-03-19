@@ -86,25 +86,103 @@ Public Class GestionarAsignaturas
         Me.Controls.Add(topPanel)
     End Sub
 
+
     Private Sub CrearPanelSuperior()
         topPanel = New Panel With {
-            .Dock = DockStyle.Top,
-            .Height = 100,
-            .BackColor = ColorTranslator.FromHtml("#074788")
-        }
+        .Dock = DockStyle.Top,
+        .Height = 120,  ' Aumentamos la altura para mejor visualización
+        .BackColor = ColorTranslator.FromHtml("#074788")
+    }
 
+        ' Icono principal
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
-            .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(80, 80),
-            .Location = New Point(20, 10),
-            .Anchor = AnchorStyles.Left
-        }
+        .Image = My.Resources.guia_turistico_3,
+        .SizeMode = PictureBoxSizeMode.Zoom,
+        .Size = New Size(90, 90),
+        .Location = New Point(25, 15),
+        .Anchor = AnchorStyles.Left
+    }
         topPanel.Controls.Add(iconoPictureBox)
 
+        ' Panel de información con sombra
+        Dim infoPanel As New Panel With {
+        .Dock = DockStyle.Right,
+        .Width = 300,
+        .BackColor = ColorTranslator.FromHtml("#0A5AA8"),
+        .Padding = New Padding(15, 10, 15, 10)
+    }
 
+        ' Contenedor principal
+        Dim mainContainer As New TableLayoutPanel With {
+        .Dock = DockStyle.Fill,
+        .ColumnCount = 2,
+        .RowCount = 2,
+        .AutoSize = True
+    }
+
+
+
+        ' Icono de carrera
+        Dim iconoCarrera As New PictureBox With {
+        .Image = SystemIcons.Shield.ToBitmap(),
+        .SizeMode = PictureBoxSizeMode.Zoom,
+        .Size = New Size(32, 32),
+        .Dock = DockStyle.Left,
+        .Margin = New Padding(0, 0, 10, 0)
+    }
+
+        ' Etiquetas mejoradas
+        Dim lblUsuario As New Label With {
+        .Text = UserSession.nombre.ToUpper(),
+        .Font = New Font("Segoe UI", 12, FontStyle.Bold),
+        .ForeColor = Color.White,
+        .TextAlign = ContentAlignment.MiddleLeft,
+        .Dock = DockStyle.Fill,
+        .AutoSize = True
+    }
+
+        Dim lblCarrera As New Label With {
+        .Text = UserSession.nombreCarrera,
+        .Font = New Font("Segoe UI", 11, FontStyle.Italic),
+        .ForeColor = Color.LightGoldenrodYellow,
+        .TextAlign = ContentAlignment.MiddleLeft,
+        .Dock = DockStyle.Fill,
+        .AutoSize = True
+    }
+
+        ' Configurar layout
+        mainContainer.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 40))
+        mainContainer.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
+
+
+        mainContainer.Controls.Add(lblUsuario, 1, 0)
+        mainContainer.Controls.Add(iconoCarrera, 0, 1)
+        mainContainer.Controls.Add(lblCarrera, 1, 1)
+
+        ' Separador visual
+        Dim separador As New Panel With {
+        .Height = 1,
+        .Dock = DockStyle.Bottom,
+        .BackColor = Color.FromArgb(50, 255, 255, 255)
+    }
+
+        infoPanel.Controls.Add(mainContainer)
+        infoPanel.Controls.Add(separador)
+        topPanel.Controls.Add(infoPanel)
+
+        ' Efecto de sombra
+        AddShadowEffect(infoPanel)
     End Sub
 
+    Private Sub AddShadowEffect(panel As Panel)
+        Dim shadow As New Panel With {
+        .BackColor = Color.FromArgb(50, 0, 0, 0),
+        .Dock = DockStyle.Fill,
+        .Padding = New Padding(0, 0, 5, 5)
+    }
+        panel.Controls.Add(shadow)
+        shadow.SendToBack()
+    End Sub
 
 
 
