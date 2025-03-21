@@ -195,46 +195,79 @@ Public Class GestionarAsignaturas
 
     Private Sub ConfigurarDataGridView()
         dgvAsignaturas = New DataGridView With {
-            .Dock = DockStyle.Fill,
-            .AllowUserToAddRows = False,
-            .AllowUserToDeleteRows = False,
-            .ReadOnly = True,
-            .AutoGenerateColumns = False,
-            .DataSource = bindingSource,
-            .SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-            .BackgroundColor = Color.White,
-            .BorderStyle = BorderStyle.None
-        }
+        .Dock = DockStyle.Fill,
+        .AllowUserToAddRows = False,
+        .AllowUserToDeleteRows = False,
+        .ReadOnly = True,
+        .AutoGenerateColumns = False,
+        .DataSource = bindingSource,
+        .SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+        .BackgroundColor = Color.White,
+        .BorderStyle = BorderStyle.None
+    }
 
+        ' Columnas con DataPropertyName en PascalCase (igual que el DataTable)
         dgvAsignaturas.Columns.AddRange({
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "CodigoAsignatura",
-                .HeaderText = "CodigoAsignatura",
-                .Width = 120
-            },
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "NombreAsignatura",
-                .HeaderText = "NombreAsignatura",
-                .Width = 250
-            },
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "descripcionAsignatura",
-                .HeaderText = "descripcionAsignatura",
-                .Width = 250
-            },
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "NombreDocenteCompleto",
-                .HeaderText = "NombreDocenteCompleto",
-                .Width = 200
-            },
-            New DataGridViewTextBoxColumn With {
-                .DataPropertyName = "nombreCarrera",
-                .HeaderText = "nombreCarrera",
-                .Width = 200
-            }
-        })
+        New DataGridViewTextBoxColumn With {
+            .DataPropertyName = "CodigoAsignatura",
+            .HeaderText = "CodigoAsignatura",
+            .Width = 120
+        },
+        New DataGridViewTextBoxColumn With {
+            .DataPropertyName = "NombreAsignatura",
+            .HeaderText = "NombreAsignatura",
+            .Width = 250
+        },
+        New DataGridViewTextBoxColumn With {
+            .DataPropertyName = "DescripcionAsignatura",
+            .HeaderText = "DescripcionAsignatura",
+            .Width = 250
+        },
+        New DataGridViewTextBoxColumn With {
+            .DataPropertyName = "NombreDocenteCompleto",
+            .HeaderText = "NombreDocenteCompleto",
+            .Width = 200
+        },
+        New DataGridViewTextBoxColumn With {
+            .DataPropertyName = "NombreCarrera",
+            .HeaderText = "NombreCarrera",
+            .Width = 200
+        }
+    })
+
+        AddHandler dgvAsignaturas.CellDoubleClick, AddressOf dgvAsignaturas_CellDoubleClick
     End Sub
+
+
+
+
+    Private Sub dgvAsignaturas_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvAsignaturas.CellDoubleClick
+        If e.RowIndex < 0 Then Return ' Evitar clic en encabezados
+
+        ' Obtener la fila seleccionada
+        Dim selectedRow As DataGridViewRow = dgvAsignaturas.Rows(e.RowIndex)
+
+        ' Intentar obtener el código de la asignatura con nombre de columna
+        Dim codigoAsignatura As String = ""
+        Try
+            codigoAsignatura = selectedRow.Cells("codigoAsignatura").Value.ToString()
+        Catch ex As ArgumentException
+            ' Si no encuentra la columna, intenta con un índice (ajústalo según corresponda)
+            codigoAsignatura = selectedRow.Cells(0).Value.ToString()
+        End Try
+
+        ' Verificar si se obtuvo correctamente el código
+        If String.IsNullOrEmpty(codigoAsignatura) Then
+            MessageBox.Show("No se pudo obtener el código de la asignatura.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
+
+        ' Crear y mostrar el formulario de descripción de asignatura
+        Dim detallesForm As New DescripcionAsignaturas(codigoAsignatura)
+        detallesForm.ShowDialog()
+    End Sub
+
 
     ' Método AplicarFiltro optimizado
     Private Sub AplicarFiltro()
@@ -264,22 +297,23 @@ Public Class GestionarAsignaturas
         AplicarFiltro()
     End Sub
 
+    ' Función para convertir la lista de asignaturas en DataTable
     Private Function ConvertirListaADataTable(asignaturas As List(Of Asignaturas)) As DataTable
         Dim dt As New DataTable()
 
         dt.Columns.Add("CodigoAsignatura", GetType(String))
         dt.Columns.Add("NombreAsignatura", GetType(String))
-        dt.Columns.Add("descripcionAsignatura", GetType(String))
+        dt.Columns.Add("DescripcionAsignatura", GetType(String))
         dt.Columns.Add("NombreDocenteCompleto", GetType(String))
-        dt.Columns.Add("nombreCarrera", GetType(String))
+        dt.Columns.Add("NombreCarrera", GetType(String))
 
         For Each a In asignaturas
             dt.Rows.Add(
-            a.codigoAsignatura,
-            a.nombreAsignatura,
-            a.descripcionAsignatura,
+            a.CodigoAsignatura,
+            a.NombreAsignatura,
+            a.DescripcionAsignatura,
             a.NombreDocenteCompleto,
-            a.nombreCarrera
+            a.NombreCarrera
         )
         Next
 
@@ -378,5 +412,6 @@ Public Class GestionarAsignaturas
         Dim dt As DataTable = ConvertirListaADataTable(asignaturas)
         bindingSource.DataSource = dt
     End Sub
+
 
 End Class
