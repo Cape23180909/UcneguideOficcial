@@ -12,6 +12,16 @@ Public Class UserSession
     Public Property password As String
     Public Shared Property Token As String
     Public Shared Property nombreCarrera As String
+
+    ' Método compartido
+    Public Shared Sub LimpiarSesion()
+        Token = Nothing
+        usuarioId = 0
+        nombre = ""
+        email = ""
+        facultadId = 0
+        carreraId = 0
+    End Sub
 End Class
 
 ' Clase Usuario con atributos JsonProperty

@@ -43,7 +43,6 @@ Public Class Menu
         }
         btnBack.Image = LoadImage("C:\\Ucneguide\\Resources\\guia-turistico 3.png")
         AddMouseHoverEffects(btnBack)
-        AddHandler btnBack.Click, AddressOf BtnBack_Click ' Nuevo evento
         topPanel.Controls.Add(btnBack)
 
         ' Título del menú

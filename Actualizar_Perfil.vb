@@ -73,6 +73,21 @@ Public Class ActualizarPerfil
     iconoPictureBox.Top + (iconoPictureBox.Height - lblTitulo.Height) \ 2
 )
 
+        ' Botón de cerrar sesión
+        Dim BtnCerrarSesion As New Button With {
+            .Text = "Cerrar Sesión",
+            .Size = New Size(120, 30),
+            .BackColor = ColorTranslator.FromHtml("#FF4444"),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Anchor = AnchorStyles.Right,
+            .Location = New Point(topPanel.Width - 140, 15),
+            .Cursor = Cursors.Hand
+        }
+        AddHandler BtnCerrarSesion.Click, AddressOf CerrarSesion_Click
+
+        ' Agregar controles al topPanel
+        topPanel.Controls.Add(BtnCerrarSesion)
         topPanel.Controls.Add(iconoPictureBox)
         topPanel.Controls.Add(lblTitulo)
 
@@ -172,6 +187,28 @@ Public Class ActualizarPerfil
         Me.Controls.Add(bottomBorder)
         Me.Controls.Add(topPanel)
     End Sub
+
+
+    Private Sub CerrarSesion_Click(sender As Object, e As EventArgs)
+        Dim result = MessageBox.Show("¿Está seguro que desea cerrar sesión?",
+                                 "Confirmar cierre de sesión",
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Warning)
+
+        If result = DialogResult.Yes Then
+            ' Limpiar datos de sesión
+            UserSession.LimpiarSesion()
+
+            ' Mostrar el formulario de inicio de sesión
+            Dim loginForm As New LoginForm()
+            loginForm.Show()
+
+            ' Cerrar el formulario actual
+            Me.Close()
+        End If
+    End Sub
+
+
 
 
     Private Async Sub CargarFacultades()
