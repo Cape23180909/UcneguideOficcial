@@ -1,10 +1,11 @@
 ﻿Imports Newtonsoft.Json
 Imports System.Net.Http
+
 Imports System.Text
-Imports System.Threading.Tasks
 
 Public Class DescripcionAsignaturas
     Private ReadOnly ApiUrlAsignaturas As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Asignaturas"
+    Private ReadOnly ApiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
     Private CodigoAsignatura As String
     Private DocenteId As String
 
@@ -119,7 +120,7 @@ Public Class DescripcionAsignaturas
         Await CargarDatosAsignatura()
     End Sub
 
-    ' Cargar datos de la asignatura y comentarios
+    ' Cargar datos de la asignatura y obtener el docente específico
     Private Async Function CargarDatosAsignatura() As Task
         Dim detalleAsignatura = Await ObtenerDatosAPI(Of List(Of Dictionary(Of String, Object)))(ApiUrlAsignaturas)
         If detalleAsignatura Is Nothing OrElse Not detalleAsignatura.Any() Then Return
@@ -131,6 +132,7 @@ Public Class DescripcionAsignaturas
         LblCodigoAsignatura.Text &= CodigoAsignatura
         LblDescripcionAsignatura.Text &= asignatura("descripcionAsignatura").ToString()
 
+        ' Obtener solo el docente de la asignatura
         If asignatura.ContainsKey("docenteId") Then
             DocenteId = asignatura("docenteId").ToString()
             LblNombreDocenteCompleto.Text &= Await ObtenerNombreDocente(DocenteId)
@@ -139,11 +141,27 @@ Public Class DescripcionAsignaturas
         Await CargarComentarios()
     End Function
 
-    ' Obtener nombre del docente
+
+
+
+
+    ' Obtener nombre del docente que imparte la asignatura
     Private Async Function ObtenerNombreDocente(docenteId As String) As Task(Of String)
-        If String.IsNullOrEmpty(docenteId) Then Return "Docente desconocido"
-        Dim docenteData = Await ObtenerDatosAPI(Of Dictionary(Of String, String))(ApiUrlAsignaturas & "/Docente?DocenteId=" & docenteId)
-        Return If(docenteData IsNot Nothing AndAlso docenteData.ContainsKey("nombre"), docenteData("nombre"), "Docente desconocido")
+        Try
+            Using client As New HttpClient()
+                Dim response = Await client.GetStringAsync($"{ApiUrlDocentes}/{docenteId}")
+                Dim docente As Dictionary(Of String, Object) = JsonConvert.DeserializeObject(Of Dictionary(Of String, Object))(response)
+
+                If docente IsNot Nothing AndAlso docente.ContainsKey("nombre") AndAlso docente.ContainsKey("apellido") Then
+                    Return $"{docente("nombre")} {docente("apellido")}"
+                Else
+                    Return "Docente no encontrado"
+                End If
+            End Using
+        Catch ex As Exception
+            MessageBox.Show($"Error obteniendo nombre del docente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return "Error al obtener el docente"
+        End Try
     End Function
 
     ' Obtener y mostrar comentarios

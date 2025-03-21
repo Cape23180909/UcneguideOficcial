@@ -4,6 +4,8 @@ Public Class Comentarios
     Public Property ComentarioId As Integer
     Public Property Comentario As String
     Public Property DocenteId As Integer
+    Public Property Contenido As String
+    Public Property CodigoAsignatura As String
     Public Property AsignaturaId As Integer
     Public Property UsuarioId As Integer
     Public Property FechaComentario As DateTime
