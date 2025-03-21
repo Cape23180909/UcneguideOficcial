@@ -1,4 +1,6 @@
-﻿Public Class Comentarios
+﻿
+
+Public Class Comentarios
     Public Property ComentarioId As Integer
     Public Property Comentario As String
     Public Property DocenteId As Integer
@@ -22,3 +24,5 @@
     End Function
 
 End Class
+
+

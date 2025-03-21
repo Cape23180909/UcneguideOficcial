@@ -1,8 +1,8 @@
-﻿Imports System.Net.Http
-Imports Newtonsoft.Json
-Imports System.Threading.Tasks
-Imports System.ComponentModel
-Imports System.Security
+﻿Imports Newtonsoft.Json
+
+Imports System.Net.Http
+
+
 Public Class GestionarAsignaturas
     Inherits Form
 
@@ -391,12 +391,12 @@ Public Class GestionarAsignaturas
 
                 ' Asignar nombres completos a las asignaturas
                 For Each asignatura In asignaturas
-                    Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = asignatura.docenteId)
+                    Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = asignatura.DocenteId)
                     asignatura.NombreDocenteCompleto = If(docente IsNot Nothing, $"{docente.nombre} {docente.apellido}", "Desconocido")
 
                     ' Asignar nombre de carrera basado en la lista obtenida
                     Dim carrera = carreras.FirstOrDefault(Function(c) c.carreraId = asignatura.CarreraId)
-                    asignatura.nombreCarrera = If(carrera IsNot Nothing, carrera.nombreCarrera, "Desconocido")
+                    asignatura.NombreCarrera = If(carrera IsNot Nothing, carrera.nombreCarrera, "Desconocido")
                 Next
             End Using
         Catch ex As Exception
