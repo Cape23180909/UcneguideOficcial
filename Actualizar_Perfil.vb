@@ -189,26 +189,36 @@ Public Class ActualizarPerfil
     End Sub
 
 
+
+
     Private Sub CerrarSesion_Click(sender As Object, e As EventArgs)
         Dim result = MessageBox.Show("¿Está seguro que desea cerrar sesión?",
-                                 "Confirmar cierre de sesión",
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Warning)
+                             "Confirmar cierre de sesión",
+                             MessageBoxButtons.YesNo,
+                             MessageBoxIcon.Warning)
 
         If result = DialogResult.Yes Then
-            ' Limpiar datos de sesión
             UserSession.LimpiarSesion()
 
-            ' Mostrar el formulario de inicio de sesión
-            Dim loginForm As New LoginForm()
-            loginForm.Show()
+            ' Crear una COPIA de la lista de formularios abiertos
+            Dim formsToClose As New List(Of Form)()
 
-            ' Cerrar el formulario actual
-            Me.Close()
+            ' Cerrar todos los formularios (excepto el login)
+            For Each form As Form In formsToClose
+                If Not form.Name = "LoginForm" Then
+                    form.Close()
+                End If
+            Next
+
+            ' Mostrar el login si no está visible
+            If Application.OpenForms.OfType(Of LoginForm)().Any() Then
+                Application.OpenForms.OfType(Of LoginForm)().First().Show()
+            Else
+                Dim loginForm As New LoginForm()
+                loginForm.Show()
+            End If
         End If
     End Sub
-
-
 
 
     Private Async Sub CargarFacultades()
