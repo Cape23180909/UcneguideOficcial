@@ -5,7 +5,7 @@ Public Class Comentarios
     <JsonProperty("comentarioId")>
     Public Property ComentarioId As Integer
 
-    <JsonProperty("comentario")> ' Nombre exacto del campo en el JSON
+    <JsonProperty("contenido")>
     Public Property Comentario As String
 
     <JsonProperty("docenteId")>
@@ -13,6 +13,9 @@ Public Class Comentarios
 
     <JsonProperty("asignaturaId")> ' Usar "asignaturaId" en lugar de "codigoAsignatura"
     Public Property AsignaturaId As Integer
+    <JsonProperty("carreraId")> ' Añadir si la API usa este campo
+    Public Property CarreraId As Integer
+
 
     <JsonProperty("usuarioId")>
     Public Property UsuarioId As Integer
