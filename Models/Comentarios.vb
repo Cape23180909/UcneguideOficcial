@@ -1,30 +1,31 @@
 ﻿
+Imports Newtonsoft.Json
 
 Public Class Comentarios
+    <JsonProperty("comentarioId")>
     Public Property ComentarioId As Integer
+
+    <JsonProperty("comentario")> ' Nombre exacto del campo en el JSON
     Public Property Comentario As String
+
+    <JsonProperty("docenteId")>
     Public Property DocenteId As Integer
-    Public Property Contenido As String
-    Public Property CodigoAsignatura As String
+
+    <JsonProperty("asignaturaId")> ' Usar "asignaturaId" en lugar de "codigoAsignatura"
     Public Property AsignaturaId As Integer
+
+    <JsonProperty("usuarioId")>
     Public Property UsuarioId As Integer
+
+    <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
 
-    ' Constructor opcional
-    Public Sub New(comentarioId As Integer, comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer, fechaComentario As DateTime)
-        Me.ComentarioId = comentarioId
+    ' Constructor para enviar nuevos comentarios
+    Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)
         Me.Comentario = comentario
         Me.DocenteId = docenteId
         Me.AsignaturaId = asignaturaId
         Me.UsuarioId = usuarioId
-        Me.FechaComentario = fechaComentario
+        Me.FechaComentario = DateTime.Now ' Establecer fecha actual
     End Sub
-
-    ' Método para mostrar la información del comentario
-    Public Overrides Function ToString() As String
-        Return $"ID: {ComentarioId}, Comentario: {Comentario}, Docente ID: {DocenteId}, Asignatura ID: {AsignaturaId}, Usuario ID: {UsuarioId}, Fecha: {FechaComentario}"
-    End Function
-
 End Class
-
-

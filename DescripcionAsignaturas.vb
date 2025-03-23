@@ -1,9 +1,11 @@
 ﻿Imports Newtonsoft.Json
 Imports System.Net.Http
+Imports System.Net.Http.Headers
 
 Imports System.Text
 
 Public Class DescripcionAsignaturas
+    Private ReadOnly ApiUrlComentarios As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios"
     Private ReadOnly ApiUrlAsignaturas As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Asignaturas"
     Private ReadOnly ApiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
     Private CodigoAsignatura As String
@@ -164,42 +166,73 @@ Public Class DescripcionAsignaturas
         End Try
     End Function
 
-    ' Obtener y mostrar comentarios
     Private Async Function CargarComentarios() As Task
-        Dim comentarios = Await ObtenerDatosAPI(Of List(Of Dictionary(Of String, String)))(ApiUrlAsignaturas & "/Comentarios?CodigoAsignatura=" & CodigoAsignatura)
-        LstComentarios.Items.Clear()
+        Try
+            ' Obtener comentarios filtrados por docente y asignatura
+            Dim url = $"https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios?docenteId={DocenteId}&asignaturaId=1" ' Cambia "1" por el ID real
+            Dim comentarios = Await ObtenerDatosAPI(Of List(Of Comentarios))(url)
 
-        If comentarios IsNot Nothing AndAlso comentarios.Any() Then
-            For Each comentario In comentarios
-                LstComentarios.Items.Add($"@{comentario("usuario")}: {comentario("contenido")}")
-            Next
-        Else
-            LstComentarios.Items.Add("No hay comentarios disponibles.")
-        End If
+            LstComentarios.Items.Clear()
+
+            If comentarios IsNot Nothing Then
+                For Each c As Comentarios In comentarios
+                    LstComentarios.Items.Add($"@{c.UsuarioId}: {c.Comentario} ({c.FechaComentario.ToString("dd/MM/yyyy")})")
+                Next
+            Else
+                LstComentarios.Items.Add("No hay comentarios aún.")
+            End If
+        Catch ex As Exception
+            MessageBox.Show($"Error al cargar comentarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Function
 
-    ' Enviar un nuevo comentario
     Private Async Sub EnviarComentario(sender As Object, e As EventArgs)
-        Dim nuevoComentario As New With {
-        .contenido = TxtComentario.Text,
-        .docenteId = DocenteId,
-        .codigoAsignatura = CodigoAsignatura
-    }
-
-        Dim json As String = JsonConvert.SerializeObject(nuevoComentario)
-        Using client As New HttpClient()
-            Dim content As New StringContent(json, Encoding.UTF8, "application/json")
-            Dim response As HttpResponseMessage = Await client.PostAsync(ApiUrlAsignaturas & "/Comentarios", content)
-            If response.IsSuccessStatusCode Then
-                TxtComentario.Clear()
-                Await CargarComentarios()
-            Else
-                MessageBox.Show("Error al enviar comentario", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Try
+            ' Validar campo vacío
+            If String.IsNullOrWhiteSpace(TxtComentario.Text) Then
+                MessageBox.Show("Escribe un comentario antes de enviar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
             End If
-        End Using
 
+            ' Convertir IDs a enteros (asegúrate de que DocenteId y AsignaturaId sean numéricos)
+            Dim docenteIdInt As Integer = Integer.Parse(DocenteId)
+            Dim asignaturaIdInt As Integer = 1 ' Reemplaza con el ID real de la asignatura
 
+            ' Crear objeto con la estructura correcta
+            Dim nuevoComentario As New Comentarios(
+            comentario:=TxtComentario.Text.Trim(),
+            docenteId:=docenteIdInt,
+            asignaturaId:=asignaturaIdInt,
+            usuarioId:=1 ' Reemplaza con el ID del usuario autenticado
+        )
+
+            ' Serializar a JSON
+            Dim json As String = JsonConvert.SerializeObject(nuevoComentario)
+
+            Using client As New HttpClient()
+                client.DefaultRequestHeaders.Accept.Add(New MediaTypeWithQualityHeaderValue("application/json"))
+
+                ' Endpoint correcto para POST
+                Dim response As HttpResponseMessage = Await client.PostAsync(
+                "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios",
+                New StringContent(json, Encoding.UTF8, "application/json")
+            )
+
+                If response.IsSuccessStatusCode Then
+                    TxtComentario.Clear()
+                    Await CargarComentarios() ' Recargar la lista
+                    MessageBox.Show("¡Comentario enviado!", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Else
+                    Dim errorContent As String = Await response.Content.ReadAsStringAsync()
+                    MessageBox.Show($"Error del API: {errorContent}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End If
+            End Using
+        Catch ex As Exception
+            MessageBox.Show($"Error crítico: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
+
+
 
     ' Método genérico para obtener datos de la API
     Private Async Function ObtenerDatosAPI(Of T)(url As String) As Task(Of T)
