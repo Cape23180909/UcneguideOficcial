@@ -155,10 +155,10 @@
     <Compile Include="GestionarDocentes.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GestionarSugerencias.Designer.vb">
-      <DependentUpon>GestionarSugerencias.vb</DependentUpon>
+    <Compile Include="GestionarComentarios.Designer.vb">
+      <DependentUpon>GestionarComentarios.vb</DependentUpon>
     </Compile>
-    <Compile Include="GestionarSugerencias.vb">
+    <Compile Include="GestionarComentarios.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GestionUsuariosForm.Designer.vb">
@@ -214,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GestionarAsignaturas.resx">
       <DependentUpon>GestionarAsignaturas.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GestionarComentarios.resx">
+      <DependentUpon>GestionarComentarios.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GestionarDocentes.resx">
       <DependentUpon>GestionarDocentes.vb</DependentUpon>

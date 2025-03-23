@@ -1,8 +1,10 @@
 ﻿Imports Newtonsoft.Json
 Imports System.Net.Http
-Imports System.Net.Http.Headers
 
+Imports System.Net.Http.Headers
 Imports System.Text
+
+
 
 Public Class DescripcionAsignaturas
     Private ReadOnly ApiUrlComentarios As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios"

@@ -77,7 +77,7 @@ Public Class Menu
 
         ' Crear tarjetas
         CreateCard(cardFacultades, imgFacultades, lblFacultades, LoadImage("C:\\Ucneguide\\Resources\\Facultad.png"), "Asignaturas")
-        CreateCard(cardSugerencias, imgSugerencias, lblSugerencias, LoadImage("C:\\Ucneguide\\Resources\\Sugerencia.png"), "Sugerencias")
+        CreateCard(cardSugerencias, imgSugerencias, lblSugerencias, LoadImage("C:\\Ucneguide\\Resources\\Sugerencia.png"), "Comentarios")
         CreateCard(cardMaestros, imgMaestros, lblMaestros, LoadImage("C:\\Ucneguide\\Resources\\Maestro.png"), "Maestros")
 
         ' Panel inferior
@@ -122,9 +122,9 @@ Public Class Menu
                                       Case "Asignaturas"
                                           Dim gestionAsignaturas As New GestionarAsignaturas(UserSession.CarreraId)
                                           gestionAsignaturas.Show()
-                                      Case "Sugerencias"
-                                          Dim formSugerencias As New GestionarSugerencias()
-                                          formSugerencias.Show()
+                                      Case "Comentarios"
+                                          Dim formComentarios As New GestionarComentarios()
+                                          formComentarios.Show()
                                       Case "Maestros"
                                           Dim formDocentes As New GestionarDocentes()
                                           formDocentes.Show()
