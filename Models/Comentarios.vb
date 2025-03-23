@@ -23,6 +23,7 @@ Public Class Comentarios
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
 
+
     ' Constructor para enviar nuevos comentarios
     Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)
         Me.Comentario = comentario
@@ -31,4 +32,5 @@ Public Class Comentarios
         Me.UsuarioId = usuarioId
         Me.FechaComentario = DateTime.Now ' Establecer fecha actual
     End Sub
+
 End Class
