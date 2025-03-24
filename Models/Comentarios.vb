@@ -1,21 +1,20 @@
 ﻿
 Imports Newtonsoft.Json
 
+
+
 Public Class Comentarios
     <JsonProperty("comentarioId")>
     Public Property ComentarioId As Integer
 
-    <JsonProperty("contenido")>
+    <JsonProperty("comentario")> ' ✅ Nombre exacto que usa la API
     Public Property Comentario As String
 
     <JsonProperty("docenteId")>
     Public Property DocenteId As Integer
 
-    <JsonProperty("asignaturaId")> ' Usar "asignaturaId" en lugar de "codigoAsignatura"
+    <JsonProperty("asignaturaId")>
     Public Property AsignaturaId As Integer
-    <JsonProperty("carreraId")> ' Añadir si la API usa este campo
-    Public Property CarreraId As Integer
-
 
     <JsonProperty("usuarioId")>
     Public Property UsuarioId As Integer
@@ -23,14 +22,12 @@ Public Class Comentarios
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
 
-
-    ' Constructor para enviar nuevos comentarios
+    ' Constructor
     Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)
         Me.Comentario = comentario
         Me.DocenteId = docenteId
         Me.AsignaturaId = asignaturaId
         Me.UsuarioId = usuarioId
-        Me.FechaComentario = DateTime.Now ' Establecer fecha actual
+        Me.FechaComentario = DateTime.Now
     End Sub
-
 End Class

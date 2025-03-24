@@ -12,7 +12,7 @@ Public Class DescripcionAsignaturas
     Private ReadOnly ApiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
     Private CodigoAsignatura As String
     Private DocenteId As String
-
+    Private AsignaturaId As Integer  ' ?? Eliminado valor hardcodeadoa
     ' Controles del formulario
     Private topPanel As Panel
     Private mainPanel As Panel
@@ -21,6 +21,7 @@ Public Class DescripcionAsignaturas
     Private LstComentarios As ListBox
     Private TxtComentario As TextBox
     Private BtnEnviarComentario As Button
+    Private docenteIdInt As Integer
 
     ' Constructor
     Public Sub New(codigo As String)
@@ -148,7 +149,6 @@ Public Class DescripcionAsignaturas
 
 
 
-
     ' Obtener nombre del docente que imparte la asignatura
     Private Async Function ObtenerNombreDocente(docenteId As String) As Task(Of String)
         Try
@@ -168,10 +168,12 @@ Public Class DescripcionAsignaturas
         End Try
     End Function
 
+
+
     Private Async Function CargarComentarios() As Task
         Try
-            ' Obtener comentarios filtrados por docente y asignatura
-            Dim url = $"https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios?docenteId={DocenteId}&asignaturaId=1" ' Cambia "1" por el ID real
+            ' Corregir URL usando AsignaturaId real
+            Dim url = $"{ApiUrlComentarios}?docenteId={DocenteId}&asignaturaId={AsignaturaId}"
             Dim comentarios = Await ObtenerDatosAPI(Of List(Of Comentarios))(url)
 
             LstComentarios.Items.Clear()
@@ -187,52 +189,55 @@ Public Class DescripcionAsignaturas
             MessageBox.Show($"Error al cargar comentarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Function
-
     Private Async Sub EnviarComentario(sender As Object, e As EventArgs)
         Try
-            ' Validar campo vacío
+            ' Validaciones
             If String.IsNullOrWhiteSpace(TxtComentario.Text) Then
                 MessageBox.Show("Escribe un comentario antes de enviar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
             End If
 
-            ' Convertir IDs a enteros (asegúrate de que DocenteId y AsignaturaId sean numéricos)
-            Dim docenteIdInt As Integer = Integer.Parse(DocenteId)
-            Dim asignaturaIdInt As Integer = 1 ' Reemplaza con el ID real de la asignatura
+            ' Convertir DocenteId a entero
+            Dim docenteIdInt As Integer
+            If Not Integer.TryParse(DocenteId, docenteIdInt) Then
+                MessageBox.Show("ID de docente inválido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End If
 
-            ' Crear objeto con la estructura correcta
+            ' Crear objeto con los nombres correctos
             Dim nuevoComentario As New Comentarios(
-            comentario:=TxtComentario.Text.Trim(),
+            comentario:=TxtComentario.Text.Trim(), ' ✅ Propiedad "Comentario"
             docenteId:=docenteIdInt,
-            asignaturaId:=asignaturaIdInt,
-            usuarioId:=1 ' Reemplaza con el ID del usuario autenticado
+            asignaturaId:=AsignaturaId,
+            usuarioId:=1 ' Cambiar por ID real del usuario
         )
 
-            ' Serializar a JSON
+            ' Serializar
             Dim json As String = JsonConvert.SerializeObject(nuevoComentario)
 
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Accept.Add(New MediaTypeWithQualityHeaderValue("application/json"))
-
-                ' Endpoint correcto para POST
                 Dim response As HttpResponseMessage = Await client.PostAsync(
-                "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios",
+                ApiUrlComentarios,
                 New StringContent(json, Encoding.UTF8, "application/json")
             )
 
                 If response.IsSuccessStatusCode Then
                     TxtComentario.Clear()
-                    Await CargarComentarios() ' Recargar la lista
+                    Await CargarComentarios()
                     MessageBox.Show("¡Comentario enviado!", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Else
                     Dim errorContent As String = Await response.Content.ReadAsStringAsync()
                     MessageBox.Show($"Error del API: {errorContent}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
             End Using
+
         Catch ex As Exception
-            MessageBox.Show($"Error crítico: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+
 
 
 
