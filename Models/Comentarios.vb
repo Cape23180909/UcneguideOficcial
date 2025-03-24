@@ -18,6 +18,7 @@ Public Class Comentarios
 
     <JsonProperty("usuarioId")>
     Public Property UsuarioId As Integer
+    Public Shared Property nombre As String
 
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime

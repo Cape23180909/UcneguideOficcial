@@ -1,4 +1,5 @@
 ﻿Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports System.Net.Http
 
 Imports System.Net.Http.Headers
@@ -13,6 +14,8 @@ Public Class DescripcionAsignaturas
     Private CodigoAsignatura As String
     Private DocenteId As String
     Private AsignaturaId As Integer  ' ?? Eliminado valor hardcodeadoa
+
+
     ' Controles del formulario
     Private topPanel As Panel
     Private mainPanel As Panel
@@ -147,7 +150,18 @@ Public Class DescripcionAsignaturas
     End Function
 
 
+    ' Nueva función para obtener nombre de usuario
+    Private Async Function ObtenerNombreUsuario(usuarioId As Integer) As Task(Of String)
+        Try
+            Using client As New HttpClient()
+                Dim response = Await client.GetStringAsync($"https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Usuarios/{usuarioId}")
+                Dim usuario As JObject = JsonConvert.DeserializeObject(Of JObject)(response)
+                Return usuario("nombre").ToString() ' Ajustar según el campo del JSON
+            End Using
+        Catch
 
+        End Try
+    End Function
 
     ' Obtener nombre del docente que imparte la asignatura
     Private Async Function ObtenerNombreDocente(docenteId As String) As Task(Of String)
@@ -172,23 +186,25 @@ Public Class DescripcionAsignaturas
 
     Private Async Function CargarComentarios() As Task
         Try
-            ' Corregir URL usando AsignaturaId real
-            Dim url = $"{ApiUrlComentarios}?docenteId={DocenteId}&asignaturaId={AsignaturaId}"
+            Dim url = $"{ApiUrlComentarios}?asignaturaId={AsignaturaId}"
             Dim comentarios = Await ObtenerDatosAPI(Of List(Of Comentarios))(url)
 
             LstComentarios.Items.Clear()
 
-            If comentarios IsNot Nothing Then
+            If comentarios IsNot Nothing AndAlso comentarios.Any() Then
                 For Each c As Comentarios In comentarios
-                    LstComentarios.Items.Add($"@{c.UsuarioId}: {c.Comentario} ({c.FechaComentario.ToString("dd/MM/yyyy")})")
+                    Dim nombreUsuario As String = Await ObtenerNombreUsuario(c.UsuarioId)
+                    LstComentarios.Items.Add($"{nombreUsuario}: {c.Comentario} ({c.FechaComentario.ToString("dd/MM/yyyy")})")
                 Next
             Else
-                LstComentarios.Items.Add("No hay comentarios aún.")
+                LstComentarios.Items.Add("No hay comentarios en esta asignatura.")
             End If
+
         Catch ex As Exception
             MessageBox.Show($"Error al cargar comentarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Function
+
     Private Async Sub EnviarComentario(sender As Object, e As EventArgs)
         Try
             ' Validaciones
