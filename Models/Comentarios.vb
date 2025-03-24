@@ -23,8 +23,6 @@ Public Class Comentarios
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
 
-
-
     ' Constructor
     Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)
         Me.Comentario = comentario
@@ -33,4 +31,7 @@ Public Class Comentarios
         Me.UsuarioId = usuarioId
         Me.FechaComentario = DateTime.Now
     End Sub
+
+
 End Class
+

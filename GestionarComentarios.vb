@@ -7,10 +7,12 @@ Public Class GestionarComentarios
     Private ReadOnly ApiUrl As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios"
     Private ReadOnly ApiUrlAsignaturas As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Asignaturas"
     Private ReadOnly ApiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
+    Public Shared Instance As GestionarComentarios
     Private httpClient As New HttpClient()
     Private currentComentario As Comentarios
     Private asignaturas As List(Of Asignaturas)
     Private docentes As List(Of Docente)
+
 
     ' Controles del formulario
     Private dgvComentarios As DataGridView
@@ -23,6 +25,7 @@ Public Class GestionarComentarios
     Private cmbDocentes As ComboBox
 
     Private Sub GestionarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Instance = Me
         InitializeComponents()
         CargarDatosIniciales()
     End Sub
@@ -108,7 +111,11 @@ Public Class GestionarComentarios
         AddHandler dgvComentarios.SelectionChanged, AddressOf SeleccionComentario
         AddHandler txtBusqueda.TextChanged, AddressOf BuscarComentarios
     End Sub
+    Private Sub NuevoComentario(sender As Object, e As EventArgs)
 
+        LimpiarCampos()
+        HabilitarEdicion(True)
+    End Sub
     Private Async Sub CargarDatosIniciales()
         Try
             ' Cargar asignaturas
@@ -138,12 +145,17 @@ Public Class GestionarComentarios
         End Try
     End Sub
 
+
+
+
     Private Async Function CargarComentarios() As Task
         Try
             Dim response = Await httpClient.GetAsync(ApiUrl)
             If response.IsSuccessStatusCode Then
                 Dim json = Await response.Content.ReadAsStringAsync()
                 Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(json)
+
+                ' Usar directamente la lista de Comentarios
                 dgvComentarios.DataSource = comentarios
                 ConfigurarColumnas()
             End If
@@ -151,7 +163,6 @@ Public Class GestionarComentarios
             MessageBox.Show($"Error cargando comentarios: {ex.Message}")
         End Try
     End Function
-
     Private Sub ConfigurarColumnas()
         dgvComentarios.AutoGenerateColumns = False
         dgvComentarios.Columns.Clear()
@@ -170,59 +181,25 @@ Public Class GestionarComentarios
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreAsignatura",
-            .HeaderText = "NombreAsignatura",
+            .HeaderText = "Asignatura",
             .Width = 150
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreDocente",
-            .HeaderText = "NombreDocente",
+            .HeaderText = "Docente",
             .Width = 150
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "FechaComentario",
-            .HeaderText = "FechaComentario",
+            .HeaderText = "Fecha",
             .Width = 100
         })
     End Sub
 
-    Private Sub NuevoComentario(sender As Object, e As EventArgs)
-        'currentComentario = New Comentarios()
-        LimpiarCampos()
-        HabilitarEdicion(True)
-    End Sub
 
-    'Private Async Sub GuardarComentario(sender As Object, e As EventArgs)
-    '    Try
-    '        If Not ValidarCampos() Then Return
 
-    '        currentComentario.Comentario = txtContenido.Text
-    '        currentComentario.AsignaturaId = CInt(cmbAsignaturas.SelectedValue)
-    '        currentComentario.DocenteId = CInt(cmbDocentes.SelectedValue)
-    '        currentComentario.FechaComentario = DateTime.Now
-
-    '        Dim json = JsonConvert.SerializeObject(currentComentario)
-    '        Dim content = New StringContent(json, Encoding.UTF8, "application/json")
-
-    '        Dim response As HttpResponseMessage
-
-    '        If currentComentario.ComentarioId = 0 Then
-    '            response = Await httpClient.PostAsync(ApiUrl, content)
-    '        Else
-    '            response = Await httpClient.PutAsync($"{ApiUrl}/{currentComentario.ComentarioId}", content)
-    '        End If
-
-    '        If response.IsSuccessStatusCode Then
-    '            Await CargarComentarios()
-    '            LimpiarCampos()
-    '            HabilitarEdicion(False)
-    '        End If
-
-    '    Catch ex As Exception
-    '        MessageBox.Show($"Error guardando comentario: {ex.Message}")
-    '    End Try
-    'End Sub
 
 
     Private Async Sub GuardarComentario(sender As Object, e As EventArgs)
@@ -261,6 +238,9 @@ Public Class GestionarComentarios
             MessageBox.Show($"Error guardando comentario: {ex.Message}")
         End Try
     End Sub
+
+
+
     Private Async Sub EliminarComentario(sender As Object, e As EventArgs)
         If currentComentario Is Nothing OrElse currentComentario.ComentarioId = 0 Then Return
 
