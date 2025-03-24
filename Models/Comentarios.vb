@@ -7,7 +7,7 @@ Public Class Comentarios
     <JsonProperty("comentarioId")>
     Public Property ComentarioId As Integer
 
-    <JsonProperty("comentario")> ' ✅ Nombre exacto que usa la API
+    <JsonProperty("comentario")>
     Public Property Comentario As String
 
     <JsonProperty("docenteId")>
@@ -22,6 +22,8 @@ Public Class Comentarios
 
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
+
+
 
     ' Constructor
     Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)

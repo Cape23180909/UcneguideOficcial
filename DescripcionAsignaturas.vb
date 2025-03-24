@@ -15,6 +15,7 @@ Public Class DescripcionAsignaturas
     Private DocenteId As String
     Private AsignaturaId As Integer  ' ?? Eliminado valor hardcodeadoa
 
+    Private UsuarioIdActualId As Integer = 1 ' Reemplazar con el ID real del usuario autenticado
 
     ' Controles del formulario
     Private topPanel As Panel
@@ -126,6 +127,7 @@ Public Class DescripcionAsignaturas
     ' Evento de carga
     Private Async Sub DescripcionAsignaturas_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Await CargarDatosAsignatura()
+        Await CargarComentarios()
     End Sub
 
     ' Cargar datos de la asignatura y obtener el docente específico
@@ -146,22 +148,8 @@ Public Class DescripcionAsignaturas
             LblNombreDocenteCompleto.Text &= Await ObtenerNombreDocente(DocenteId)
         End If
 
-        Await CargarComentarios()
     End Function
 
-
-    ' Nueva función para obtener nombre de usuario
-    Private Async Function ObtenerNombreUsuario(usuarioId As Integer) As Task(Of String)
-        Try
-            Using client As New HttpClient()
-                Dim response = Await client.GetStringAsync($"https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Usuarios/{usuarioId}")
-                Dim usuario As JObject = JsonConvert.DeserializeObject(Of JObject)(response)
-                Return usuario("nombre").ToString() ' Ajustar según el campo del JSON
-            End Using
-        Catch
-
-        End Try
-    End Function
 
     ' Obtener nombre del docente que imparte la asignatura
     Private Async Function ObtenerNombreDocente(docenteId As String) As Task(Of String)
@@ -184,26 +172,7 @@ Public Class DescripcionAsignaturas
 
 
 
-    Private Async Function CargarComentarios() As Task
-        Try
-            Dim url = $"{ApiUrlComentarios}?asignaturaId={AsignaturaId}"
-            Dim comentarios = Await ObtenerDatosAPI(Of List(Of Comentarios))(url)
 
-            LstComentarios.Items.Clear()
-
-            If comentarios IsNot Nothing AndAlso comentarios.Any() Then
-                For Each c As Comentarios In comentarios
-                    Dim nombreUsuario As String = Await ObtenerNombreUsuario(c.UsuarioId)
-                    LstComentarios.Items.Add($"{nombreUsuario}: {c.Comentario} ({c.FechaComentario.ToString("dd/MM/yyyy")})")
-                Next
-            Else
-                LstComentarios.Items.Add("No hay comentarios en esta asignatura.")
-            End If
-
-        Catch ex As Exception
-            MessageBox.Show($"Error al cargar comentarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Function
 
     Private Async Sub EnviarComentario(sender As Object, e As EventArgs)
         Try
@@ -256,6 +225,48 @@ Public Class DescripcionAsignaturas
 
 
 
+    Private Async Function CargarComentarios() As Task
+        Try
+            Dim url = $"{ApiUrlComentarios}?asignaturaId={AsignaturaId}"
+            Dim comentarios = Await ObtenerDatosAPI(Of List(Of Comentarios))(url)
+
+            LstComentarios.Items.Clear()
+
+            If comentarios IsNot Nothing AndAlso comentarios.Any() Then
+                'Filtrar solo los comentarios del usuario autenticado
+                Dim comentariosUsuario = comentarios.Where(Function(c) c.UsuarioId = UsuarioIdActualId).ToList()
+
+                If comentariosUsuario.Any() Then
+                    For Each c As Comentarios In comentariosUsuario
+                        Dim nombreUsuario As String = Await ObtenerNombreUsuario(c.UsuarioId)
+                        LstComentarios.Items.Add($"{nombreUsuario}: {c.Comentario} ({c.FechaComentario:dd/MM/yyyy})")
+                    Next
+                Else
+                    LstComentarios.Items.Add("No has escrito comentarios en esta asignatura.")
+                End If
+            Else
+                LstComentarios.Items.Add("No hay comentarios en esta asignatura.")
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show($"Error al cargar comentarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Function
+
+
+
+    ' Función para obtener el nombre del usuario
+    Private Async Function ObtenerNombreUsuario(usuarioId As Integer) As Task(Of String)
+        Try
+            Using client As New HttpClient()
+                Dim response = Await client.GetStringAsync($"https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Usuarios/{usuarioId}")
+                Dim usuario As JObject = JsonConvert.DeserializeObject(Of JObject)(response)
+                Return usuario("nombre").ToString()
+            End Using
+        Catch
+            Return "Usuario Anónimo"
+        End Try
+    End Function
 
     ' Método genérico para obtener datos de la API
     Private Async Function ObtenerDatosAPI(Of T)(url As String) As Task(Of T)
