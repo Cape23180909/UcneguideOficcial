@@ -4,10 +4,9 @@ Imports System.Net.Http.Headers
 Imports System.Text
 
 Public Class GestionarComentarios
-    Private ReadOnly ApiUrl As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios"
+    Private ReadOnly ApiUrlComentarios As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Comentarios"
     Private ReadOnly ApiUrlAsignaturas As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Asignaturas"
     Private ReadOnly ApiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
-    Public Shared Instance As GestionarComentarios
     Private httpClient As New HttpClient()
     Private currentComentario As Comentarios
     Private asignaturas As List(Of Asignaturas)
@@ -25,7 +24,7 @@ Public Class GestionarComentarios
     Private cmbDocentes As ComboBox
 
     Private Sub GestionarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Instance = Me
+
         InitializeComponents()
         CargarDatosIniciales()
     End Sub
@@ -145,17 +144,40 @@ Public Class GestionarComentarios
         End Try
     End Sub
 
+    ' Obtener nombre del docente que imparte la asignatura
+    Private Async Function ObtenerNombreDocente(docenteId As String) As Task(Of String)
+        Try
+            Using client As New HttpClient()
+                Dim response = Await client.GetStringAsync($"{ApiUrlDocentes}/{docenteId}")
+                Dim docente As Dictionary(Of String, Object) = JsonConvert.DeserializeObject(Of Dictionary(Of String, Object))(response)
 
-
-
+                If docente IsNot Nothing AndAlso docente.ContainsKey("nombre") AndAlso docente.ContainsKey("apellido") Then
+                    Return $"{docente("nombre")} {docente("apellido")}"
+                Else
+                    Return "Docente no encontrado"
+                End If
+            End Using
+        Catch ex As Exception
+            MessageBox.Show($"Error obteniendo nombre del docente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return "Error al obtener el docente"
+        End Try
+    End Function
     Private Async Function CargarComentarios() As Task
         Try
-            Dim response = Await httpClient.GetAsync(ApiUrl)
+            Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
             If response.IsSuccessStatusCode Then
                 Dim json = Await response.Content.ReadAsStringAsync()
                 Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(json)
 
-                ' Usar directamente la lista de Comentarios
+                ' Obtener nombres de asignaturas y docentes
+                For Each comentario In comentarios
+                    Dim asignatura = asignaturas.FirstOrDefault(Function(a) a.AsignaturaId = comentario.AsignaturaId)
+                    Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = comentario.DocenteId)
+                    comentario.NombreAsignatura = If(asignatura IsNot Nothing, asignatura.NombreAsignatura, "N/A")
+                    comentario.NombreDocenteCompleto = If(docente IsNot Nothing, docente.NombreCompleto, "N/A")
+                Next
+
+                dgvComentarios.DataSource = Nothing
                 dgvComentarios.DataSource = comentarios
                 ConfigurarColumnas()
             End If
@@ -220,9 +242,9 @@ Public Class GestionarComentarios
             Dim response As HttpResponseMessage
 
             If currentComentario.ComentarioId = 0 Then
-                response = Await httpClient.PostAsync(ApiUrl, content)
+                response = Await httpClient.PostAsync(ApiUrlComentarios, content)
             Else
-                response = Await httpClient.PutAsync($"{ApiUrl}/{currentComentario.ComentarioId}", content)
+                response = Await httpClient.PutAsync($"{ ApiUrlComentarios}/{currentComentario.ComentarioId}", content)
             End If
 
             If response.IsSuccessStatusCode Then
@@ -247,7 +269,7 @@ Public Class GestionarComentarios
         Dim result = MessageBox.Show("¿Está seguro de eliminar este comentario?", "Confirmar", MessageBoxButtons.YesNo)
         If result = DialogResult.Yes Then
             Try
-                Dim response = Await httpClient.DeleteAsync($"{ApiUrl}/{currentComentario.ComentarioId}")
+                Dim response = Await httpClient.DeleteAsync($"{ ApiUrlComentarios}/{currentComentario.ComentarioId}")
                 If response.IsSuccessStatusCode Then
                     Await CargarComentarios()
                     LimpiarCampos()

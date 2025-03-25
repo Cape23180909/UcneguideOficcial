@@ -4,4 +4,5 @@
     Public Property apellido As String
     Public Property rol As String
     Public Property asignaturaId As Integer
+    Public Property NombreCompleto As String
 End Class

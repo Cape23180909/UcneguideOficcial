@@ -23,6 +23,9 @@ Public Class Comentarios
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
 
+    Public Property NombreAsignatura As String
+    Public Property NombreDocenteCompleto As String
+
     ' Constructor
     Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)
         Me.Comentario = comentario
