@@ -19,6 +19,7 @@ Public Class Menu
     Private lblSugerencias As Label
     Private lblMaestros As Label
 
+
     Public Sub New()
         ' Configuración del formulario
         Me.Text = "Menú"
@@ -120,13 +121,13 @@ Public Class Menu
         AddHandler img.Click, Sub(sender, e)
                                   Select Case text
                                       Case "Asignaturas"
-                                          Dim gestionAsignaturas As New GestionarAsignaturas(UserSession.CarreraId)
+                                          Dim gestionAsignaturas As New GestionarAsignaturas(UserSession.carreraId)
                                           gestionAsignaturas.Show()
                                       Case "Comentarios"
                                           Dim formComentarios As New GestionarComentarios()
                                           formComentarios.Show()
                                       Case "Maestros"
-                                          Dim formDocentes As New GestionarDocentes()
+                                          Dim formDocentes As New GestionarDocentes(UserSession.carreraId)
                                           formDocentes.Show()
                                   End Select
                               End Sub

@@ -128,6 +128,7 @@ Public Class LoginForm
                 If response.IsSuccessStatusCode Then
                     Dim jsonResponse As String = Await response.Content.ReadAsStringAsync()
                     Dim usuarios As List(Of Usuario) = JsonConvert.DeserializeObject(Of List(Of Usuario))(jsonResponse)
+                    ' Después de validar el login, obtener asignaturaId para docentes
 
                     If usuarios IsNot Nothing Then
                         Dim usuarioValido = usuarios.FirstOrDefault(Function(u) u.email = txtEmail.Text.Trim() AndAlso u.password = txtPassword.Text.Trim())
@@ -139,6 +140,7 @@ Public Class LoginForm
                             UserSession.facultadId = usuarioValido.facultadId
                             UserSession.carreraId = usuarioValido.carreraId
                             UserSession.Token = usuarioValido.token
+
 
                             ' Abrir BienvenidaForm
                             Dim bienvenidaForm As New BienvenidaForm()
@@ -154,7 +156,6 @@ Public Class LoginForm
             MessageBox.Show("Error de conexión: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
 
     Private Sub Placeholder_Enter(sender As Object, e As EventArgs)
         Dim txt = CType(sender, TextBox)

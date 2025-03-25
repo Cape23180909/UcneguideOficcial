@@ -1,21 +1,21 @@
-﻿Imports System.Net.Http
-Imports Newtonsoft.Json
-Imports System.Threading.Tasks
+﻿Imports Newtonsoft.Json
+Imports System.Net.Http
+Imports Newtonsoft.Json.Serialization
 
 Public Class GestionarDocentes
     Inherits Form
 
     Private ReadOnly apiUrlDocentes As String = "https://api-ucne-emfugwekcfefc3ef.eastus-01.azurewebsites.net/api/Docentes"
-    Private WithEvents dgvDocentes As DataGridView
+    Private WithEvents flowPanel As FlowLayoutPanel
     Private topPanel As Panel
     Private iconoPictureBox As PictureBox
-
-
     Private WithEvents txtFiltro As TextBox
-    Private WithEvents btnFiltrar As Button
     Private _docentes As List(Of Docente)
+    Private filteredDocentes As List(Of Docente)
+    Private carreraId As Integer
 
-    Public Sub New()
+    Public Sub New(carreraId As Integer)
+        Me.carreraId = carreraId
         InitializeComponents()
     End Sub
 
@@ -24,104 +24,69 @@ Public Class GestionarDocentes
         Me.Size = New Size(800, 600)
         Me.StartPosition = FormStartPosition.CenterScreen
 
-        ' Panel superior con color azul
+        ' Panel superior
         topPanel = New Panel With {
             .Dock = DockStyle.Top,
             .Height = 100,
             .BackColor = ColorTranslator.FromHtml("#074788")
         }
 
-        ' Línea amarilla debajo del panel azul
+        ' Línea amarilla
         Dim bottomBorder As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 5,
             .BackColor = ColorTranslator.FromHtml("#F7D917")
         }
 
-        ' Icono PictureBox
+        ' Icono
         iconoPictureBox = New PictureBox With {
             .Image = My.Resources.guia_turistico_3,
             .SizeMode = PictureBoxSizeMode.Zoom,
             .Size = New Size(90, 90),
             .Location = New Point(25, 15),
-            .Anchor = AnchorStyles.Left,
             .Cursor = Cursors.Hand
         }
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
         topPanel.Controls.Add(iconoPictureBox)
 
-        ' Configuración del TextBox de filtro (corregido)
+        ' Barra de búsqueda
         txtFiltro = New TextBox With {
-            .Size = New Size(200, 30),
-            .Location = New Point(iconoPictureBox.Right + 20, 40),
-            .Anchor = AnchorStyles.Left,
-            .Text = "Filtrar por nombre..." ' Simulamos placeholder
+            .Text = "Buscar maestros...",
+            .ForeColor = Color.Gray,
+            .Size = New Size(250, 30),
+            .Location = New Point(iconoPictureBox.Right + 20, 40)
         }
-
-        ' Agregamos manejo de eventos para el placeholder
-        AddHandler txtFiltro.GotFocus, AddressOf RemovePlaceholder
-        AddHandler txtFiltro.LostFocus, AddressOf SetPlaceholder
-
-        btnFiltrar = New Button With {
-            .Text = "Filtrar",
-            .Size = New Size(80, 30),
-            .Location = New Point(txtFiltro.Right + 10, 40),
-            .Anchor = AnchorStyles.Left
-        }
-
+        AddHandler txtFiltro.GotFocus, Sub(s, e)
+                                           If txtFiltro.Text = "Buscar maestros..." Then
+                                               txtFiltro.Text = ""
+                                               txtFiltro.ForeColor = Color.Black
+                                           End If
+                                       End Sub
+        AddHandler txtFiltro.LostFocus, Sub(s, e)
+                                            If String.IsNullOrEmpty(txtFiltro.Text) Then
+                                                txtFiltro.Text = "Buscar maestros..."
+                                                txtFiltro.ForeColor = Color.Gray
+                                            End If
+                                        End Sub
+        AddHandler txtFiltro.TextChanged, AddressOf FiltrarDocentes
         topPanel.Controls.Add(txtFiltro)
-        topPanel.Controls.Add(btnFiltrar)
 
-        ' DataGridView para docentes
-        dgvDocentes = New DataGridView With {
+        ' Contenedor principal
+        flowPanel = New FlowLayoutPanel With {
             .Dock = DockStyle.Fill,
-            .AllowUserToAddRows = False,
-            .AllowUserToDeleteRows = False,
-            .ReadOnly = True,
-            .SelectionMode = DataGridViewSelectionMode.FullRowSelect
+            .AutoScroll = True,
+            .Padding = New Padding(20)
         }
 
-        ' Agregar controles al formulario
-        Me.Controls.Add(dgvDocentes)
+        Me.Controls.Add(flowPanel)
         Me.Controls.Add(bottomBorder)
         Me.Controls.Add(topPanel)
 
         AddHandler Me.Load, AddressOf GestionarDocentes_Load
-        AddHandler btnFiltrar.Click, AddressOf FiltrarDocentes
     End Sub
 
-    Private Sub RemovePlaceholder(sender As Object, e As EventArgs)
-        If txtFiltro.Text = "Filtrar por nombre..." Then
-            txtFiltro.Text = ""
-            txtFiltro.ForeColor = SystemColors.WindowText
-        End If
-    End Sub
-
-    Private Sub SetPlaceholder(sender As Object, e As EventArgs)
-        If String.IsNullOrWhiteSpace(txtFiltro.Text) Then
-            txtFiltro.Text = "Filtrar por nombre..."
-            txtFiltro.ForeColor = SystemColors.GrayText
-        End If
-    End Sub
-
-    Private Async Sub GestionarDocentes_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Async Sub GestionarDocentes_Load(sender As Object, e As EventArgs)
         Await CargarDocentes()
-    End Sub
-    Private Sub FiltrarDocentes(sender As Object, e As EventArgs)
-        If _docentes Is Nothing Then Exit Sub
-
-        Dim filtro As String = If(txtFiltro.Text = "Filtrar por nombre...", "", txtFiltro.Text.Trim().ToLower())
-
-        If String.IsNullOrEmpty(filtro) Then
-            dgvDocentes.DataSource = _docentes
-        Else
-            Dim filtered = _docentes.Where(Function(d)
-                                               Dim nombre = If(d.nombre IsNot Nothing, d.nombre.ToLower(), "")
-                                               Dim apellido = If(d.apellido IsNot Nothing, d.apellido.ToLower(), "")
-                                               Return nombre.Contains(filtro) OrElse apellido.Contains(filtro)
-                                           End Function).ToList()
-            dgvDocentes.DataSource = filtered
-        End If
     End Sub
 
     Private Async Function CargarDocentes() As Task
@@ -130,17 +95,12 @@ Public Class GestionarDocentes
                 Dim response As HttpResponseMessage = Await client.GetAsync(apiUrlDocentes)
                 If response.IsSuccessStatusCode Then
                     Dim jsonResponse As String = Await response.Content.ReadAsStringAsync()
-                    _docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonResponse)
-
-                    dgvDocentes.Invoke(Sub()
-                                           dgvDocentes.DataSource = _docentes
-                                           dgvDocentes.Columns("docenteId").HeaderText = "DocenteId"
-                                           dgvDocentes.Columns("nombre").HeaderText = "Nombre"
-                                           dgvDocentes.Columns("apellido").HeaderText = "Apellido"
-                                           dgvDocentes.Columns("rol").HeaderText = "Rol"
-                                           dgvDocentes.Columns("asignaturaId").HeaderText = "AsignaturaId"
-                                           dgvDocentes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-                                       End Sub)
+                    Dim settings = New JsonSerializerSettings With {
+                        .ContractResolver = New CamelCasePropertyNamesContractResolver()
+                    }
+                    _docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonResponse, settings)
+                    filteredDocentes = _docentes.Where(Function(d) d.carreraId = carreraId).ToList()
+                    RenderizarDocentes()
                 Else
                     MessageBox.Show("Error al obtener docentes.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
@@ -150,6 +110,57 @@ Public Class GestionarDocentes
         End Try
     End Function
 
+    Private Sub RenderizarDocentes()
+        flowPanel.Controls.Clear()
 
+        For Each docente In filteredDocentes
+            Dim card As New Panel With {
+                .Size = New Size(300, 100),
+                .BackColor = Color.White,
+                .Margin = New Padding(10),
+                .BorderStyle = BorderStyle.FixedSingle
+            }
 
+            Dim infoPanel As New Panel With {
+                .Dock = DockStyle.Fill,
+                .Padding = New Padding(10)
+            }
+
+            Dim nameLabel As New Label With {
+                .Text = $"{docente.nombre} {docente.apellido}",
+                .Font = New Font("Arial", 12, FontStyle.Bold),
+                .AutoSize = True
+            }
+
+            Dim detailsLabel As New Label With {
+                .Text = $"{docente.rol}",
+                .Top = 25,
+                .AutoSize = True
+            }
+
+            infoPanel.Controls.Add(nameLabel)
+            infoPanel.Controls.Add(detailsLabel)
+            card.Controls.Add(infoPanel)
+            flowPanel.Controls.Add(card)
+        Next
+    End Sub
+
+    Private Sub FiltrarDocentes(sender As Object, e As EventArgs)
+        ' Verificar si hay datos cargados
+        If _docentes Is Nothing Then Return
+
+        Dim searchTerm = If(txtFiltro.Text?.Trim().ToLower(), "")
+        If searchTerm = "buscar maestros..." Then searchTerm = ""
+
+        filteredDocentes = _docentes.Where(Function(d)
+                                               ' Verificar nulos en todas las propiedades
+                                               Return d IsNot Nothing AndAlso
+               d.carreraId = carreraId AndAlso
+               (If(d.nombre?.ToLower()?.Contains(searchTerm), False) Or
+                If(d.apellido?.ToLower()?.Contains(searchTerm), False))
+                                           End Function).ToList()
+
+        RenderizarDocentes()
+    End Sub
 End Class
+

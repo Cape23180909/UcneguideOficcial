@@ -12,6 +12,8 @@ Public Class UserSession
     Public Property password As String
     Public Shared Property Token As String
     Public Shared Property nombreCarrera As String
+    Public Shared Property asignaturaId As Integer
+    Public Shared Property rol As String ' Nueva propiedad
 
     ' Método compartido
     Public Shared Sub LimpiarSesion()

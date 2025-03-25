@@ -275,4 +275,6 @@ Public Class DescripcionAsignaturas
             Return If(response.IsSuccessStatusCode, JsonConvert.DeserializeObject(Of T)(Await response.Content.ReadAsStringAsync()), Nothing)
         End Using
     End Function
+
+
 End Class
