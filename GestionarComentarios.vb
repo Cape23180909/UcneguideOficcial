@@ -133,7 +133,7 @@ Public Class GestionarComentarios
                 Dim jsonDocentes = Await responseDocentes.Content.ReadAsStringAsync()
                 docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonDocentes)
                 cmbDocentes.DataSource = docentes
-                cmbDocentes.DisplayMember = "NombreCompleto"
+                cmbDocentes.DisplayMember = "NombreDocente"
                 cmbDocentes.ValueMember = "DocenteId"
             End If
 
@@ -144,24 +144,7 @@ Public Class GestionarComentarios
         End Try
     End Sub
 
-    ' Obtener nombre del docente que imparte la asignatura
-    Private Async Function ObtenerNombreDocente(docenteId As String) As Task(Of String)
-        Try
-            Using client As New HttpClient()
-                Dim response = Await client.GetStringAsync($"{ApiUrlDocentes}/{docenteId}")
-                Dim docente As Dictionary(Of String, Object) = JsonConvert.DeserializeObject(Of Dictionary(Of String, Object))(response)
 
-                If docente IsNot Nothing AndAlso docente.ContainsKey("nombre") AndAlso docente.ContainsKey("apellido") Then
-                    Return $"{docente("nombre")} {docente("apellido")}"
-                Else
-                    Return "Docente no encontrado"
-                End If
-            End Using
-        Catch ex As Exception
-            MessageBox.Show($"Error obteniendo nombre del docente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return "Error al obtener el docente"
-        End Try
-    End Function
     Private Async Function CargarComentarios() As Task
         Try
             Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
@@ -174,7 +157,7 @@ Public Class GestionarComentarios
                     Dim asignatura = asignaturas.FirstOrDefault(Function(a) a.AsignaturaId = comentario.AsignaturaId)
                     Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = comentario.DocenteId)
                     comentario.NombreAsignatura = If(asignatura IsNot Nothing, asignatura.NombreAsignatura, "N/A")
-                    comentario.NombreDocenteCompleto = If(docente IsNot Nothing, docente.NombreCompleto, "N/A")
+                    comentario.NombreDocente = If(docente IsNot Nothing, docente.nombre, "N/A")
                 Next
 
                 dgvComentarios.DataSource = Nothing
@@ -203,19 +186,19 @@ Public Class GestionarComentarios
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreAsignatura",
-            .HeaderText = "Asignatura",
+            .HeaderText = "NombreAsignatura",
             .Width = 150
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreDocente",
-            .HeaderText = "Docente",
+            .HeaderText = "NombreDocente",
             .Width = 150
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "FechaComentario",
-            .HeaderText = "Fecha",
+            .HeaderText = "FechaComentario",
             .Width = 100
         })
     End Sub
