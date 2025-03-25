@@ -133,7 +133,7 @@ Public Class GestionarComentarios
                 Dim jsonDocentes = Await responseDocentes.Content.ReadAsStringAsync()
                 docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonDocentes)
                 cmbDocentes.DataSource = docentes
-                cmbDocentes.DisplayMember = "NombreDocente"
+                cmbDocentes.DisplayMember = "NombreDocenteCompleto"
                 cmbDocentes.ValueMember = "DocenteId"
             End If
 
@@ -157,7 +157,7 @@ Public Class GestionarComentarios
                     Dim asignatura = asignaturas.FirstOrDefault(Function(a) a.AsignaturaId = comentario.AsignaturaId)
                     Dim docente = docentes.FirstOrDefault(Function(d) d.docenteId = comentario.DocenteId)
                     comentario.NombreAsignatura = If(asignatura IsNot Nothing, asignatura.NombreAsignatura, "N/A")
-                    comentario.NombreDocente = If(docente IsNot Nothing, docente.nombre, "N/A")
+                    comentario.NombreDocenteCompleto = If(docente IsNot Nothing, docente.nombre, "N/A")
                 Next
 
                 dgvComentarios.DataSource = Nothing
@@ -168,6 +168,8 @@ Public Class GestionarComentarios
             MessageBox.Show($"Error cargando comentarios: {ex.Message}")
         End Try
     End Function
+
+
     Private Sub ConfigurarColumnas()
         dgvComentarios.AutoGenerateColumns = False
         dgvComentarios.Columns.Clear()
@@ -191,8 +193,8 @@ Public Class GestionarComentarios
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
-            .DataPropertyName = "NombreDocente",
-            .HeaderText = "NombreDocente",
+            .DataPropertyName = "NombreDocenteCompleto",
+            .HeaderText = "NombreDocenteCompleto",
             .Width = 150
         })
 
