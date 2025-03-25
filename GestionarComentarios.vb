@@ -58,21 +58,24 @@ Public Class GestionarComentarios
 
     Private Sub CrearPanelBotones()
         Dim footerPanel As New Panel With {
-            .Dock = DockStyle.Bottom,
-            .Height = 50,
-            .BackColor = Color.White
-        }
+        .Dock = DockStyle.Bottom,
+        .Height = 50,
+        .BackColor = Color.White
+    }
 
         btnCrear = New Button With {
-            .Text = "Crear Nuevo",
-            .Size = New Size(140, 35),
-            .BackColor = ColorTranslator.FromHtml("#074788"),
-            .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat,
-            .Font = New Font("Arial", 10, FontStyle.Bold),
-            .Anchor = AnchorStyles.Right
-        }
+        .Text = "Crear Nuevo",
+        .Size = New Size(140, 35),
+        .BackColor = ColorTranslator.FromHtml("#074788"),
+        .ForeColor = Color.White,
+        .FlatStyle = FlatStyle.Flat,
+        .Font = New Font("Arial", 10, FontStyle.Bold),
+        .Anchor = AnchorStyles.Right
+    }
         btnCrear.FlatAppearance.BorderSize = 0
+
+        ' Agregar el manejador de eventos aquí
+        AddHandler btnCrear.Click, AddressOf AbrirGenerarComentarios
 
         btnCrear.Location = New Point(footerPanel.Width - btnCrear.Width - 10, 7)
 
@@ -83,6 +86,7 @@ Public Class GestionarComentarios
         footerPanel.Controls.Add(btnCrear)
         contentPanel.Controls.Add(footerPanel)
     End Sub
+
 
     Private Async Sub CargarDatosIniciales()
         Try
@@ -165,6 +169,10 @@ Public Class GestionarComentarios
         })
 
         dgvComentarios.RowTemplate.Height = 35
+    End Sub
+    Private Sub AbrirGenerarComentarios(sender As Object, e As EventArgs)
+        Dim formGenerar As New GenerarComentarios()
+        formGenerar.ShowDialog()
     End Sub
 
 End Class

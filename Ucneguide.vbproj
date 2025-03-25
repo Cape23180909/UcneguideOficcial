@@ -143,6 +143,12 @@
     <Compile Include="DescripcionAsignaturas.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GenerarComentarios.Designer.vb">
+      <DependentUpon>GenerarComentarios.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GenerarComentarios.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GestionarAsignaturas.Designer.vb">
       <DependentUpon>GestionarAsignaturas.vb</DependentUpon>
     </Compile>
@@ -211,6 +217,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DescripcionAsignaturas.resx">
       <DependentUpon>DescripcionAsignaturas.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GenerarComentarios.resx">
+      <DependentUpon>GenerarComentarios.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GestionarAsignaturas.resx">
       <DependentUpon>GestionarAsignaturas.vb</DependentUpon>
