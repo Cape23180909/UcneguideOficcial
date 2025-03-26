@@ -77,25 +77,38 @@ Public Class GestionarComentarios
 
     Private Sub ConfigurarDataGridView()
         dgvComentarios = New DataGridView With {
-            .Dock = DockStyle.Fill,
-            .AllowUserToAddRows = False,
-            .AllowUserToDeleteRows = False,
-            .ReadOnly = True,
-            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-            .BackgroundColor = Color.White,
-            .BorderStyle = BorderStyle.None,
-            .RowHeadersVisible = False,
-            .Margin = New Padding(0, 0, 0, 5),
-            .DefaultCellStyle = New DataGridViewCellStyle With {
-                .Padding = New Padding(5),
-                .Alignment = DataGridViewContentAlignment.MiddleLeft
-            },
-            .ColumnHeadersDefaultCellStyle = New DataGridViewCellStyle With {
-                .BackColor = ColorTranslator.FromHtml("#074788"),
-                .ForeColor = Color.White,
-                .Font = New Font("Arial", 10, FontStyle.Bold)
-            }
+        .Dock = DockStyle.Fill,
+        .AllowUserToAddRows = False,
+        .AllowUserToDeleteRows = False,
+        .ReadOnly = True,
+        .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+        .BackgroundColor = Color.White,
+        .BorderStyle = BorderStyle.None,
+        .RowHeadersVisible = False,
+        .Margin = New Padding(0, 0, 0, 5),
+        .DefaultCellStyle = New DataGridViewCellStyle With {
+            .Font = New Font("Segoe UI", 10, FontStyle.Regular),
+            .ForeColor = Color.FromArgb(64, 64, 64),
+            .BackColor = Color.White,
+            .Padding = New Padding(5),
+            .Alignment = DataGridViewContentAlignment.MiddleLeft
+        },
+        .ColumnHeadersDefaultCellStyle = New DataGridViewCellStyle With {
+            .BackColor = ColorTranslator.FromHtml("#074788"),
+            .ForeColor = Color.White,
+            .Font = New Font("Arial", 11, FontStyle.Bold),
+            .Alignment = DataGridViewContentAlignment.MiddleCenter
+        },
+        .AlternatingRowsDefaultCellStyle = New DataGridViewCellStyle With {
+            .BackColor = Color.FromArgb(245, 245, 245)
         }
+    }
+
+        ' Mejorar la renderización del texto
+        dgvComentarios.EnableHeadersVisualStyles = False
+        dgvComentarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing
+        dgvComentarios.ColumnHeadersHeight = 40
+        dgvComentarios.RowTemplate.Height = 35
 
         contentPanel.Controls.Add(dgvComentarios)
     End Sub
@@ -196,21 +209,21 @@ Public Class GestionarComentarios
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreAsignatura",
-            .HeaderText = "ASIGNATURA",
+            .HeaderText = "NombreAsignatura",
             .Width = 200,
             .DefaultCellStyle = columnStyle
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreDocenteCompleto",
-            .HeaderText = "DOCENTE",
+            .HeaderText = "NombreDocenteCompleto",
             .Width = 200,
             .DefaultCellStyle = columnStyle
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "FechaComentario",
-            .HeaderText = "FECHA",
+            .HeaderText = "FechaComentario",
             .Width = 150,
             .DefaultCellStyle = New DataGridViewCellStyle With {
                 .Format = "dd/MM/yyyy HH:mm",
