@@ -30,14 +30,29 @@ Public Class GenerarComentarios
         CargarAsignaturasYDocentes()
     End Sub
 
+    'Private Sub ConfigurarInterfaz()
+    '    Me.Text = "Generar Comentarios"
+    '    Me.Size = New Size(600, 500)
+    '    Me.BackColor = Color.White
+    '    Me.StartPosition = FormStartPosition.CenterScreen
+    '    Me.Font = New Font("Segoe UI", 10)
+
+    '    ' Cambiar el FormBorderStyle y habilitar los botones de control
+    '    Me.FormBorderStyle = FormBorderStyle.Sizable
+    '    Me.ControlBox = True
+    '    Me.MaximizeBox = True
+    '    Me.MinimizeBox = True
+
+    '    CrearPanelSuperior()
+    '    CrearControlesFormulario()
+    'End Sub
+
     Private Sub ConfigurarInterfaz()
         Me.Text = "Generar Comentarios"
-        Me.Size = New Size(600, 500)
+        Me.Size = New Size(800, 600) ' Tamaño aumentado
         Me.BackColor = Color.White
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.Font = New Font("Segoe UI", 10)
-
-        ' Cambiar el FormBorderStyle y habilitar los botones de control
         Me.FormBorderStyle = FormBorderStyle.Sizable
         Me.ControlBox = True
         Me.MaximizeBox = True
@@ -78,108 +93,105 @@ Public Class GenerarComentarios
         Dim mainPanel As New Panel With {
         .Dock = DockStyle.Fill,
         .BackColor = Color.White,
-        .Padding = New Padding(20)
+        .Padding = New Padding(40)
     }
 
         Dim contentPanel As New Panel With {
-        .Size = New Size(500, 400),
+        .Size = New Size(700, 500), ' Ancho aumentado
         .Dock = DockStyle.None,
         .Anchor = AnchorStyles.None,
-        .Left = (Me.ClientSize.Width - 500) \ 2,
-        .Top = (Me.ClientSize.Height - 400) \ 2
+        .Left = (Me.ClientSize.Width - 700) \ 2,
+        .Top = (Me.ClientSize.Height - 500) \ 2
     }
 
         ' Configurar estilos base
         Dim labelStyle As New Label With {
-        .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+        .Font = New Font("Segoe UI", 11, FontStyle.Bold), ' Fuente más grande
         .ForeColor = ColorTranslator.FromHtml("#074788"),
         .AutoSize = True
     }
 
-        ' Configurar controles con alineación central
+        ' Configurar controles con tamaño aumentado
         CbAsignaturas = New ComboBox With {
-        .Font = New Font("Segoe UI", 10),
+        .Font = New Font("Segoe UI", 11),
         .DropDownStyle = ComboBoxStyle.DropDownList,
         .FlatStyle = FlatStyle.Flat,
-        .Width = 350,
-        .Height = 35,
-        .Margin = New Padding(0, 0, 0, 20)
+        .Width = 500, ' Ancho aumentado
+        .Height = 40,
+        .Margin = New Padding(0, 0, 0, 25)
     }
 
         CbDocentes = New ComboBox With {
-        .Font = New Font("Segoe UI", 10),
+        .Font = New Font("Segoe UI", 11),
         .DropDownStyle = ComboBoxStyle.DropDownList,
         .FlatStyle = FlatStyle.Flat,
-        .Width = 350,
-        .Height = 35,
-        .Margin = New Padding(0, 0, 0, 20)
+        .Width = 500, ' Ancho aumentado
+        .Height = 40,
+        .Margin = New Padding(0, 0, 0, 25)
     }
 
         TxtComentario = New TextBox With {
         .Multiline = True,
         .ScrollBars = ScrollBars.Vertical,
-        .Font = New Font("Segoe UI", 10),
+        .Font = New Font("Segoe UI", 11),
         .BorderStyle = BorderStyle.FixedSingle,
-        .Size = New Size(350, 120),
-        .Margin = New Padding(0, 0, 0, 20)
+        .Size = New Size(500, 150), ' Tamaño aumentado
+        .Margin = New Padding(0, 0, 0, 25)
     }
 
-        ' Configurar botón centrado
+        ' Configurar botón más grande
         BtnRegistrar = New Button With {
         .Text = "REGISTRAR COMENTARIO",
-        .Size = New Size(200, 40),
+        .Size = New Size(300, 45), ' Tamaño aumentado
         .BackColor = ColorTranslator.FromHtml("#28A745"),
         .ForeColor = Color.White,
         .FlatStyle = FlatStyle.Flat,
-        .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+        .Font = New Font("Segoe UI", 11, FontStyle.Bold),
         .Cursor = Cursors.Hand
     }
 
-        ' Organizar controles verticalmente centrados
-        Dim yPosition As Integer = 0
+        ' Organizar controles
+        Dim yPosition As Integer = 20 ' Margen superior inicial
 
         ' Asignatura
         Dim lblAsignatura = CreateLabel("Asignatura:", labelStyle, yPosition)
         lblAsignatura.Left = (contentPanel.Width - lblAsignatura.Width) \ 2
         contentPanel.Controls.Add(lblAsignatura)
-        yPosition += 25
+        yPosition += 35
 
         CbAsignaturas.Location = New Point((contentPanel.Width - CbAsignaturas.Width) \ 2, yPosition)
         contentPanel.Controls.Add(CbAsignaturas)
-        yPosition += 55
+        yPosition += 70
 
         ' Docente
         Dim lblDocente = CreateLabel("Docente:", labelStyle, yPosition)
         lblDocente.Left = (contentPanel.Width - lblDocente.Width) \ 2
         contentPanel.Controls.Add(lblDocente)
-        yPosition += 25
+        yPosition += 35
 
         CbDocentes.Location = New Point((contentPanel.Width - CbDocentes.Width) \ 2, yPosition)
         contentPanel.Controls.Add(CbDocentes)
-        yPosition += 55
+        yPosition += 70
 
         ' Comentario
         Dim lblComentario = CreateLabel("Comentario:", labelStyle, yPosition)
         lblComentario.Left = (contentPanel.Width - lblComentario.Width) \ 2
         contentPanel.Controls.Add(lblComentario)
-        yPosition += 25
+        yPosition += 35
 
         TxtComentario.Location = New Point((contentPanel.Width - TxtComentario.Width) \ 2, yPosition)
         contentPanel.Controls.Add(TxtComentario)
-        yPosition += 140
+        yPosition += 180
 
         ' Botón centrado
         BtnRegistrar.Location = New Point((contentPanel.Width - BtnRegistrar.Width) \ 2, yPosition)
         contentPanel.Controls.Add(BtnRegistrar)
 
-        ' Eventos
-        AddHandler BtnRegistrar.Click, AddressOf RegistrarComentario
-
-        ' Manejar redimensionamiento
-        AddHandler contentPanel.Layout, Sub(sender, e)
-                                            contentPanel.Left = (mainPanel.Width - contentPanel.Width) \ 2
-                                            contentPanel.Top = (mainPanel.Height - contentPanel.Height) \ 2
-                                        End Sub
+        ' Manejar redimensionamiento dinámico
+        AddHandler Me.Resize, Sub(sender, e)
+                                  contentPanel.Left = (mainPanel.Width - contentPanel.Width) \ 2
+                                  contentPanel.Top = (mainPanel.Height - contentPanel.Height) \ 2
+                              End Sub
 
         mainPanel.Controls.Add(contentPanel)
         Me.Controls.Add(mainPanel)
