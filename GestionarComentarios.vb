@@ -14,48 +14,67 @@ Public Class GestionarComentarios
     Private dgvComentarios As DataGridView
     Private btnCrear As Button
     Private contentPanel As Panel
+    Private topPanel As Panel
+    Private iconoPictureBox As PictureBox
 
     Private Sub GestionarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         InitializeComponents()
         CargarDatosIniciales()
     End Sub
 
-
     Private Sub InitializeComponents()
         Me.WindowState = FormWindowState.Maximized
         Me.StartPosition = FormStartPosition.CenterScreen
-        ' Elimina o comenta esta línea para mostrar la barra de título
-        ' Me.FormBorderStyle = FormBorderStyle.None
+        Me.FormBorderStyle = FormBorderStyle.None
         Me.BackColor = Color.White
 
+        ' Crear controles en el orden correcto
+        CrearPanelSuperior()
         CrearContenidoPrincipal()
     End Sub
+
+    Private Sub CrearPanelSuperior()
+        topPanel = New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 120,
+            .BackColor = ColorTranslator.FromHtml("#074788")
+        }
+
+        ' Icono/Logo
+        iconoPictureBox = New PictureBox With {
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(90, 90),
+            .Location = New Point(25, 15),
+            .Cursor = Cursors.Hand
+        }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
+        topPanel.Controls.Add(iconoPictureBox)
+
+        ' Borde decorativo
+        Dim bottomBorder As New Panel With {
+            .Dock = DockStyle.Bottom,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
+        topPanel.Controls.Add(bottomBorder)
+
+        Me.Controls.Add(topPanel)
+    End Sub
+
     Private Sub CrearContenidoPrincipal()
         contentPanel = New Panel With {
             .Dock = DockStyle.Fill,
-            .Padding = New Padding(25, 15, 25, 15),
+            .Padding = New Padding(20, 10, 20, 10),
             .BackColor = Color.White
         }
 
         ConfigurarDataGridView()
         CrearPanelBotones()
         Me.Controls.Add(contentPanel)
-        ' Agrega un botón de cierre personalizado
-        Dim btnCerrar As New Button With {
-            .Text = "X",
-            .Size = New Size(30, 30),
-            .BackColor = Color.Red,
-            .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat,
-            .Location = New Point(Me.Width - 40, 10)
-        }
-        AddHandler btnCerrar.Click, AddressOf CerrarFormulario
-        Me.Controls.Add(btnCerrar)
+        contentPanel.BringToFront()
     End Sub
 
-    Private Sub CerrarFormulario(sender As Object, e As EventArgs)
-        Me.Close()
-    End Sub
     Private Sub ConfigurarDataGridView()
         dgvComentarios = New DataGridView With {
             .Dock = DockStyle.Fill,
@@ -65,7 +84,17 @@ Public Class GestionarComentarios
             .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             .BackgroundColor = Color.White,
             .BorderStyle = BorderStyle.None,
-            .RowHeadersVisible = False
+            .RowHeadersVisible = False,
+            .Margin = New Padding(0, 0, 0, 5),
+            .DefaultCellStyle = New DataGridViewCellStyle With {
+                .Padding = New Padding(5),
+                .Alignment = DataGridViewContentAlignment.MiddleLeft
+            },
+            .ColumnHeadersDefaultCellStyle = New DataGridViewCellStyle With {
+                .BackColor = ColorTranslator.FromHtml("#074788"),
+                .ForeColor = Color.White,
+                .Font = New Font("Arial", 10, FontStyle.Bold)
+            }
         }
 
         contentPanel.Controls.Add(dgvComentarios)
@@ -73,35 +102,34 @@ Public Class GestionarComentarios
 
     Private Sub CrearPanelBotones()
         Dim footerPanel As New Panel With {
-        .Dock = DockStyle.Bottom,
-        .Height = 50,
-        .BackColor = Color.White
-    }
+            .Dock = DockStyle.Bottom,
+            .Height = 60,
+            .BackColor = Color.White,
+            .Padding = New Padding(20, 5, 20, 5)
+        }
 
         btnCrear = New Button With {
-        .Text = "Crear Nuevo",
-        .Size = New Size(140, 35),
-        .BackColor = ColorTranslator.FromHtml("#074788"),
-        .ForeColor = Color.White,
-        .FlatStyle = FlatStyle.Flat,
-        .Font = New Font("Arial", 10, FontStyle.Bold),
-        .Anchor = AnchorStyles.Right
-    }
+            .Text = "Crear Nuevo",
+            .Size = New Size(150, 40),
+            .BackColor = ColorTranslator.FromHtml("#074788"),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Arial", 10, FontStyle.Bold),
+            .Anchor = AnchorStyles.Right,
+            .Cursor = Cursors.Hand
+        }
         btnCrear.FlatAppearance.BorderSize = 0
 
-        ' Agregar el manejador de eventos aquí
         AddHandler btnCrear.Click, AddressOf AbrirGenerarComentarios
-
-        btnCrear.Location = New Point(footerPanel.Width - btnCrear.Width - 10, 7)
+        btnCrear.Location = New Point(footerPanel.Width - btnCrear.Width - 20, 10)
 
         AddHandler footerPanel.Resize, Sub(s, e)
-                                           btnCrear.Left = footerPanel.Width - btnCrear.Width - 15
+                                           btnCrear.Left = footerPanel.Width - btnCrear.Width - 20
                                        End Sub
 
         footerPanel.Controls.Add(btnCrear)
         contentPanel.Controls.Add(footerPanel)
     End Sub
-
 
     Private Async Sub CargarDatosIniciales()
         Try
@@ -154,28 +182,35 @@ Public Class GestionarComentarios
         dgvComentarios.AutoGenerateColumns = False
         dgvComentarios.Columns.Clear()
 
+        Dim columnStyle = New DataGridViewCellStyle With {
+            .Padding = New Padding(5),
+            .Alignment = DataGridViewContentAlignment.MiddleLeft
+        }
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "Comentario",
-            .HeaderText = "Comentario",
-            .Width = 300
+            .HeaderText = "COMENTARIO",
+            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+            .DefaultCellStyle = columnStyle
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreAsignatura",
-            .HeaderText = "NombreAsignatura",
-            .Width = 180
+            .HeaderText = "ASIGNATURA",
+            .Width = 200,
+            .DefaultCellStyle = columnStyle
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "NombreDocenteCompleto",
-            .HeaderText = "NombreDocenteCompleto",
-            .Width = 180
+            .HeaderText = "DOCENTE",
+            .Width = 200,
+            .DefaultCellStyle = columnStyle
         })
 
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
             .DataPropertyName = "FechaComentario",
-            .HeaderText = "FechaComentario",
+            .HeaderText = "FECHA",
             .Width = 150,
             .DefaultCellStyle = New DataGridViewCellStyle With {
                 .Format = "dd/MM/yyyy HH:mm",
@@ -184,7 +219,9 @@ Public Class GestionarComentarios
         })
 
         dgvComentarios.RowTemplate.Height = 35
+        dgvComentarios.ColumnHeadersHeight = 40
     End Sub
+
     Private Sub AbrirGenerarComentarios(sender As Object, e As EventArgs)
         Dim formGenerar As New GenerarComentarios()
         formGenerar.ShowDialog()
