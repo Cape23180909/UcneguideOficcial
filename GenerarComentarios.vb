@@ -14,7 +14,9 @@ Public Class GenerarComentarios
     Private CbDocentes As ComboBox
     Private TxtComentario As TextBox
     Private BtnRegistrar As Button
-    ' Añadir clase modelo para el comentario
+    Private topPanel As Panel
+    Private iconoPictureBox As PictureBox
+
     Public Class ComentarioRequest
         Public Property Comentario As String
         Public Property DocenteId As Integer
@@ -22,6 +24,7 @@ Public Class GenerarComentarios
         Public Property UsuarioId As Integer
         Public Property FechaComentario As DateTime
     End Class
+
     Private Sub GenerarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ConfigurarInterfaz()
         CargarAsignaturasYDocentes()
@@ -29,65 +32,171 @@ Public Class GenerarComentarios
 
     Private Sub ConfigurarInterfaz()
         Me.Text = "Generar Comentarios"
-        Me.Size = New Size(500, 400)
-        Me.BackColor = ColorTranslator.FromHtml("#1E1E1E")
+        Me.Size = New Size(600, 500)
+        Me.BackColor = Color.White
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.Font = New Font("Segoe UI", 10)
 
-        ' Crear y configurar controles
-        CbAsignaturas = New ComboBox With {
-            .Location = New Point(120, 50),
-            .Width = 300,
-            .DropDownStyle = ComboBoxStyle.DropDownList
+        ' Cambiar el FormBorderStyle y habilitar los botones de control
+        Me.FormBorderStyle = FormBorderStyle.Sizable
+        Me.ControlBox = True
+        Me.MaximizeBox = True
+        Me.MinimizeBox = True
+
+        CrearPanelSuperior()
+        CrearControlesFormulario()
+    End Sub
+
+    Private Sub CrearPanelSuperior()
+        topPanel = New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 100,
+            .BackColor = ColorTranslator.FromHtml("#074788")
         }
+
+        iconoPictureBox = New PictureBox With {
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(80, 80),
+            .Location = New Point(20, 10),
+            .Cursor = Cursors.Hand
+        }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
+        topPanel.Controls.Add(iconoPictureBox)
+
+        Dim bottomBorder As New Panel With {
+            .Dock = DockStyle.Bottom,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
+        topPanel.Controls.Add(bottomBorder)
+
+        Me.Controls.Add(topPanel)
+    End Sub
+
+    Private Sub CrearControlesFormulario()
+        Dim mainPanel As New Panel With {
+        .Dock = DockStyle.Fill,
+        .BackColor = Color.White,
+        .Padding = New Padding(20)
+    }
+
+        Dim contentPanel As New Panel With {
+        .Size = New Size(500, 400),
+        .Dock = DockStyle.None,
+        .Anchor = AnchorStyles.None,
+        .Left = (Me.ClientSize.Width - 500) \ 2,
+        .Top = (Me.ClientSize.Height - 400) \ 2
+    }
+
+        ' Configurar estilos base
+        Dim labelStyle As New Label With {
+        .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+        .ForeColor = ColorTranslator.FromHtml("#074788"),
+        .AutoSize = True
+    }
+
+        ' Configurar controles con alineación central
+        CbAsignaturas = New ComboBox With {
+        .Font = New Font("Segoe UI", 10),
+        .DropDownStyle = ComboBoxStyle.DropDownList,
+        .FlatStyle = FlatStyle.Flat,
+        .Width = 350,
+        .Height = 35,
+        .Margin = New Padding(0, 0, 0, 20)
+    }
 
         CbDocentes = New ComboBox With {
-            .Location = New Point(120, 100),
-            .Width = 300,
-            .DropDownStyle = ComboBoxStyle.DropDownList
-        }
+        .Font = New Font("Segoe UI", 10),
+        .DropDownStyle = ComboBoxStyle.DropDownList,
+        .FlatStyle = FlatStyle.Flat,
+        .Width = 350,
+        .Height = 35,
+        .Margin = New Padding(0, 0, 0, 20)
+    }
 
         TxtComentario = New TextBox With {
-            .Location = New Point(120, 150),
-            .Size = New Size(300, 100),
-            .Multiline = True,
-            .ScrollBars = ScrollBars.Vertical
-        }
+        .Multiline = True,
+        .ScrollBars = ScrollBars.Vertical,
+        .Font = New Font("Segoe UI", 10),
+        .BorderStyle = BorderStyle.FixedSingle,
+        .Size = New Size(350, 120),
+        .Margin = New Padding(0, 0, 0, 20)
+    }
 
+        ' Configurar botón centrado
         BtnRegistrar = New Button With {
-            .Text = "Registrar Comentario",
-            .Location = New Point(120, 270),
-            .Size = New Size(300, 35),
-            .BackColor = ColorTranslator.FromHtml("#28A745"),
-            .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat
-        }
+        .Text = "REGISTRAR COMENTARIO",
+        .Size = New Size(200, 40),
+        .BackColor = ColorTranslator.FromHtml("#28A745"),
+        .ForeColor = Color.White,
+        .FlatStyle = FlatStyle.Flat,
+        .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+        .Cursor = Cursors.Hand
+    }
 
-        ' Agregar controles y etiquetas
-        AgregarEtiqueta("Asignatura:", 20, 50)
-        Me.Controls.Add(CbAsignaturas)
-        AgregarEtiqueta("Docente:", 20, 100)
-        Me.Controls.Add(CbDocentes)
-        AgregarEtiqueta("Comentario:", 20, 150)
-        Me.Controls.Add(TxtComentario)
-        Me.Controls.Add(BtnRegistrar)
+        ' Organizar controles verticalmente centrados
+        Dim yPosition As Integer = 0
+
+        ' Asignatura
+        Dim lblAsignatura = CreateLabel("Asignatura:", labelStyle, yPosition)
+        lblAsignatura.Left = (contentPanel.Width - lblAsignatura.Width) \ 2
+        contentPanel.Controls.Add(lblAsignatura)
+        yPosition += 25
+
+        CbAsignaturas.Location = New Point((contentPanel.Width - CbAsignaturas.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(CbAsignaturas)
+        yPosition += 55
+
+        ' Docente
+        Dim lblDocente = CreateLabel("Docente:", labelStyle, yPosition)
+        lblDocente.Left = (contentPanel.Width - lblDocente.Width) \ 2
+        contentPanel.Controls.Add(lblDocente)
+        yPosition += 25
+
+        CbDocentes.Location = New Point((contentPanel.Width - CbDocentes.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(CbDocentes)
+        yPosition += 55
+
+        ' Comentario
+        Dim lblComentario = CreateLabel("Comentario:", labelStyle, yPosition)
+        lblComentario.Left = (contentPanel.Width - lblComentario.Width) \ 2
+        contentPanel.Controls.Add(lblComentario)
+        yPosition += 25
+
+        TxtComentario.Location = New Point((contentPanel.Width - TxtComentario.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(TxtComentario)
+        yPosition += 140
+
+        ' Botón centrado
+        BtnRegistrar.Location = New Point((contentPanel.Width - BtnRegistrar.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(BtnRegistrar)
 
         ' Eventos
         AddHandler BtnRegistrar.Click, AddressOf RegistrarComentario
+
+        ' Manejar redimensionamiento
+        AddHandler contentPanel.Layout, Sub(sender, e)
+                                            contentPanel.Left = (mainPanel.Width - contentPanel.Width) \ 2
+                                            contentPanel.Top = (mainPanel.Height - contentPanel.Height) \ 2
+                                        End Sub
+
+        mainPanel.Controls.Add(contentPanel)
+        Me.Controls.Add(mainPanel)
     End Sub
 
-    Private Sub AgregarEtiqueta(texto As String, x As Integer, y As Integer)
-        Me.Controls.Add(New Label With {
-            .Text = texto,
-            .Location = New Point(x, y),
-            .ForeColor = Color.White,
+    Private Function CreateLabel(text As String, style As Label, y As Integer) As Label
+        Return New Label With {
+            .Text = text,
+            .Font = style.Font,
+            .ForeColor = style.ForeColor,
+            .Location = New Point(0, y),
             .AutoSize = True
-        })
-    End Sub
+        }
+    End Function
 
     Private Async Sub CargarAsignaturasYDocentes()
         Try
-            ' Cargar asignaturas
             Dim responseAsignaturas = Await HttpClient.GetAsync(ApiUrlAsignaturas)
             If responseAsignaturas.IsSuccessStatusCode Then
                 Dim jsonAsignaturas = Await responseAsignaturas.Content.ReadAsStringAsync()
@@ -97,7 +206,6 @@ Public Class GenerarComentarios
                 CbAsignaturas.ValueMember = "AsignaturaId"
             End If
 
-            ' Cargar docentes
             Dim responseDocentes = Await HttpClient.GetAsync(ApiUrlDocentes)
             If responseDocentes.IsSuccessStatusCode Then
                 Dim jsonDocentes = Await responseDocentes.Content.ReadAsStringAsync()
@@ -111,7 +219,6 @@ Public Class GenerarComentarios
             MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
 
     Private Async Sub RegistrarComentario(sender As Object, e As EventArgs)
         If Not ValidarCampos() Then Return
@@ -153,7 +260,6 @@ Public Class GenerarComentarios
         End Try
     End Sub
 
-
     Private Function ValidarCampos() As Boolean
         If String.IsNullOrWhiteSpace(TxtComentario.Text) Then
             MessageBox.Show("El comentario no puede estar vacío", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -174,6 +280,5 @@ Public Class GenerarComentarios
         CbDocentes.SelectedIndex = -1
         TxtComentario.Focus()
     End Sub
-
 
 End Class
