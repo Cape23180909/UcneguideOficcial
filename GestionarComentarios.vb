@@ -20,15 +20,16 @@ Public Class GestionarComentarios
         CargarDatosIniciales()
     End Sub
 
+
     Private Sub InitializeComponents()
         Me.WindowState = FormWindowState.Maximized
         Me.StartPosition = FormStartPosition.CenterScreen
-        Me.FormBorderStyle = FormBorderStyle.None
+        ' Elimina o comenta esta línea para mostrar la barra de título
+        ' Me.FormBorderStyle = FormBorderStyle.None
         Me.BackColor = Color.White
 
         CrearContenidoPrincipal()
     End Sub
-
     Private Sub CrearContenidoPrincipal()
         contentPanel = New Panel With {
             .Dock = DockStyle.Fill,
@@ -39,8 +40,22 @@ Public Class GestionarComentarios
         ConfigurarDataGridView()
         CrearPanelBotones()
         Me.Controls.Add(contentPanel)
+        ' Agrega un botón de cierre personalizado
+        Dim btnCerrar As New Button With {
+            .Text = "X",
+            .Size = New Size(30, 30),
+            .BackColor = Color.Red,
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Location = New Point(Me.Width - 40, 10)
+        }
+        AddHandler btnCerrar.Click, AddressOf CerrarFormulario
+        Me.Controls.Add(btnCerrar)
     End Sub
 
+    Private Sub CerrarFormulario(sender As Object, e As EventArgs)
+        Me.Close()
+    End Sub
     Private Sub ConfigurarDataGridView()
         dgvComentarios = New DataGridView With {
             .Dock = DockStyle.Fill,
