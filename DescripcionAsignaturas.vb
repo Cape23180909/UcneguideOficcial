@@ -15,7 +15,7 @@ Public Class DescripcionAsignaturas
     Private DocenteId As String
     Private AsignaturaId As Integer  ' ?? Eliminado valor hardcodeadoa
 
-    Private UsuarioIdActualId As Integer = 1 ' Reemplazar con el ID real del usuario autenticado
+
 
     ' Controles del formulario
     Private topPanel As Panel
@@ -172,15 +172,15 @@ Public Class DescripcionAsignaturas
 
 
 
-
-
     Private Async Sub EnviarComentario(sender As Object, e As EventArgs)
         Try
-            ' Validaciones
             If String.IsNullOrWhiteSpace(TxtComentario.Text) Then
                 MessageBox.Show("Escribe un comentario antes de enviar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
             End If
+
+            ' Obtener ID del usuario desde la sesión
+            Dim usuarioIdActual As Integer = UserSession.usuarioId
 
             ' Convertir DocenteId a entero
             Dim docenteIdInt As Integer
@@ -189,14 +189,13 @@ Public Class DescripcionAsignaturas
                 Return
             End If
 
-            ' Crear objeto con los nombres correctos
+            ' Crear comentario con el usuario real
             Dim nuevoComentario As New Comentarios(
-            comentario:=TxtComentario.Text.Trim(), ' ✅ Propiedad "Comentario"
-            docenteId:=docenteIdInt,
-            asignaturaId:=AsignaturaId,
-            usuarioId:=1 ' Cambiar por ID real del usuario
-        )
-
+                comentario:=TxtComentario.Text.Trim(),
+                docenteId:=docenteIdInt,
+                asignaturaId:=AsignaturaId,
+                usuarioId:=usuarioIdActual ' Usar ID de sesión
+            )
             ' Serializar
             Dim json As String = JsonConvert.SerializeObject(nuevoComentario)
 
@@ -216,7 +215,7 @@ Public Class DescripcionAsignaturas
                     MessageBox.Show($"Error del API: {errorContent}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
             End Using
-
+            ' ... (resto del código de envío sin cambios)
         Catch ex As Exception
             MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -224,36 +223,35 @@ Public Class DescripcionAsignaturas
 
 
 
-
     Private Async Function CargarComentarios() As Task
         Try
-            Dim url = $"{ApiUrlComentarios}?asignaturaId={AsignaturaId}"
-            Dim comentarios = Await ObtenerDatosAPI(Of List(Of Comentarios))(url)
+            Using client As New HttpClient()
+                Dim response = Await client.GetAsync(ApiUrlComentarios)
+                If response.IsSuccessStatusCode Then
+                    Dim json = Await response.Content.ReadAsStringAsync()
+                    Dim todosComentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(json)
 
-            LstComentarios.Items.Clear()
+                    ' Filtrar por usuario logeado y asignatura actual
+                    Dim comentariosFiltrados = todosComentarios.
+                        Where(Function(c) c.UsuarioId = UserSession.usuarioId AndAlso c.AsignaturaId = AsignaturaId).
+                        ToList()
 
-            If comentarios IsNot Nothing AndAlso comentarios.Any() Then
-                'Filtrar solo los comentarios del usuario autenticado
-                Dim comentariosUsuario = comentarios.Where(Function(c) c.UsuarioId = UsuarioIdActualId).ToList()
-
-                If comentariosUsuario.Any() Then
-                    For Each c As Comentarios In comentariosUsuario
-                        Dim nombreUsuario As String = Await ObtenerNombreUsuario(c.UsuarioId)
-                        LstComentarios.Items.Add($"{nombreUsuario}: {c.Comentario} ({c.FechaComentario:dd/MM/yyyy})")
+                    ' Limpiar y cargar comentarios
+                    LstComentarios.Items.Clear()
+                    For Each comentario In comentariosFiltrados
+                        LstComentarios.Items.Add($"[{comentario.FechaComentario:dd/MM/yy HH:mm}] {comentario.Comentario}")
                     Next
-                Else
-                    LstComentarios.Items.Add("No has escrito comentarios en esta asignatura.")
                 End If
-            Else
-                LstComentarios.Items.Add("No hay comentarios en esta asignatura.")
-            End If
-
+            End Using
         Catch ex As Exception
-            MessageBox.Show($"Error al cargar comentarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show($"Error cargando comentarios: {ex.Message}")
         End Try
     End Function
 
-
+    ' Método para obtener el ID del usuario (implementa según tu lógica de autenticación)
+    Private Function ObtenerUsuarioIdActual() As Integer
+        Return UserSession.usuarioId
+    End Function
 
     ' Función para obtener el nombre del usuario
     Private Async Function ObtenerNombreUsuario(usuarioId As Integer) As Task(Of String)
