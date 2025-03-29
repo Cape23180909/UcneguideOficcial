@@ -251,7 +251,6 @@ Public Class GestionarComentarios
                       MessageBoxIcon.Error)
         End Try
     End Sub
-
     Private Async Function CargarComentarios() As Task
         Try
             Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
@@ -259,7 +258,13 @@ Public Class GestionarComentarios
                 Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(
                 Await response.Content.ReadAsStringAsync())
 
-                For Each c In comentarios
+                ' Obtener ID del usuario actual (ajusta esta línea según tu sistema de autenticación)
+                Dim usuarioIdActual As Integer = ObtenerUsuarioIdActual()
+
+                ' Filtrar comentarios por el usuario actual
+                Dim comentariosFiltrados = comentarios.Where(Function(c) c.UsuarioId = usuarioIdActual).ToList()
+
+                For Each c In comentariosFiltrados
                     c.NombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
                     asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).NombreAsignatura,
                     "N/A")
@@ -269,14 +274,47 @@ Public Class GestionarComentarios
                     "N/A")
                 Next
 
-                ' Configurar columnas ANTES de asignar el DataSource
                 ConfigurarColumnas()
-                dgvComentarios.DataSource = comentarios
+                dgvComentarios.DataSource = comentariosFiltrados
             End If
         Catch ex As Exception
             MessageBox.Show($"Error cargando comentarios: {ex.Message}")
         End Try
     End Function
+
+    ' Método para obtener el ID del usuario (implementa según tu lógica de autenticación)
+    Private Function ObtenerUsuarioIdActual() As Integer
+        ' Ejemplo usando My.Settings
+        Return My.Settings.UsuarioId
+
+        ' Si usas un sistema de sesión:
+        ' Return SesionActual.UsuarioId
+    End Function
+    'Private Async Function CargarComentarios() As Task
+    '    Try
+    '        Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
+    '        If response.IsSuccessStatusCode Then
+    '            Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(
+    '            Await response.Content.ReadAsStringAsync())
+
+    '            For Each c In comentarios
+    '                c.NombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
+    '                asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).NombreAsignatura,
+    '                "N/A")
+
+    '                c.NombreDocenteCompleto = If(docentes?.Any(Function(d) d.docenteId = c.DocenteId),
+    '                docentes.First(Function(d) d.docenteId = c.DocenteId).nombre,
+    '                "N/A")
+    '            Next
+
+    '            ' Configurar columnas ANTES de asignar el DataSource
+    '            ConfigurarColumnas()
+    '            dgvComentarios.DataSource = comentarios
+    '        End If
+    '    Catch ex As Exception
+    '        MessageBox.Show($"Error cargando comentarios: {ex.Message}")
+    '    End Try
+    'End Function
 
     Private Sub ConfigurarColumnas()
         dgvComentarios.AutoGenerateColumns = False
