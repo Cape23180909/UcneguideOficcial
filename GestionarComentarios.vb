@@ -200,6 +200,8 @@ Public Class GestionarComentarios
             MessageBox.Show($"Error inicial: {ex.Message}")
         End Try
     End Sub
+
+
     Private Async Sub EliminarComentario(sender As Object, e As EventArgs)
         If dgvComentarios.SelectedRows.Count = 0 Then
             MessageBox.Show("Seleccione un comentario para eliminar")
@@ -207,25 +209,14 @@ Public Class GestionarComentarios
         End If
 
         Dim comentarioId = CInt(dgvComentarios.SelectedRows(0).Cells("ComentarioId").Value)
-        Dim confirmacion = MessageBox.Show("¿Está seguro de eliminar este comentario?",
-                                          "Confirmar eliminación",
-                                          MessageBoxButtons.YesNo,
-                                          MessageBoxIcon.Warning)
 
-        If confirmacion = DialogResult.Yes Then
-            Try
-                Dim response = Await httpClient.DeleteAsync($"{ApiUrlComentarios}/{comentarioId}")
-
-                If response.IsSuccessStatusCode Then
-                    MessageBox.Show("Comentario eliminado correctamente")
-                    Await CargarComentarios()
-                Else
-                    MessageBox.Show("Error al eliminar el comentario")
-                End If
-            Catch ex As Exception
-                MessageBox.Show($"Error: {ex.Message}")
-            End Try
-        End If
+        ' Mostrar formulario de confirmación
+        Using eliminarForm As New EliminarComentarios(comentarioId)
+            If eliminarForm.ShowDialog() = DialogResult.OK Then
+                ' Actualizar lista si la eliminación fue exitosa
+                Await CargarComentarios()
+            End If
+        End Using
     End Sub
 
     Private Async Sub EditarComentario(sender As Object, e As EventArgs) Handles btnEditar.Click
