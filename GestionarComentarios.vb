@@ -273,6 +273,20 @@ Public Class GestionarComentarios
         End Try
     End Function
 
+    Private Async Function CargarAsignaturasYDocentes() As Task
+        Dim t1 = httpClient.GetAsync(ApiUrlAsignaturas)
+        Dim t2 = httpClient.GetAsync(ApiUrlDocentes)
+        Await Task.WhenAll(t1, t2)
+
+        asignaturas = If(t1.Result.IsSuccessStatusCode,
+            JsonConvert.DeserializeObject(Of List(Of Asignaturas))(Await t1.Result.Content.ReadAsStringAsync()),
+            New List(Of Asignaturas))
+
+        docentes = If(t2.Result.IsSuccessStatusCode,
+            JsonConvert.DeserializeObject(Of List(Of Docente))(Await t2.Result.Content.ReadAsStringAsync()),
+            New List(Of Docente))
+    End Function
+
     ' Método para obtener el ID del usuario (implementa según tu lógica de autenticación)
     Private Function ObtenerUsuarioIdActual() As Integer
         Return UserSession.usuarioId

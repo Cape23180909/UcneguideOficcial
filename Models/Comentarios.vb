@@ -22,10 +22,13 @@ Public Class Comentarios
 
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
-
+    <JsonProperty("NombreAsignatura")>
     Public Property NombreAsignatura As String
-    <JsonProperty("NombreDocente")>
+    <JsonProperty("NombreDocenteCompleto")>
     Public Property NombreDocenteCompleto As String
+
+
+
     Public Sub New()
     End Sub
     ' Constructor

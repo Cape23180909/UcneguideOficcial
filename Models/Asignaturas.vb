@@ -19,6 +19,9 @@ Public Class Asignaturas
     Public Sub New()
         AsignaturaDetalle = New List(Of AsignaturaDetalle)()
     End Sub
+
+
+
 End Class
 
 Public Class AsignaturaDetalle
