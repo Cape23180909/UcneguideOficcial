@@ -21,6 +21,8 @@ Public Class EliminarComentarios
     Private asignaturaData As Asignaturas
     Private docenteData As Docente
 
+    Private topPanel As Panel
+    Private iconoPictureBox As PictureBox
     ' Elementos de datos
     Private lblAsignaturaValor As Label
     Private lblDocenteValor As Label
@@ -30,6 +32,7 @@ Public Class EliminarComentarios
     Public Sub New(comentarioId As Integer)
         Me.comentarioId = comentarioId
         InitializeComponents()
+        CrearPanelSuperior()
         Me.Size = New Size(750, 650)
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
@@ -52,14 +55,40 @@ Public Class EliminarComentarios
         Me.Controls.Add(panelBody)
     End Sub
 
+    Private Sub CrearPanelSuperior()
+        topPanel = New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 100,
+            .BackColor = ColorTranslator.FromHtml("#074788")
+        }
+
+        iconoPictureBox = New PictureBox With {
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(80, 80),
+            .Location = New Point(20, 10),
+            .Cursor = Cursors.Hand
+        }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
+        topPanel.Controls.Add(iconoPictureBox)
+
+        Dim bottomBorder As New Panel With {
+            .Dock = DockStyle.Bottom,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
+        topPanel.Controls.Add(bottomBorder)
+
+        Me.Controls.Add(topPanel)
+    End Sub
     Private Sub CrearContenidoDetallado()
         Dim contenedorPrincipal As New TableLayoutPanel With {
         .Dock = DockStyle.Fill,
-        .RowCount = 5, ' Filas optimizadas
+        .RowCount = 6, ' Añadimos una fila para espaciado superior
         .ColumnCount = 2,
-        .Padding = New Padding(25, 20, 25, 15),
+        .Padding = New Padding(25, 40, 25, 15), ' Más padding superior
         .BackColor = Color.White,
-        .Margin = New Padding(15),
+        .Margin = New Padding(0, 50, 0, 0), ' Margen superior para bajar el contenido
         .CellBorderStyle = TableLayoutPanelCellBorderStyle.None
     }
 
@@ -67,25 +96,26 @@ Public Class EliminarComentarios
         contenedorPrincipal.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 35))
         contenedorPrincipal.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 65))
 
-        ' Configuración de filas optimizadas
-        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 55))  ' Docente
-        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 55))  ' Asignatura
-        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 55))  ' Fecha
-        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 100)) ' Comentario (altura reducida)
-        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 60))  ' Botón
+        ' Configuración de filas con espacio superior
+        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 0))    ' Espaciado superior
+        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 55))   ' Docente
+        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 55))   ' Asignatura
+        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 55))   ' Fecha
+        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 100))  ' Comentario
+        contenedorPrincipal.RowStyles.Add(New RowStyle(SizeType.Absolute, 60))   ' Botón
 
-        ' Etiquetas
-        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("DOCENTE:"), 0, 0)
-        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("ASIGNATURA:"), 0, 1)
-        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("FECHA:"), 0, 2)
-        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("COMENTARIO:"), 0, 3)
+        ' Etiquetas (posición inicial en fila 1)
+        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("DOCENTE:"), 0, 1)
+        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("ASIGNATURA:"), 0, 2)
+        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("FECHA:"), 0, 3)
+        contenedorPrincipal.Controls.Add(CrearEtiquetaTitulo("COMENTARIO:"), 0, 4)
 
         ' Valores
         lblDocenteValor = CrearEtiquetaValor()
         lblAsignaturaValor = CrearEtiquetaValor()
         lblFechaValor = CrearEtiquetaValor()
 
-        ' Cuadro de comentario más compacto
+        ' Cuadro de comentario
         txtComentarioContenido = New TextBox With {
         .Multiline = True,
         .ReadOnly = True,
@@ -95,45 +125,40 @@ Public Class EliminarComentarios
         .Dock = DockStyle.Fill,
         .Margin = New Padding(5),
         .BorderStyle = BorderStyle.None,
-        .Height = 80 ' Altura reducida
+        .Height = 80
     }
 
-        ' Posicionamiento
-        contenedorPrincipal.Controls.Add(lblDocenteValor, 1, 0)
-        contenedorPrincipal.Controls.Add(lblAsignaturaValor, 1, 1)
-        contenedorPrincipal.Controls.Add(lblFechaValor, 1, 2)
-        contenedorPrincipal.Controls.Add(txtComentarioContenido, 1, 3)
+        ' Posicionamiento de controles
+        contenedorPrincipal.Controls.Add(lblDocenteValor, 1, 1)
+        contenedorPrincipal.Controls.Add(lblAsignaturaValor, 1, 2)
+        contenedorPrincipal.Controls.Add(lblFechaValor, 1, 3)
+        contenedorPrincipal.Controls.Add(txtComentarioContenido, 1, 4)
 
-        '' Botón más compacto y proporcional
+        ' Botón compacto
         btnConfirmar = New Button With {
-    .Text = "CONFIRMAR ELIMINACIÓN",
-    .Height = 35,         ' Altura reducida
-    .Width = 180,         ' Ancho ajustado
-    .BackColor = Color.FromArgb(220, 53, 69),
-    .ForeColor = Color.White,
-    .FlatStyle = FlatStyle.Flat,
-    .Font = New Font("Arial", 9, FontStyle.Bold),  ' Fuente más pequeña
-    .Cursor = Cursors.Hand,
-    .Padding = New Padding(0),                    ' Eliminar padding interno
-    .Margin = New Padding(0),                     ' Eliminar márgenes externos
-    .Anchor = AnchorStyles.None
-}
-
+        .Text = "CONFIRMAR ELIMINACIÓN",
+        .Size = New Size(180, 35),
+        .BackColor = Color.FromArgb(220, 53, 69),
+        .ForeColor = Color.White,
+        .FlatStyle = FlatStyle.Flat,
+        .Font = New Font("Arial", 9, FontStyle.Bold),
+        .Cursor = Cursors.Hand,
+        .Anchor = AnchorStyles.None
+    }
         btnConfirmar.FlatAppearance.BorderSize = 0
 
         Dim btnContainer As New Panel With {
-    .Dock = DockStyle.Fill,
-    .Padding = New Padding(0, 5, 0, 0)
-}
+        .Dock = DockStyle.Fill,
+        .Padding = New Padding(0, 10, 0, 0)
+    }
         btnContainer.Controls.Add(btnConfirmar)
         btnConfirmar.Location = New Point((btnContainer.Width - btnConfirmar.Width) \ 2, 0)
 
         contenedorPrincipal.SetColumnSpan(btnContainer, 2)
-        contenedorPrincipal.Controls.Add(btnContainer, 0, 4)
+        contenedorPrincipal.Controls.Add(btnContainer, 0, 5)
 
         panelBody.Controls.Add(contenedorPrincipal)
     End Sub
-
     Private Function CrearEtiquetaTitulo(texto As String) As Label
         Return New Label With {
         .Text = texto,
