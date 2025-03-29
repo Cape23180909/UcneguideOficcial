@@ -16,7 +16,8 @@ Public Class GestionarComentarios
     Private contentPanel As Panel
     Private topPanel As Panel
     Private iconoPictureBox As PictureBox
-
+    Private WithEvents btnEditar As Button
+    Private btnEliminar As Button
     Private Sub GestionarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         InitializeComponents()
         CargarDatosIniciales()
@@ -86,6 +87,9 @@ Public Class GestionarComentarios
         .BorderStyle = BorderStyle.None,
         .RowHeadersVisible = False,
         .Margin = New Padding(0, 0, 0, 5),
+        .SelectionMode = DataGridViewSelectionMode.FullRowSelect, ' Selección completa de fila
+        .MultiSelect = False, ' Deshabilitar selección múltiple
+        .EditMode = DataGridViewEditMode.EditProgrammatically, ' Evitar edición con clic
         .DefaultCellStyle = New DataGridViewCellStyle With {
             .Font = New Font("Segoe UI", 10, FontStyle.Regular),
             .ForeColor = Color.FromArgb(64, 64, 64),
@@ -121,6 +125,7 @@ Public Class GestionarComentarios
             .Padding = New Padding(20, 5, 20, 5)
         }
 
+        ' Botón Crear
         btnCrear = New Button With {
             .Text = "Crear Nuevo",
             .Size = New Size(150, 40),
@@ -128,18 +133,48 @@ Public Class GestionarComentarios
             .ForeColor = Color.White,
             .FlatStyle = FlatStyle.Flat,
             .Font = New Font("Arial", 10, FontStyle.Bold),
-            .Anchor = AnchorStyles.Right,
             .Cursor = Cursors.Hand
         }
         btnCrear.FlatAppearance.BorderSize = 0
 
-        AddHandler btnCrear.Click, AddressOf AbrirGenerarComentarios
-        btnCrear.Location = New Point(footerPanel.Width - btnCrear.Width - 20, 10)
+        ' Botón Eliminar
+        btnEliminar = New Button With {
+            .Text = "Eliminar",
+            .Size = New Size(150, 40),
+            .BackColor = ColorTranslator.FromHtml("#dc3545"),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Arial", 10, FontStyle.Bold),
+            .Cursor = Cursors.Hand
+        }
+        btnEliminar.FlatAppearance.BorderSize = 0
 
+        ' Botón Editar
+        btnEditar = New Button With {
+            .Text = "Editar",
+            .Size = New Size(150, 40),
+            .BackColor = ColorTranslator.FromHtml("#28a745"),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Arial", 10, FontStyle.Bold),
+            .Cursor = Cursors.Hand
+        }
+        btnEditar.FlatAppearance.BorderSize = 0
+
+        ' Manejadores de eventos
+        AddHandler btnCrear.Click, AddressOf AbrirGenerarComentarios
+        AddHandler btnEliminar.Click, AddressOf EliminarComentario
+        AddHandler btnEditar.Click, AddressOf EditarComentario
+
+        ' Posicionamiento de botones
         AddHandler footerPanel.Resize, Sub(s, e)
                                            btnCrear.Left = footerPanel.Width - btnCrear.Width - 20
+                                           btnEliminar.Left = btnCrear.Left - btnEliminar.Width - 10
+                                           btnEditar.Left = btnEliminar.Left - btnEditar.Width - 10
                                        End Sub
 
+        footerPanel.Controls.Add(btnEditar)
+        footerPanel.Controls.Add(btnEliminar)
         footerPanel.Controls.Add(btnCrear)
         contentPanel.Controls.Add(footerPanel)
     End Sub
@@ -165,26 +200,78 @@ Public Class GestionarComentarios
             MessageBox.Show($"Error inicial: {ex.Message}")
         End Try
     End Sub
+    Private Async Sub EliminarComentario(sender As Object, e As EventArgs)
+        If dgvComentarios.SelectedRows.Count = 0 Then
+            MessageBox.Show("Seleccione un comentario para eliminar")
+            Return
+        End If
+
+        Dim comentarioId = CInt(dgvComentarios.SelectedRows(0).Cells("ComentarioId").Value)
+        Dim confirmacion = MessageBox.Show("¿Está seguro de eliminar este comentario?",
+                                          "Confirmar eliminación",
+                                          MessageBoxButtons.YesNo,
+                                          MessageBoxIcon.Warning)
+
+        If confirmacion = DialogResult.Yes Then
+            Try
+                Dim response = Await httpClient.DeleteAsync($"{ApiUrlComentarios}/{comentarioId}")
+
+                If response.IsSuccessStatusCode Then
+                    MessageBox.Show("Comentario eliminado correctamente")
+                    Await CargarComentarios()
+                Else
+                    MessageBox.Show("Error al eliminar el comentario")
+                End If
+            Catch ex As Exception
+                MessageBox.Show($"Error: {ex.Message}")
+            End Try
+        End If
+    End Sub
+
+    Private Async Sub EditarComentario(sender As Object, e As EventArgs) Handles btnEditar.Click
+        If dgvComentarios.SelectedRows.Count = 0 Then
+            MessageBox.Show("Seleccione un comentario para editar",
+                      "Advertencia",
+                      MessageBoxButtons.OK,
+                      MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            Dim selectedId = CInt(dgvComentarios.SelectedRows(0).Cells("ComentarioId").Value)
+            Using editForm = New ModificarComentarios(selectedId, asignaturas, docentes)
+                If editForm.ShowDialog() = DialogResult.OK Then
+                    Await CargarComentarios()
+                End If
+            End Using
+        Catch ex As Exception
+            MessageBox.Show($"Error al editar: {ex.Message}",
+                      "Error",
+                      MessageBoxButtons.OK,
+                      MessageBoxIcon.Error)
+        End Try
+    End Sub
 
     Private Async Function CargarComentarios() As Task
         Try
             Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
             If response.IsSuccessStatusCode Then
                 Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(
-                    Await response.Content.ReadAsStringAsync())
+                Await response.Content.ReadAsStringAsync())
 
                 For Each c In comentarios
                     c.NombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
-                        asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).NombreAsignatura,
-                        "N/A")
+                    asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).NombreAsignatura,
+                    "N/A")
 
                     c.NombreDocenteCompleto = If(docentes?.Any(Function(d) d.docenteId = c.DocenteId),
-                        docentes.First(Function(d) d.docenteId = c.DocenteId).nombre,
-                        "N/A")
+                    docentes.First(Function(d) d.docenteId = c.DocenteId).nombre,
+                    "N/A")
                 Next
 
-                dgvComentarios.DataSource = comentarios
+                ' Configurar columnas ANTES de asignar el DataSource
                 ConfigurarColumnas()
+                dgvComentarios.DataSource = comentarios
             End If
         Catch ex As Exception
             MessageBox.Show($"Error cargando comentarios: {ex.Message}")
@@ -195,46 +282,63 @@ Public Class GestionarComentarios
         dgvComentarios.AutoGenerateColumns = False
         dgvComentarios.Columns.Clear()
 
-        Dim columnStyle = New DataGridViewCellStyle With {
+
+        ' Asegurar que el nombre de la columna coincida EXACTAMENTE
+        dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
+        .Name = "ComentarioId",
+        .DataPropertyName = "ComentarioId",
+        .HeaderText = "ComentarioId",
+        .Visible = False
+    })
+
+        ' Columna Comentario
+        dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
+        .DataPropertyName = "Comentario",
+        .HeaderText = "COMENTARIO",
+        .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+        .DefaultCellStyle = New DataGridViewCellStyle With {
             .Padding = New Padding(5),
             .Alignment = DataGridViewContentAlignment.MiddleLeft
         }
+    })
 
+        ' Columna Asignatura
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
-            .DataPropertyName = "Comentario",
-            .HeaderText = "COMENTARIO",
-            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-            .DefaultCellStyle = columnStyle
-        })
+        .DataPropertyName = "NombreAsignatura",
+        .HeaderText = "ASIGNATURA",
+        .Width = 200,
+        .DefaultCellStyle = New DataGridViewCellStyle With {
+            .Padding = New Padding(5),
+            .Alignment = DataGridViewContentAlignment.MiddleLeft
+        }
+    })
 
+        ' Columna Docente
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
-            .DataPropertyName = "NombreAsignatura",
-            .HeaderText = "NombreAsignatura",
-            .Width = 200,
-            .DefaultCellStyle = columnStyle
-        })
+        .DataPropertyName = "NombreDocenteCompleto",
+        .HeaderText = "DOCENTE",
+        .Width = 200,
+        .DefaultCellStyle = New DataGridViewCellStyle With {
+            .Padding = New Padding(5),
+            .Alignment = DataGridViewContentAlignment.MiddleLeft
+        }
+    })
 
+        ' Columna Fecha
         dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
-            .DataPropertyName = "NombreDocenteCompleto",
-            .HeaderText = "NombreDocenteCompleto",
-            .Width = 200,
-            .DefaultCellStyle = columnStyle
-        })
+        .DataPropertyName = "FechaComentario",
+        .HeaderText = "FECHA",
+        .Width = 150,
+        .DefaultCellStyle = New DataGridViewCellStyle With {
+            .Format = "dd/MM/yyyy HH:mm",
+            .Alignment = DataGridViewContentAlignment.MiddleCenter
+        }
+    })
 
-        dgvComentarios.Columns.Add(New DataGridViewTextBoxColumn With {
-            .DataPropertyName = "FechaComentario",
-            .HeaderText = "FechaComentario",
-            .Width = 150,
-            .DefaultCellStyle = New DataGridViewCellStyle With {
-                .Format = "dd/MM/yyyy HH:mm",
-                .Alignment = DataGridViewContentAlignment.MiddleCenter
-            }
-        })
-
+        ' Estilos adicionales
         dgvComentarios.RowTemplate.Height = 35
         dgvComentarios.ColumnHeadersHeight = 40
     End Sub
-
     Private Sub AbrirGenerarComentarios(sender As Object, e As EventArgs)
         Dim formGenerar As New GenerarComentarios()
         formGenerar.ShowDialog()

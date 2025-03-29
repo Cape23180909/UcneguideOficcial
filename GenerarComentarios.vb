@@ -30,22 +30,7 @@ Public Class GenerarComentarios
         CargarAsignaturasYDocentes()
     End Sub
 
-    'Private Sub ConfigurarInterfaz()
-    '    Me.Text = "Generar Comentarios"
-    '    Me.Size = New Size(600, 500)
-    '    Me.BackColor = Color.White
-    '    Me.StartPosition = FormStartPosition.CenterScreen
-    '    Me.Font = New Font("Segoe UI", 10)
 
-    '    ' Cambiar el FormBorderStyle y habilitar los botones de control
-    '    Me.FormBorderStyle = FormBorderStyle.Sizable
-    '    Me.ControlBox = True
-    '    Me.MaximizeBox = True
-    '    Me.MinimizeBox = True
-
-    '    CrearPanelSuperior()
-    '    CrearControlesFormulario()
-    'End Sub
 
     Private Sub ConfigurarInterfaz()
         Me.Text = "Generar Comentarios"

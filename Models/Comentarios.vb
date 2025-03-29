@@ -26,7 +26,8 @@ Public Class Comentarios
     Public Property NombreAsignatura As String
     <JsonProperty("NombreDocente")>
     Public Property NombreDocenteCompleto As String
-
+    Public Sub New()
+    End Sub
     ' Constructor
     Public Sub New(comentario As String, docenteId As Integer, asignaturaId As Integer, usuarioId As Integer)
         Me.Comentario = comentario

@@ -143,6 +143,12 @@
     <Compile Include="DescripcionAsignaturas.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="EliminarComentarios.Designer.vb">
+      <DependentUpon>EliminarComentarios.vb</DependentUpon>
+    </Compile>
+    <Compile Include="EliminarComentarios.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GenerarComentarios.Designer.vb">
       <DependentUpon>GenerarComentarios.vb</DependentUpon>
     </Compile>
@@ -189,6 +195,12 @@
     <Compile Include="Models\Sugerencias.vb" />
     <Compile Include="Models\Usuario.vb" />
     <Compile Include="Models\Usuariosapi.vb" />
+    <Compile Include="ModificarComentarios.Designer.vb">
+      <DependentUpon>ModificarComentarios.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ModificarComentarios.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -238,6 +250,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Models\Facultades.resx">
       <DependentUpon>Facultades.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModificarComentarios.resx">
+      <DependentUpon>ModificarComentarios.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
