@@ -18,6 +18,8 @@ Public Class ModificarComentarios
     Private WithEvents txtComentario As TextBox
     Private lblFecha As Label
     Private WithEvents btnActualizar As Button
+    Private topPanel As Panel
+    Private iconoPictureBox As PictureBox
 
     ' Variables de estado
     Private httpClient As New HttpClient()
@@ -38,56 +40,161 @@ Public Class ModificarComentarios
         Me.SuspendLayout()
 
         ' Configuración básica del formulario
-        Me.Text = "Editar Comentario"
-        Me.Size = New Size(600, 400)
-        Me.StartPosition = FormStartPosition.CenterScreen
-
-        ' Crear controles
-        CreateControls()
+        ConfigurarInterfaz()
+        CrearPanelSuperior()
+        CrearControlesFormulario()
 
         Me.ResumeLayout(False)
         Me.PerformLayout()
     End Sub
 
-    Private Sub CreateControls()
-        ' Configurar ComboBox de asignaturas
-        cmbAsignaturas = New ComboBox With {
-            .Location = New Point(20, 60),
-            .Size = New Size(400, 30),
-            .DropDownStyle = ComboBoxStyle.DropDownList
-        }
-
-        ' Configurar ComboBox de docentes
-        cmbDocentes = New ComboBox With {
-            .Location = New Point(20, 140),
-            .Size = New Size(400, 30),
-            .DropDownStyle = ComboBoxStyle.DropDownList
-        }
-
-        ' Configurar TextBox de comentario
-        txtComentario = New TextBox With {
-            .Location = New Point(20, 220),
-            .Size = New Size(400, 100),
-            .Multiline = True
-        }
-
-        ' Configurar etiqueta de fecha
-        lblFecha = New Label With {
-            .Location = New Point(20, 20),
-            .Size = New Size(300, 20),
-            .Text = "Fecha:"
-        }
-
-        ' Configurar botón de actualización
-        btnActualizar = New Button With {
-            .Location = New Point(20, 340),
-            .Size = New Size(150, 30),
-            .Text = "Actualizar"
-        }
-
-        ' Agregar controles al formulario
-        Me.Controls.AddRange({cmbAsignaturas, cmbDocentes, txtComentario, lblFecha, btnActualizar})
+    Private Sub ConfigurarInterfaz()
+        Me.Text = "Editar Comentario"
+        Me.Size = New Size(800, 600)
+        Me.BackColor = Color.White
+        Me.StartPosition = FormStartPosition.CenterScreen
+        Me.Font = New Font("Segoe UI", 10)
+        Me.FormBorderStyle = FormBorderStyle.Sizable
     End Sub
+
+    Private Sub CrearPanelSuperior()
+        topPanel = New Panel With {
+            .Dock = DockStyle.Top,
+            .Height = 100,
+            .BackColor = ColorTranslator.FromHtml("#074788")
+        }
+
+        iconoPictureBox = New PictureBox With {
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(80, 80),
+            .Location = New Point(20, 10),
+            .Cursor = Cursors.Hand
+        }
+        AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
+        topPanel.Controls.Add(iconoPictureBox)
+
+        Dim bottomBorder As New Panel With {
+            .Dock = DockStyle.Bottom,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
+        topPanel.Controls.Add(bottomBorder)
+
+        Me.Controls.Add(topPanel)
+    End Sub
+
+    Private Sub CrearControlesFormulario()
+        Dim mainPanel As New Panel With {
+            .Dock = DockStyle.Fill,
+            .BackColor = Color.White,
+            .Padding = New Padding(40)
+        }
+
+        Dim contentPanel As New Panel With {
+            .Size = New Size(700, 500),
+            .Dock = DockStyle.None,
+            .Anchor = AnchorStyles.None,
+            .Left = (Me.ClientSize.Width - 700) \ 2,
+            .Top = (Me.ClientSize.Height - 500) \ 2
+        }
+
+        ' Configurar estilos base
+        Dim labelStyle As New Label With {
+            .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+            .ForeColor = ColorTranslator.FromHtml("#074788"),
+            .AutoSize = True
+        }
+
+        ' Configurar controles
+        lblFecha = CreateLabel("Fecha:", labelStyle, 20)
+        cmbAsignaturas = New ComboBox With {
+            .Font = New Font("Segoe UI", 11),
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.Flat,
+            .Size = New Size(500, 40),
+            .Margin = New Padding(0, 0, 0, 25)
+        }
+
+        cmbDocentes = New ComboBox With {
+            .Font = New Font("Segoe UI", 11),
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.Flat,
+            .Size = New Size(500, 40),
+            .Margin = New Padding(0, 0, 0, 25)
+        }
+
+        txtComentario = New TextBox With {
+            .Multiline = True,
+            .ScrollBars = ScrollBars.Vertical,
+            .Font = New Font("Segoe UI", 11),
+            .BorderStyle = BorderStyle.FixedSingle,
+            .Size = New Size(500, 150),
+            .Margin = New Padding(0, 0, 0, 25)
+        }
+
+        btnActualizar = New Button With {
+            .Text = "ACTUALIZAR COMENTARIO",
+            .Size = New Size(300, 45),
+            .BackColor = ColorTranslator.FromHtml("#28A745"),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+            .Cursor = Cursors.Hand
+        }
+
+        ' Organizar controles
+        Dim yPosition As Integer = 60
+
+        contentPanel.Controls.Add(lblFecha)
+        yPosition += 30
+
+        contentPanel.Controls.Add(CreateLabel("Asignatura:", labelStyle, yPosition))
+        yPosition += 35
+        cmbAsignaturas.Location = New Point((contentPanel.Width - cmbAsignaturas.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(cmbAsignaturas)
+        yPosition += 70
+
+        contentPanel.Controls.Add(CreateLabel("Docente:", labelStyle, yPosition))
+        yPosition += 35
+        cmbDocentes.Location = New Point((contentPanel.Width - cmbDocentes.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(cmbDocentes)
+        yPosition += 70
+
+        contentPanel.Controls.Add(CreateLabel("Comentario:", labelStyle, yPosition))
+        yPosition += 35
+        txtComentario.Location = New Point((contentPanel.Width - txtComentario.Width) \ 2, yPosition)
+        contentPanel.Controls.Add(txtComentario)
+        yPosition += 180
+
+
+
+        ' Mover el botón más abajo dentro del contentPanel
+        btnActualizar.Location = New Point(10, contentPanel.Height - btnActualizar.Height - 5)
+
+
+        contentPanel.Controls.Add(btnActualizar)
+
+
+        ' Manejar redimensionamiento
+        AddHandler Me.Resize, Sub(sender, e)
+                                  contentPanel.Left = (mainPanel.Width - contentPanel.Width) \ 2
+                                  contentPanel.Top = (mainPanel.Height - contentPanel.Height) \ 2
+                              End Sub
+
+        mainPanel.Controls.Add(contentPanel)
+        Me.Controls.Add(mainPanel)
+    End Sub
+
+    Private Function CreateLabel(text As String, style As Label, y As Integer) As Label
+        Return New Label With {
+            .Text = text,
+            .Font = style.Font,
+            .ForeColor = style.ForeColor,
+            .Location = New Point((Me.ClientSize.Width - 500) \ 2, y),
+            .AutoSize = True
+        }
+    End Function
 
     Private Async Sub ModificarComentarios_Load(sender As Object, e As EventArgs)
         Await LoadInitialData()
