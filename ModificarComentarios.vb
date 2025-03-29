@@ -92,12 +92,13 @@ Public Class ModificarComentarios
         }
 
         Dim contentPanel As New Panel With {
-            .Size = New Size(700, 500),
-            .Dock = DockStyle.None,
-            .Anchor = AnchorStyles.None,
-            .Left = (Me.ClientSize.Width - 700) \ 2,
-            .Top = (Me.ClientSize.Height - 500) \ 2
-        }
+        .Size = New Size(700, 600), ' Altura aumentada
+        .Dock = DockStyle.None,
+        .Anchor = AnchorStyles.None,
+        .Left = (Me.ClientSize.Width - 700) \ 2,
+        .Top = (Me.ClientSize.Height - 600) \ 2,
+        .AutoScroll = True ' Scroll activado
+    }
 
         ' Configurar estilos base
         Dim labelStyle As New Label With {
@@ -169,6 +170,15 @@ Public Class ModificarComentarios
 
 
 
+        ' Posición del botón ajustada
+        btnActualizar.Location = New Point(
+        (contentPanel.Width - btnActualizar.Width) \ 2,
+        txtComentario.Bottom + 20
+    )
+
+        contentPanel.Controls.Add(btnActualizar)
+
+
         ' Manejar redimensionamiento
         AddHandler Me.Resize, Sub(sender, e)
                                   contentPanel.Left = (mainPanel.Width - contentPanel.Width) \ 2
@@ -178,10 +188,7 @@ Public Class ModificarComentarios
         mainPanel.Controls.Add(contentPanel)
         Me.Controls.Add(mainPanel)
 
-        btnActualizar.Location = New Point(10, contentPanel.Height - btnActualizar.Height - 5)
 
-
-        contentPanel.Controls.Add(btnActualizar)
     End Sub
 
     Private Function CreateLabel(text As String, style As Label, y As Integer) As Label

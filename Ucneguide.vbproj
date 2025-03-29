@@ -230,6 +230,9 @@
     <EmbeddedResource Include="DescripcionAsignaturas.resx">
       <DependentUpon>DescripcionAsignaturas.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="EliminarComentarios.resx">
+      <DependentUpon>EliminarComentarios.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GenerarComentarios.resx">
       <DependentUpon>GenerarComentarios.vb</DependentUpon>
     </EmbeddedResource>
