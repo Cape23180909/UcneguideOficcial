@@ -96,6 +96,9 @@ Public Class ModificarComentarios
 
     Private Async Function LoadInitialData() As Task
         Try
+            ' Obtener carrera del usuario desde la sesión
+            Dim carreraIdUsuario As Integer = UserSession.carreraId
+
             ' Cargar comentario
             Dim response = Await httpClient.GetAsync($"{ApiUrlComentarios}/{comentarioId}")
             If response.IsSuccessStatusCode Then
@@ -106,22 +109,26 @@ Public Class ModificarComentarios
                     MessageBox.Show("El comentario no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Me.Close()
                 End If
-            Else
-                MessageBox.Show("Error al cargar el comentario", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Me.Close()
             End If
 
-            ' Cargar asignaturas y docentes
-            Dim asignaturasResponse = Await httpClient.GetAsync(ApiUrlAsignaturas)
-            If asignaturasResponse.IsSuccessStatusCode Then
-                asignaturas = JsonConvert.DeserializeObject(Of List(Of Asignaturas))(
-                    Await asignaturasResponse.Content.ReadAsStringAsync())
+            ' Cargar asignaturas filtradas por carrera
+            Dim responseAsignaturas = Await httpClient.GetAsync($"{ApiUrlAsignaturas}?carreraId={carreraIdUsuario}")
+            If responseAsignaturas.IsSuccessStatusCode Then
+                Dim jsonAsignaturas = Await responseAsignaturas.Content.ReadAsStringAsync()
+                asignaturas = JsonConvert.DeserializeObject(Of List(Of Asignaturas))(jsonAsignaturas)
+
+                ' Filtro adicional por carrera (si el API no lo hace)
+                asignaturas = asignaturas.Where(Function(a) a.CarreraId = carreraIdUsuario).ToList()
             End If
 
-            Dim docentesResponse = Await httpClient.GetAsync(ApiUrlDocentes)
-            If docentesResponse.IsSuccessStatusCode Then
-                docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(
-                    Await docentesResponse.Content.ReadAsStringAsync())
+            ' Cargar docentes filtrados por carrera
+            Dim responseDocentes = Await httpClient.GetAsync($"{ApiUrlDocentes}?carreraId={carreraIdUsuario}")
+            If responseDocentes.IsSuccessStatusCode Then
+                Dim jsonDocentes = Await responseDocentes.Content.ReadAsStringAsync()
+                docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonDocentes)
+
+                ' Filtro adicional por carrera
+                docentes = docentes.Where(Function(d) d.carreraId = carreraIdUsuario).ToList()
             End If
 
         Catch ex As Exception
