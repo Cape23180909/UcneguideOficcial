@@ -169,13 +169,6 @@ Public Class ModificarComentarios
 
 
 
-        ' Mover el botón más abajo dentro del contentPanel
-        btnActualizar.Location = New Point(10, contentPanel.Height - btnActualizar.Height - 5)
-
-
-        contentPanel.Controls.Add(btnActualizar)
-
-
         ' Manejar redimensionamiento
         AddHandler Me.Resize, Sub(sender, e)
                                   contentPanel.Left = (mainPanel.Width - contentPanel.Width) \ 2
@@ -184,6 +177,11 @@ Public Class ModificarComentarios
 
         mainPanel.Controls.Add(contentPanel)
         Me.Controls.Add(mainPanel)
+
+        btnActualizar.Location = New Point(10, contentPanel.Height - btnActualizar.Height - 5)
+
+
+        contentPanel.Controls.Add(btnActualizar)
     End Sub
 
     Private Function CreateLabel(text As String, style As Label, y As Integer) As Label
