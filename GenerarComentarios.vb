@@ -194,19 +194,31 @@ Public Class GenerarComentarios
 
     Private Async Sub CargarAsignaturasYDocentes()
         Try
-            Dim responseAsignaturas = Await HttpClient.GetAsync(ApiUrlAsignaturas)
+            Dim carreraIdUsuario As Integer = UserSession.carreraId
+
+            ' 1. Cargar asignaturas filtradas por carrera
+            Dim responseAsignaturas = Await HttpClient.GetAsync($"{ApiUrlAsignaturas}?carreraId={carreraIdUsuario}")
             If responseAsignaturas.IsSuccessStatusCode Then
                 Dim jsonAsignaturas = Await responseAsignaturas.Content.ReadAsStringAsync()
                 Dim asignaturas = JsonConvert.DeserializeObject(Of List(Of Asignaturas))(jsonAsignaturas)
+
+                ' Filtro adicional por carrera (si el API no lo hace)
+                asignaturas = asignaturas.Where(Function(a) a.CarreraId = carreraIdUsuario).ToList()
+
                 CbAsignaturas.DataSource = asignaturas
                 CbAsignaturas.DisplayMember = "NombreAsignatura"
                 CbAsignaturas.ValueMember = "AsignaturaId"
             End If
 
-            Dim responseDocentes = Await HttpClient.GetAsync(ApiUrlDocentes)
+            ' 2. Cargar docentes filtrados por carrera
+            Dim responseDocentes = Await HttpClient.GetAsync($"{ApiUrlDocentes}?carreraId={carreraIdUsuario}")
             If responseDocentes.IsSuccessStatusCode Then
                 Dim jsonDocentes = Await responseDocentes.Content.ReadAsStringAsync()
                 Dim docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonDocentes)
+
+                ' Filtro adicional por carrera (si el API no lo hace)
+                docentes = docentes.Where(Function(d) d.carreraId = carreraIdUsuario).ToList()
+
                 CbDocentes.DataSource = docentes
                 CbDocentes.DisplayMember = "NombreCompleto"
                 CbDocentes.ValueMember = "DocenteId"
@@ -216,6 +228,7 @@ Public Class GenerarComentarios
             MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
 
     Private Async Sub RegistrarComentario(sender As Object, e As EventArgs)
         If Not ValidarCampos() Then Return
