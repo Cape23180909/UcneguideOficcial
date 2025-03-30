@@ -58,20 +58,27 @@ Public Class ActualizarPerfil
     .Cursor = Cursors.Hand
 }
 
-        ' Título al lado del icono con alineación vertical
-        Dim lblTitulo As New Label With {
-    .Text = "Actualizar Perfil",
-    .Font = New Font("Arial", 16, FontStyle.Bold),
-    .ForeColor = Color.White,
-    .AutoSize = True,
-    .TextAlign = ContentAlignment.MiddleLeft  ' Alineación vertical
-}
+        ' Título centrado - MODIFICACIÓN
+        Dim lblTitle As New Label With {
+        .Text = "Actualizar Perfil",
+        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+        .ForeColor = Color.White,
+        .AutoSize = True
+    }
 
-        ' Posicionamiento relativo al icono
-        lblTitulo.Location = New Point(
-    iconoPictureBox.Right + 10,
-    iconoPictureBox.Top + (iconoPictureBox.Height - lblTitulo.Height) \ 2
-)
+        ' Posicionamiento dinámico mejorado
+        AddHandler topPanel.Resize, Sub()
+                                        ' 
+
+                                        ' Centrar título considerando el icono
+                                        lblTitle.Location = New Point(
+                                        (topPanel.Width - lblTitle.Width) \ 2,
+                                        (topPanel.Height - lblTitle.Height) \ 2)
+
+                                    End Sub
+
+        topPanel.Controls.Add(lblTitle)
+        lblTitle.BringToFront() ' Asegurar que está sobre el borde
 
         ' Botón de cerrar sesión
         Dim BtnCerrarSesion As New Button With {
@@ -89,7 +96,7 @@ Public Class ActualizarPerfil
         ' Agregar controles al topPanel
         topPanel.Controls.Add(BtnCerrarSesion)
         topPanel.Controls.Add(iconoPictureBox)
-        topPanel.Controls.Add(lblTitulo)
+        topPanel.Controls.Add(lblTitle)
 
         ' Contenedor principal con scroll
         Dim mainContainer As New Panel With {

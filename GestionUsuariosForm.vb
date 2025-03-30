@@ -34,37 +34,60 @@ Public Class LoginForm
             .BackColor = ColorTranslator.FromHtml("#074788")
         }
 
-        ' Primera línea amarilla justo debajo del panel azul
+        ' Líneas amarillas
         Dim bottomBorder1 As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 5,
             .BackColor = ColorTranslator.FromHtml("#F7D917")
         }
 
-        ' Segunda línea amarilla debajo de la primera
         Dim bottomBorder2 As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 5,
             .BackColor = ColorTranslator.FromHtml("#F7D917")
         }
 
-        ' Icono en el centro del panel azul
+        ' Icono
         iconoPictureBox = New PictureBox With {
             .Image = My.Resources.guia_turistico_3,
             .SizeMode = PictureBoxSizeMode.Zoom,
             .Size = New Size(100, 100),
-            .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 100) \ 2 + 20), ' Ajuste de posición
-             .Anchor = AnchorStyles.None
+            .Anchor = AnchorStyles.None
         }
+
+        ' Título "Login" arriba del icono (Versión mejorada)
+        lblTitulo = New Label With {
+            .Text = "LOGIN",
+            .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+            .ForeColor = Color.White,
+            .AutoSize = True,
+            .Anchor = AnchorStyles.None
+        }
+
+        ' Posicionamiento dinámico mejorado
+        AddHandler topPanel.Resize, Sub()
+                                        ' Calcular posición vertical
+                                        Dim totalHeight = lblTitulo.Height + iconoPictureBox.Height + 20 ' 20px de separación
+                                        Dim startY = (topPanel.Height - totalHeight) \ 2
+
+                                        ' Posicionar título
+                                        lblTitulo.Location = New Point(
+                (topPanel.Width - lblTitulo.Width) \ 2,
+                startY)
+
+                                        ' Posicionar icono debajo del título
+                                        iconoPictureBox.Location = New Point(
+                (topPanel.Width - iconoPictureBox.Width) \ 2,
+                lblTitulo.Bottom + 20)
+                                    End Sub
+
+        ' Agregar controles al panel
+        topPanel.Controls.Add(lblTitulo)
+        topPanel.Controls.Add(iconoPictureBox)
+        topPanel.PerformLayout() ' Forzar cálculo inicial
         topPanel.Controls.Add(iconoPictureBox)
 
-        lblTitulo = New Label With {
-            .Text = "Login",
-            .Font = New Font("Arial", 16, FontStyle.Bold),
-            .AutoSize = True,
-            .ForeColor = Color.Black
-        }
-
+        ' Resto de controles (igual que antes)
         txtEmail = New TextBox With {
             .Text = "Email",
             .ForeColor = Color.Gray,
@@ -101,15 +124,16 @@ Public Class LoginForm
         }
         AddHandler lblCrearCuenta.Click, AddressOf CrearCuenta_Click
 
-        Me.Controls.AddRange({topPanel, bottomBorder1, bottomBorder2, lblTitulo, txtEmail, txtPassword, btnLogin, lblCrearCuenta})
+        ' Modificar esta línea (eliminar lblTitulo de los controles principales)
+        Me.Controls.AddRange({topPanel, bottomBorder1, bottomBorder2, txtEmail, txtPassword, btnLogin, lblCrearCuenta})
         CenterControls()
     End Sub
 
     Private Sub CenterControls()
+        ' Eliminar la referencia a lblTitulo aquí
         Dim centerX As Integer = (Me.ClientSize.Width - txtEmail.Width) \ 2
         Dim centerY As Integer = (Me.ClientSize.Height - 200) \ 2
 
-        lblTitulo.Location = New Point(centerX + (txtEmail.Width - lblTitulo.Width) \ 2, centerY - 80)
         txtEmail.Location = New Point(centerX, centerY)
         txtPassword.Location = New Point(centerX, centerY + 50)
         btnLogin.Location = New Point(centerX, centerY + 100)
@@ -242,12 +266,27 @@ Public Class RegistroForm
 
         ' Icono centrado en el panel azul
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
-            .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(100, 100),
-            .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 100) \ 2 + 20),
-            .Anchor = AnchorStyles.None
-        }
+        .Image = My.Resources.guia_turistico_3,
+        .SizeMode = PictureBoxSizeMode.Zoom,
+        .Size = New Size(100, 100),
+        .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 100) \ 2 + 40), ' Ajustada posición Y
+        .Anchor = AnchorStyles.None
+    }
+
+        ' Texto "Sign Up" arriba del icono
+        Dim lblSignUp As New Label With {
+        .Text = "SIGN UP",
+        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+        .ForeColor = Color.White,
+        .AutoSize = True,
+        .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 150) \ 2),
+        .Anchor = AnchorStyles.None
+    }
+
+        ' Ajustar posición X para centrar correctamente
+        lblSignUp.Location = New Point((topPanel.Width - lblSignUp.Width) \ 2, lblSignUp.Location.Y)
+
+        topPanel.Controls.Add(lblSignUp)
         topPanel.Controls.Add(iconoPictureBox)
 
         ' Panel contenedor para centrar el formulario

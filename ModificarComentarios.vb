@@ -73,6 +73,23 @@ Public Class ModificarComentarios
         }
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
         topPanel.Controls.Add(iconoPictureBox)
+        ' Título centrado
+        Dim lblTitle As New Label With {
+        .Text = "MODIFICAR COMENTARIO",
+        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+        .ForeColor = Color.White,
+        .AutoSize = True
+    }
+
+        ' Posicionamiento dinámico del título
+        AddHandler topPanel.Resize, Sub()
+                                        lblTitle.Location = New Point(
+                                        (topPanel.Width - lblTitle.Width) \ 2,
+                                        (topPanel.Height - lblTitle.Height) \ 2)
+                                    End Sub
+
+        topPanel.Controls.Add(lblTitle)
+        lblTitle.BringToFront() ' Asegurar que está sobre el borde
 
         Dim bottomBorder As New Panel With {
             .Dock = DockStyle.Bottom,

@@ -26,64 +26,95 @@ Public Class GestionarDocentes
 
         ' Panel superior
         topPanel = New Panel With {
-            .Dock = DockStyle.Top,
-            .Height = 100,
-            .BackColor = ColorTranslator.FromHtml("#074788")
-        }
+        .Dock = DockStyle.Top,
+        .Height = 120,
+        .BackColor = ColorTranslator.FromHtml("#074788")
+    }
+
+        ' Título centrado
+        Dim lblTitle As New Label With {
+        .Text = "CONTROL DOCENTES",
+        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+        .ForeColor = Color.White,
+        .AutoSize = True
+    }
 
         ' Línea amarilla
         Dim bottomBorder As New Panel With {
-            .Dock = DockStyle.Top,
-            .Height = 5,
-            .BackColor = ColorTranslator.FromHtml("#F7D917")
-        }
+        .Dock = DockStyle.Bottom,
+        .Height = 5,
+        .BackColor = ColorTranslator.FromHtml("#F7D917")
+    }
 
         ' Icono
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
-            .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(90, 90),
-            .Location = New Point(25, 15),
-            .Cursor = Cursors.Hand
-        }
+        .Image = My.Resources.guia_turistico_3,
+        .SizeMode = PictureBoxSizeMode.Zoom,
+        .Size = New Size(90, 90),
+        .Location = New Point(25, 15),
+        .Cursor = Cursors.Hand
+    }
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
-        topPanel.Controls.Add(iconoPictureBox)
 
         ' Barra de búsqueda
         txtFiltro = New TextBox With {
-            .Text = "Buscar maestros...",
-            .ForeColor = Color.Gray,
-            .Size = New Size(250, 30),
-            .Location = New Point(iconoPictureBox.Right + 20, 40)
-        }
+        .Text = "Buscar maestros...",
+        .ForeColor = Color.Gray,
+        .Size = New Size(250, 30)
+    }
+
+        ' Configurar posición dinámica
+        AddHandler topPanel.Resize, Sub()
+                                        ' Posicionar barra de búsqueda pegada al icono
+                                        txtFiltro.Location = New Point(
+                                        iconoPictureBox.Location.X + iconoPictureBox.Width + 10, ' Colocar después del icono con un pequeño margen
+                                        (topPanel.Height - txtFiltro.Height) \ 2 ' Mantener alineado verticalmente
+                                    )
+
+                                        ' Centrar título
+                                        lblTitle.Location = New Point(
+                                        (topPanel.Width - lblTitle.Width) \ 2,
+                                        (topPanel.Height - lblTitle.Height) \ 2
+                                    )
+                                    End Sub
+
+        ' Manejadores de eventos para el placeholder
         AddHandler txtFiltro.GotFocus, Sub(s, e)
                                            If txtFiltro.Text = "Buscar maestros..." Then
                                                txtFiltro.Text = ""
                                                txtFiltro.ForeColor = Color.Black
                                            End If
                                        End Sub
+
         AddHandler txtFiltro.LostFocus, Sub(s, e)
                                             If String.IsNullOrEmpty(txtFiltro.Text) Then
                                                 txtFiltro.Text = "Buscar maestros..."
                                                 txtFiltro.ForeColor = Color.Gray
                                             End If
                                         End Sub
+
         AddHandler txtFiltro.TextChanged, AddressOf FiltrarDocentes
+
+        ' Agregar controles al panel
+        topPanel.Controls.Add(iconoPictureBox)
+        topPanel.Controls.Add(lblTitle)
         topPanel.Controls.Add(txtFiltro)
+        topPanel.Controls.Add(bottomBorder)
 
         ' Contenedor principal
         flowPanel = New FlowLayoutPanel With {
-            .Dock = DockStyle.Fill,
-            .AutoScroll = True,
-            .Padding = New Padding(20)
-        }
+        .Dock = DockStyle.Fill,
+        .AutoScroll = True,
+        .Padding = New Padding(20)
+    }
 
         Me.Controls.Add(flowPanel)
-        Me.Controls.Add(bottomBorder)
         Me.Controls.Add(topPanel)
 
         AddHandler Me.Load, AddressOf GestionarDocentes_Load
     End Sub
+
+
 
     Private Async Sub GestionarDocentes_Load(sender As Object, e As EventArgs)
         Await CargarDocentes()
@@ -161,6 +192,10 @@ Public Class GestionarDocentes
                                            End Function).ToList()
 
         RenderizarDocentes()
+    End Sub
+
+    Private Sub GestionarDocentes_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
+
     End Sub
 End Class
 
