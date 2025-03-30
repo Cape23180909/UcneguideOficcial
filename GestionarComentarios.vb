@@ -202,6 +202,7 @@ Public Class GestionarComentarios
     End Sub
 
 
+
     Private Async Sub EliminarComentario(sender As Object, e As EventArgs)
         If dgvComentarios.SelectedRows.Count = 0 Then
             MessageBox.Show("Seleccione un comentario para eliminar")
@@ -242,36 +243,91 @@ Public Class GestionarComentarios
                       MessageBoxIcon.Error)
         End Try
     End Sub
+    'Private Async Function CargarComentarios() As Task
+    '    Try
+    '        Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
+    '        If response.IsSuccessStatusCode Then
+    '            Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(
+    '            Await response.Content.ReadAsStringAsync())
+
+    '            ' Obtener ID del usuario actual (ajusta esta línea según tu sistema de autenticación)
+    '            Dim usuarioIdActual As Integer = ObtenerUsuarioIdActual()
+
+    '            ' Filtrar comentarios por el usuario actual
+    '            Dim comentariosFiltrados = comentarios.Where(Function(c) c.UsuarioId = usuarioIdActual).ToList()
+
+    '            For Each c In comentariosFiltrados
+    '                c.nombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
+    '                asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).nombreAsignatura,
+    '                "N/A")
+
+    '                c.NombreDocenteCompleto = If(docentes?.Any(Function(d) d.docenteId = c.DocenteId),
+    '                docentes.First(Function(d) d.docenteId = c.DocenteId).nombre,
+    '                "N/A")
+    '            Next
+
+    '            ConfigurarColumnas()
+    '            dgvComentarios.DataSource = comentariosFiltrados
+    '        End If
+    '    Catch ex As Exception
+    '        MessageBox.Show($"Error cargando comentarios: {ex.Message}")
+    '    End Try
+    'End Function
     Private Async Function CargarComentarios() As Task
         Try
-            Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
-            If response.IsSuccessStatusCode Then
-                Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(
-                Await response.Content.ReadAsStringAsync())
-
-                ' Obtener ID del usuario actual (ajusta esta línea según tu sistema de autenticación)
-                Dim usuarioIdActual As Integer = ObtenerUsuarioIdActual()
-
-                ' Filtrar comentarios por el usuario actual
-                Dim comentariosFiltrados = comentarios.Where(Function(c) c.UsuarioId = usuarioIdActual).ToList()
-
-                For Each c In comentariosFiltrados
-                    c.nombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
-                    asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).nombreAsignatura,
-                    "N/A")
-
-                    c.NombreDocenteCompleto = If(docentes?.Any(Function(d) d.docenteId = c.DocenteId),
-                    docentes.First(Function(d) d.docenteId = c.DocenteId).nombre,
-                    "N/A")
-                Next
-
-                ConfigurarColumnas()
-                dgvComentarios.DataSource = comentariosFiltrados
+            ' Asegurar que las asignaturas y docentes están cargados
+            If asignaturas Is Nothing OrElse docentes Is Nothing Then
+                Await CargarAsignaturasYDocentes()
             End If
+
+            Using client As New HttpClient()
+                Dim response = Await client.GetAsync(ApiUrlComentarios)
+                If response.IsSuccessStatusCode Then
+                    Dim json = Await response.Content.ReadAsStringAsync()
+                    Dim todosComentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(json)
+
+                    ' Obtener ID del usuario actual
+                    Dim usuarioIdActual As Integer = ObtenerUsuarioIdActual()
+
+                    ' Filtrar por usuario (si aplica)
+                    Dim comentariosFiltrados = todosComentarios.
+                    Where(Function(c) c.UsuarioId = usuarioIdActual). ' Filtro por usuario
+                    ToList()
+
+                    ' Mapear nombres de asignaturas y docentes
+                    For Each c In comentariosFiltrados
+                        ' Verificar si se encuentra la asignatura correspondiente
+                        Dim asignatura = asignaturas?.FirstOrDefault(Function(a) a.AsignaturaId = c.AsignaturaId)
+
+                        If asignatura IsNot Nothing Then
+                            c.nombreAsignatura = asignatura.nombreAsignatura
+                        Else
+                            ' Si no se encuentra la asignatura, mostrar mensaje de depuración
+                            c.nombreAsignatura = "Asignatura no encontrada"
+                            Debug.WriteLine($"Asignatura no encontrada para el ComentarioId: {c.ComentarioId}, AsignaturaId: {c.AsignaturaId}")
+                        End If
+
+                        ' Opcional: Si necesitas docentes
+                        Dim docente = docentes?.FirstOrDefault(Function(d) d.docenteId = c.DocenteId)
+                        c.NombreDocenteCompleto = If(docente IsNot Nothing, docente.nombre, "N/A")
+                    Next
+
+                    ' Actualizar DataGridView de forma segura
+                    dgvComentarios.Invoke(Sub()
+                                              dgvComentarios.DataSource = Nothing
+                                              dgvComentarios.DataSource = comentariosFiltrados
+                                              ConfigurarColumnas() ' Asegurar formato de columnas
+                                          End Sub)
+                Else
+                    MessageBox.Show("Error al cargar comentarios: " & response.StatusCode)
+                End If
+            End Using
         Catch ex As Exception
-            MessageBox.Show($"Error cargando comentarios: {ex.Message}")
+            MessageBox.Show($"Error crítico: {ex.Message}")
         End Try
     End Function
+
+
 
 
     Private Async Function ObtenerDatosAPI(Of T)(url As String) As Task(Of T)
@@ -362,6 +418,8 @@ Public Class GestionarComentarios
         dgvComentarios.RowTemplate.Height = 35
         dgvComentarios.ColumnHeadersHeight = 40
     End Sub
+
+
     Private Sub AbrirGenerarComentarios(sender As Object, e As EventArgs)
         Dim formGenerar As New GenerarComentarios()
         formGenerar.ShowDialog()

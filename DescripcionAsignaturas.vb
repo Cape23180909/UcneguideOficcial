@@ -130,24 +130,30 @@ Public Class DescripcionAsignaturas
         Await CargarComentarios()
     End Sub
 
-    ' Cargar datos de la asignatura y obtener el docente específico
+
     Private Async Function CargarDatosAsignatura() As Task
         Dim detalleAsignatura = Await ObtenerDatosAPI(Of List(Of Dictionary(Of String, Object)))(ApiUrlAsignaturas)
         If detalleAsignatura Is Nothing OrElse Not detalleAsignatura.Any() Then Return
 
+        ' Buscar la asignatura por código
         Dim asignatura = detalleAsignatura.FirstOrDefault(Function(a) a.ContainsKey("codigoAsignatura") AndAlso a("codigoAsignatura").ToString() = CodigoAsignatura)
         If asignatura Is Nothing Then Return
 
+        ' Asignar valores de la asignatura
         LblNombreAsignatura.Text &= asignatura("nombreAsignatura").ToString()
         LblCodigoAsignatura.Text &= CodigoAsignatura
         LblDescripcionAsignatura.Text &= asignatura("descripcionAsignatura").ToString()
+
+        ' Asignar el AsignaturaId
+        If asignatura.ContainsKey("asignaturaId") Then
+            AsignaturaId = Convert.ToInt32(asignatura("asignaturaId"))
+        End If
 
         ' Obtener solo el docente de la asignatura
         If asignatura.ContainsKey("docenteId") Then
             DocenteId = asignatura("docenteId").ToString()
             LblNombreDocenteCompleto.Text &= Await ObtenerNombreDocente(DocenteId)
         End If
-
     End Function
 
 
@@ -221,8 +227,6 @@ Public Class DescripcionAsignaturas
         End Try
     End Sub
 
-
-
     Private Async Function CargarComentarios() As Task
         Try
             Using client As New HttpClient()
@@ -233,8 +237,8 @@ Public Class DescripcionAsignaturas
 
                     ' Filtrar por usuario logeado y asignatura actual
                     Dim comentariosFiltrados = todosComentarios.
-                        Where(Function(c) c.UsuarioId = UserSession.usuarioId AndAlso c.AsignaturaId = AsignaturaId).
-                        ToList()
+                    Where(Function(c) c.UsuarioId = UserSession.usuarioId AndAlso c.AsignaturaId = AsignaturaId).
+                    ToList()
 
                     ' Limpiar y cargar comentarios
                     LstComentarios.Items.Clear()
@@ -247,6 +251,7 @@ Public Class DescripcionAsignaturas
             MessageBox.Show($"Error cargando comentarios: {ex.Message}")
         End Try
     End Function
+
 
     ' Método para obtener el ID del usuario (implementa según tu lógica de autenticación)
     Private Function ObtenerUsuarioIdActual() As Integer
