@@ -256,8 +256,8 @@ Public Class GestionarComentarios
                 Dim comentariosFiltrados = comentarios.Where(Function(c) c.UsuarioId = usuarioIdActual).ToList()
 
                 For Each c In comentariosFiltrados
-                    c.NombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
-                    asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).NombreAsignatura,
+                    c.nombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
+                    asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).nombreAsignatura,
                     "N/A")
 
                     c.NombreDocenteCompleto = If(docentes?.Any(Function(d) d.docenteId = c.DocenteId),
@@ -271,6 +271,14 @@ Public Class GestionarComentarios
         Catch ex As Exception
             MessageBox.Show($"Error cargando comentarios: {ex.Message}")
         End Try
+    End Function
+
+
+    Private Async Function ObtenerDatosAPI(Of T)(url As String) As Task(Of T)
+        Using client As New HttpClient()
+            Dim response = Await client.GetAsync(url)
+            Return If(response.IsSuccessStatusCode, JsonConvert.DeserializeObject(Of T)(Await response.Content.ReadAsStringAsync()), Nothing)
+        End Using
     End Function
 
     Private Async Function CargarAsignaturasYDocentes() As Task

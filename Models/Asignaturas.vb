@@ -4,8 +4,8 @@ Public Class Asignaturas
     Public Property AsignaturaId As Integer
     <JsonProperty("CodigoAsignatura")>
     Public Property CodigoAsignatura As String
-    <JsonProperty("NombreAsignatura")>
-    Public Property NombreAsignatura As String
+    <JsonProperty("nombreAsignatura")> '
+    Public Property nombreAsignatura As String
     <JsonProperty("DescripcionAsignatura")>
     Public Property DescripcionAsignatura As String
     <JsonProperty("DocenteId")>

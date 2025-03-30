@@ -22,8 +22,8 @@ Public Class Comentarios
 
     <JsonProperty("fechaComentario")>
     Public Property FechaComentario As DateTime
-    <JsonProperty("NombreAsignatura")>
-    Public Property NombreAsignatura As String
+    <JsonProperty("nombreAsignatura")>
+    Public Property nombreAsignatura As String
     <JsonProperty("NombreDocenteCompleto")>
     Public Property NombreDocenteCompleto As String
 
