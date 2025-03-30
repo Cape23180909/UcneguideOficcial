@@ -226,7 +226,7 @@ Public Class EliminarComentarios
 
     Private Sub MostrarDatos()
         lblAsignaturaValor.Text = If(asignaturaData?.NombreAsignatura, "N/A")
-        lblDocenteValor.Text = If(docenteData?.nombre, "N/A")
+        lblDocenteValor.Text = If(docenteData?.nombre & " " & docenteData.apellido, "N/A")
         lblFechaValor.Text = comentarioData.FechaComentario.ToString("dd/MM/yyyy HH:mm")
         txtComentarioContenido.Text = If(comentarioData?.Comentario, "N/A")
     End Sub

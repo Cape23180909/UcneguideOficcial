@@ -243,36 +243,7 @@ Public Class GestionarComentarios
                       MessageBoxIcon.Error)
         End Try
     End Sub
-    'Private Async Function CargarComentarios() As Task
-    '    Try
-    '        Dim response = Await httpClient.GetAsync(ApiUrlComentarios)
-    '        If response.IsSuccessStatusCode Then
-    '            Dim comentarios = JsonConvert.DeserializeObject(Of List(Of Comentarios))(
-    '            Await response.Content.ReadAsStringAsync())
 
-    '            ' Obtener ID del usuario actual (ajusta esta línea según tu sistema de autenticación)
-    '            Dim usuarioIdActual As Integer = ObtenerUsuarioIdActual()
-
-    '            ' Filtrar comentarios por el usuario actual
-    '            Dim comentariosFiltrados = comentarios.Where(Function(c) c.UsuarioId = usuarioIdActual).ToList()
-
-    '            For Each c In comentariosFiltrados
-    '                c.nombreAsignatura = If(asignaturas?.Any(Function(a) a.AsignaturaId = c.AsignaturaId),
-    '                asignaturas.First(Function(a) a.AsignaturaId = c.AsignaturaId).nombreAsignatura,
-    '                "N/A")
-
-    '                c.NombreDocenteCompleto = If(docentes?.Any(Function(d) d.docenteId = c.DocenteId),
-    '                docentes.First(Function(d) d.docenteId = c.DocenteId).nombre,
-    '                "N/A")
-    '            Next
-
-    '            ConfigurarColumnas()
-    '            dgvComentarios.DataSource = comentariosFiltrados
-    '        End If
-    '    Catch ex As Exception
-    '        MessageBox.Show($"Error cargando comentarios: {ex.Message}")
-    '    End Try
-    'End Function
     Private Async Function CargarComentarios() As Task
         Try
             ' Asegurar que las asignaturas y docentes están cargados
@@ -309,7 +280,8 @@ Public Class GestionarComentarios
 
                         ' Opcional: Si necesitas docentes
                         Dim docente = docentes?.FirstOrDefault(Function(d) d.docenteId = c.DocenteId)
-                        c.NombreDocenteCompleto = If(docente IsNot Nothing, docente.nombre, "N/A")
+                        c.NombreDocenteCompleto = If(docente IsNot Nothing, docente.nombre & " " & docente.apellido, "N/A")
+
                     Next
 
                     ' Actualizar DataGridView de forma segura
