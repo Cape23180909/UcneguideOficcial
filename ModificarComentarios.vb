@@ -3,6 +3,7 @@ Imports System.Net.Http
 Imports System.Text
 Imports System.Threading.Tasks
 Imports System.Windows.Forms
+Imports System.Linq
 
 Public Class ModificarComentarios
     Inherits Form
@@ -73,13 +74,14 @@ Public Class ModificarComentarios
         }
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
         topPanel.Controls.Add(iconoPictureBox)
+
         ' Título centrado
         Dim lblTitle As New Label With {
-        .Text = "MODIFICAR COMENTARIO",
-        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
-        .ForeColor = Color.White,
-        .AutoSize = True
-    }
+            .Text = "MODIFICAR COMENTARIO",
+            .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+            .ForeColor = Color.White,
+            .AutoSize = True
+        }
 
         ' Posicionamiento dinámico del título
         AddHandler topPanel.Resize, Sub()
@@ -89,7 +91,7 @@ Public Class ModificarComentarios
                                     End Sub
 
         topPanel.Controls.Add(lblTitle)
-        lblTitle.BringToFront() ' Asegurar que está sobre el borde
+        lblTitle.BringToFront()
 
         Dim bottomBorder As New Panel With {
             .Dock = DockStyle.Bottom,
@@ -109,13 +111,13 @@ Public Class ModificarComentarios
         }
 
         Dim contentPanel As New Panel With {
-        .Size = New Size(700, 600), ' Altura aumentada
-        .Dock = DockStyle.None,
-        .Anchor = AnchorStyles.None,
-        .Left = (Me.ClientSize.Width - 700) \ 2,
-        .Top = (Me.ClientSize.Height - 600) \ 2,
-        .AutoScroll = True ' Scroll activado
-    }
+            .Size = New Size(700, 600),
+            .Dock = DockStyle.None,
+            .Anchor = AnchorStyles.None,
+            .Left = (Me.ClientSize.Width - 700) \ 2,
+            .Top = (Me.ClientSize.Height - 600) \ 2,
+            .AutoScroll = True
+        }
 
         ' Configurar estilos base
         Dim labelStyle As New Label With {
@@ -185,16 +187,13 @@ Public Class ModificarComentarios
         contentPanel.Controls.Add(txtComentario)
         yPosition += 180
 
-
-
-        ' Posición del botón ajustada
+        ' Posición del botón
         btnActualizar.Location = New Point(
-        (contentPanel.Width - btnActualizar.Width) \ 2,
-        txtComentario.Bottom + 20
-    )
+            (contentPanel.Width - btnActualizar.Width) \ 2,
+            txtComentario.Bottom + 20
+        )
 
         contentPanel.Controls.Add(btnActualizar)
-
 
         ' Manejar redimensionamiento
         AddHandler Me.Resize, Sub(sender, e)
@@ -204,8 +203,6 @@ Public Class ModificarComentarios
 
         mainPanel.Controls.Add(contentPanel)
         Me.Controls.Add(mainPanel)
-
-
     End Sub
 
     Private Function CreateLabel(text As String, style As Label, y As Integer) As Label
@@ -263,28 +260,53 @@ Public Class ModificarComentarios
         End Try
     End Function
 
-
     Private Sub ConfigureControls()
         Try
-            ' Configurar ComboBox de docentes con nombre completo
-            cmbDocentes.DataSource = docentes
-            cmbDocentes.DisplayMember = "NombreCompleto" ' Asegurar que la clase Docente tenga esta propiedad
-            cmbDocentes.ValueMember = "docenteId"
-            cmbDocentes.SelectedValue = comentarioActual.DocenteId
-
-            ' Configurar ComboBox de asignaturas
+            ' Configurar ComboBox de asignaturas primero
             cmbAsignaturas.DataSource = asignaturas
             cmbAsignaturas.DisplayMember = "NombreAsignatura"
             cmbAsignaturas.ValueMember = "AsignaturaId"
             cmbAsignaturas.SelectedValue = comentarioActual.AsignaturaId
 
-            ' Otros controles
+            ' Filtrar docentes basado en la asignatura seleccionada inicialmente
+            FilterTeachersBySelectedSubject()
+
+            ' Configurar otros controles
             lblFecha.Text = $"Fecha: {comentarioActual.FechaComentario:dd/MM/yyyy HH:mm}"
             txtComentario.Text = comentarioActual.Comentario
+
+            ' Agregar manejador de eventos para cuando cambie la selección de asignatura
+            AddHandler cmbAsignaturas.SelectedIndexChanged, AddressOf cmbAsignaturas_SelectedIndexChanged
+
         Catch ex As Exception
             MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    Private Sub cmbAsignaturas_SelectedIndexChanged(sender As Object, e As EventArgs)
+        FilterTeachersBySelectedSubject()
+    End Sub
+
+    Private Sub FilterTeachersBySelectedSubject()
+        If cmbAsignaturas.SelectedItem IsNot Nothing Then
+            Dim selectedAsignatura = DirectCast(cmbAsignaturas.SelectedItem, Asignaturas)
+            Dim docenteIdDeLaAsignatura = selectedAsignatura.DocenteId
+
+            ' Filtrar la lista de docentes para mostrar solo el que imparte esta materia
+            Dim docenteFiltrado = docentes.Where(Function(d) d.docenteId = docenteIdDeLaAsignatura).ToList()
+
+            ' Configurar ComboBox de docentes con el docente filtrado
+            cmbDocentes.DataSource = docenteFiltrado
+            cmbDocentes.DisplayMember = "NombreCompleto"
+            cmbDocentes.ValueMember = "docenteId"
+
+            ' Seleccionar el docente correspondiente
+            If docenteFiltrado.Any() Then
+                cmbDocentes.SelectedValue = docenteIdDeLaAsignatura
+            End If
+        End If
+    End Sub
+
     Private Async Sub btnActualizar_Click(sender As Object, e As EventArgs) Handles btnActualizar.Click
         If Not ValidateInputs() Then Return
 
@@ -341,9 +363,5 @@ Public Class ModificarComentarios
                         "Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error)
-    End Sub
-
-    Private Sub ModificarComentarios_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
-
     End Sub
 End Class
