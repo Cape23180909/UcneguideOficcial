@@ -110,7 +110,7 @@ Public Class BienvenidaForm
             g.FillEllipse(brush, rect)
 
             ' Cargar el ícono desde los recursos
-            Dim icono As Image = My.Resources.guia_turistico_3
+            Dim icono As Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg")
 
             ' Ajustar tamaño del ícono dentro del círculo
             Dim iconSize As Integer = pb.Width \ 2

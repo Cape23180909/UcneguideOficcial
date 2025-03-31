@@ -51,7 +51,7 @@ Public Class ActualizarPerfil
 
         ' Icono interactivo
         iconoPictureBox = New PictureBox With {
-    .Image = My.Resources.guia_turistico_3,
+    .Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg"),
     .SizeMode = PictureBoxSizeMode.Zoom,
     .Size = New Size(70, 70),
     .Location = New Point(20, 15),

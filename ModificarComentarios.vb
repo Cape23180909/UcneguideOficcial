@@ -66,7 +66,7 @@ Public Class ModificarComentarios
         }
 
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
+             .Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg"),
             .SizeMode = PictureBoxSizeMode.Zoom,
             .Size = New Size(80, 80),
             .Location = New Point(20, 10),

@@ -39,9 +39,9 @@ Public Class BarraCarga1
             Dim rect As New Rectangle(0, 0, pb.Width, pb.Height)
             g.FillEllipse(brush, rect)
 
-            ' Cargar el ícono desde los recursos
-            Dim icono As Image = My.Resources.guia_turistico_3
-
+            '' Cargar el ícono desde los recursos
+            'Dim As Image = My.Resources.guia_turistico_3
+            Dim icono As Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg")
             ' Ajustar tamaño del ícono dentro del círculo
             Dim iconSize As Integer = pb.Width \ 2
             Dim iconRect As New Rectangle((pb.Width - iconSize) \ 2, (pb.Height - iconSize) \ 2, iconSize, iconSize)
@@ -82,5 +82,9 @@ Public Class BarraCarga1
         ProgressBar1.Location = New Point((Me.ClientSize.Width - ProgressBar1.Width) \ 2, PictureBox1.Bottom + 50)
         ProgressBar1.Size = New Size(Me.ClientSize.Width \ 2, 30)
         Label1.Location = New Point((Me.ClientSize.Width - Label1.Width) \ 2, ProgressBar1.Bottom + 20)
+    End Sub
+
+    Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
+
     End Sub
 End Class

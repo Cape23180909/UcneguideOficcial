@@ -96,7 +96,7 @@ Public Class GestionarAsignaturas
 }
 
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
+           .Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg"),
             .SizeMode = PictureBoxSizeMode.Zoom,
             .Size = New Size(90, 90),
             .Location = New Point(25, 15),

@@ -266,9 +266,9 @@ Public Class RegistroForm
 
         ' Icono centrado en el panel azul
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
+            .Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg"),
             .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(100, 100),
+            .Size = New Size(95, 95),
             .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 100) \ 2 + 40),
             .Anchor = AnchorStyles.None
         }

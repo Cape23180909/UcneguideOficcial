@@ -44,7 +44,7 @@ Public Class Menu
             .Location = New Point(10, 20),
             .Cursor = Cursors.Hand
         }
-        btnBack.Image = LoadImage("C:\\Ucneguide\\Resources\\guia-turistico 3.png")
+        btnBack.Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg")
         AddMouseHoverEffects(btnBack)
         topPanel.Controls.Add(btnBack)
 
