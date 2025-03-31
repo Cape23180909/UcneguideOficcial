@@ -364,4 +364,8 @@ Public Class ModificarComentarios
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error)
     End Sub
+
+    Private Sub ModificarComentarios_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
 End Class
