@@ -127,7 +127,7 @@ Public Class Menu
                                           Dim formComentarios As New GestionarComentarios()
                                           formComentarios.Show()
                                       Case "Maestros"
-                                          Dim formDocentes As New GestionarDocentes(UserSession.carreraId)
+                                          Dim formDocentes As New GestionarDocentes()
                                           formDocentes.Show()
                                   End Select
                               End Sub

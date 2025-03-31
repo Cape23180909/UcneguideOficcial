@@ -12,10 +12,8 @@ Public Class GestionarDocentes
     Private WithEvents txtFiltro As TextBox
     Private _docentes As List(Of Docente)
     Private filteredDocentes As List(Of Docente)
-    Private carreraId As Integer
 
-    Public Sub New(carreraId As Integer)
-        Me.carreraId = carreraId
+    Public Sub New()
         InitializeComponents()
     End Sub
 
@@ -26,59 +24,56 @@ Public Class GestionarDocentes
 
         ' Panel superior
         topPanel = New Panel With {
-        .Dock = DockStyle.Top,
-        .Height = 120,
-        .BackColor = ColorTranslator.FromHtml("#074788")
-    }
+            .Dock = DockStyle.Top,
+            .Height = 120,
+            .BackColor = ColorTranslator.FromHtml("#074788")
+        }
 
         ' Título centrado
         Dim lblTitle As New Label With {
-        .Text = "CONTROL DOCENTES",
-        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
-        .ForeColor = Color.White,
-        .AutoSize = True
-    }
+            .Text = "CONTROL DOCENTES",
+            .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+            .ForeColor = Color.White,
+            .AutoSize = True
+        }
 
         ' Línea amarilla
         Dim bottomBorder As New Panel With {
-        .Dock = DockStyle.Bottom,
-        .Height = 5,
-        .BackColor = ColorTranslator.FromHtml("#F7D917")
-    }
+            .Dock = DockStyle.Bottom,
+            .Height = 5,
+            .BackColor = ColorTranslator.FromHtml("#F7D917")
+        }
 
         ' Icono
         iconoPictureBox = New PictureBox With {
-        .Image = My.Resources.guia_turistico_3,
-        .SizeMode = PictureBoxSizeMode.Zoom,
-        .Size = New Size(90, 90),
-        .Location = New Point(25, 15),
-        .Cursor = Cursors.Hand
-    }
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(90, 90),
+            .Location = New Point(25, 15),
+            .Cursor = Cursors.Hand
+        }
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
 
         ' Barra de búsqueda
         txtFiltro = New TextBox With {
-        .Text = "Buscar maestros...",
-        .ForeColor = Color.Gray,
-        .Size = New Size(250, 30)
-    }
+            .Text = "Buscar maestros...",
+            .ForeColor = Color.Gray,
+            .Size = New Size(250, 30)
+        }
 
         ' Configurar posición dinámica
         AddHandler topPanel.Resize, Sub()
-                                        ' Posicionar barra de búsqueda pegada al icono
                                         txtFiltro.Location = New Point(
-                                        iconoPictureBox.Location.X + iconoPictureBox.Width + 10, ' Colocar después del icono con un pequeño margen
-                                        (topPanel.Height - txtFiltro.Height) \ 2 ' Mantener alineado verticalmente
-                                    )
-
-                                        ' Centrar título
+                                            iconoPictureBox.Right + 10,
+                                            (topPanel.Height - txtFiltro.Height) \ 2
+                                        )
                                         lblTitle.Location = New Point(
-                                        (topPanel.Width - lblTitle.Width) \ 2,
-                                        (topPanel.Height - lblTitle.Height) \ 2
-                                    )
+                                            (topPanel.Width - lblTitle.Width) \ 2,
+                                            (topPanel.Height - lblTitle.Height) \ 2
+                                        )
                                     End Sub
 
-        ' Manejadores de eventos para el placeholder
+        ' Placeholder
         AddHandler txtFiltro.GotFocus, Sub(s, e)
                                            If txtFiltro.Text = "Buscar maestros..." Then
                                                txtFiltro.Text = ""
@@ -87,7 +82,7 @@ Public Class GestionarDocentes
                                        End Sub
 
         AddHandler txtFiltro.LostFocus, Sub(s, e)
-                                            If String.IsNullOrEmpty(txtFiltro.Text) Then
+                                            If String.IsNullOrWhiteSpace(txtFiltro.Text) Then
                                                 txtFiltro.Text = "Buscar maestros..."
                                                 txtFiltro.ForeColor = Color.Gray
                                             End If
@@ -95,7 +90,7 @@ Public Class GestionarDocentes
 
         AddHandler txtFiltro.TextChanged, AddressOf FiltrarDocentes
 
-        ' Agregar controles al panel
+        ' Agregar controles
         topPanel.Controls.Add(iconoPictureBox)
         topPanel.Controls.Add(lblTitle)
         topPanel.Controls.Add(txtFiltro)
@@ -103,18 +98,16 @@ Public Class GestionarDocentes
 
         ' Contenedor principal
         flowPanel = New FlowLayoutPanel With {
-        .Dock = DockStyle.Fill,
-        .AutoScroll = True,
-        .Padding = New Padding(20)
-    }
+            .Dock = DockStyle.Fill,
+            .AutoScroll = True,
+            .Padding = New Padding(20)
+        }
 
         Me.Controls.Add(flowPanel)
         Me.Controls.Add(topPanel)
 
         AddHandler Me.Load, AddressOf GestionarDocentes_Load
     End Sub
-
-
 
     Private Async Sub GestionarDocentes_Load(sender As Object, e As EventArgs)
         Await CargarDocentes()
@@ -124,78 +117,87 @@ Public Class GestionarDocentes
         Try
             Using client As New HttpClient()
                 Dim response As HttpResponseMessage = Await client.GetAsync(apiUrlDocentes)
+
                 If response.IsSuccessStatusCode Then
                     Dim jsonResponse As String = Await response.Content.ReadAsStringAsync()
                     Dim settings = New JsonSerializerSettings With {
                         .ContractResolver = New CamelCasePropertyNamesContractResolver()
                     }
                     _docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonResponse, settings)
-                    filteredDocentes = _docentes.Where(Function(d) d.carreraId = carreraId).ToList()
+                    filteredDocentes = _docentes.ToList() ' <- Carga completa
                     RenderizarDocentes()
                 Else
-                    MessageBox.Show("Error al obtener docentes.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show($"Error HTTP: {response.StatusCode}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
             End Using
         Catch ex As Exception
-            MessageBox.Show("Error de conexión: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Function
 
     Private Sub RenderizarDocentes()
+        flowPanel.SuspendLayout()
         flowPanel.Controls.Clear()
 
-        For Each docente In filteredDocentes
-            Dim card As New Panel With {
-                .Size = New Size(300, 100),
-                .BackColor = Color.White,
-                .Margin = New Padding(10),
-                .BorderStyle = BorderStyle.FixedSingle
+        If filteredDocentes Is Nothing OrElse filteredDocentes.Count = 0 Then
+            Dim lblMensaje As New Label With {
+                .Text = "No hay docentes registrados.",
+                .Font = New Font("Arial", 12),
+                .ForeColor = Color.Gray,
+                .TextAlign = ContentAlignment.MiddleCenter,
+                .Dock = DockStyle.Fill
             }
+            flowPanel.Controls.Add(lblMensaje)
+        Else
+            For Each docente In filteredDocentes
+                Dim card As New Panel With {
+                    .Size = New Size(300, 100),
+                    .BackColor = Color.White,
+                    .Margin = New Padding(10),
+                    .BorderStyle = BorderStyle.FixedSingle
+                }
 
-            Dim infoPanel As New Panel With {
-                .Dock = DockStyle.Fill,
-                .Padding = New Padding(10)
-            }
+                Dim infoPanel As New Panel With {
+                    .Dock = DockStyle.Fill,
+                    .Padding = New Padding(10)
+                }
 
-            Dim nameLabel As New Label With {
-                .Text = $"{docente.nombre} {docente.apellido}",
-                .Font = New Font("Arial", 12, FontStyle.Bold),
-                .AutoSize = True
-            }
+                Dim nameLabel As New Label With {
+                    .Text = $"{docente.nombre} {docente.apellido}",
+                    .Font = New Font("Arial", 12, FontStyle.Bold),
+                    .AutoSize = True
+                }
 
-            Dim detailsLabel As New Label With {
-                .Text = $"{docente.rol}",
-                .Top = 25,
-                .AutoSize = True
-            }
+                Dim detailsLabel As New Label With {
+                    .Text = $"{docente.rol}",
+                    .Top = 25,
+                    .AutoSize = True,
+                    .ForeColor = Color.DimGray
+                }
 
-            infoPanel.Controls.Add(nameLabel)
-            infoPanel.Controls.Add(detailsLabel)
-            card.Controls.Add(infoPanel)
-            flowPanel.Controls.Add(card)
-        Next
+                infoPanel.Controls.Add(nameLabel)
+                infoPanel.Controls.Add(detailsLabel)
+                card.Controls.Add(infoPanel)
+                flowPanel.Controls.Add(card)
+            Next
+        End If
+
+        flowPanel.ResumeLayout(True)
     End Sub
 
     Private Sub FiltrarDocentes(sender As Object, e As EventArgs)
-        ' Verificar si hay datos cargados
         If _docentes Is Nothing Then Return
 
         Dim searchTerm = If(txtFiltro.Text?.Trim().ToLower(), "")
         If searchTerm = "buscar maestros..." Then searchTerm = ""
 
-        filteredDocentes = _docentes.Where(Function(d)
-                                               ' Verificar nulos en todas las propiedades
-                                               Return d IsNot Nothing AndAlso
-               d.carreraId = carreraId AndAlso
-               (If(d.nombre?.ToLower()?.Contains(searchTerm), False) Or
-                If(d.apellido?.ToLower()?.Contains(searchTerm), False))
-                                           End Function).ToList()
+        filteredDocentes = _docentes.
+            Where(Function(d) d IsNot Nothing AndAlso
+                (d.nombre?.ToLower().Contains(searchTerm) OrElse
+                 d.apellido?.ToLower().Contains(searchTerm))).
+            ToList()
 
         RenderizarDocentes()
-    End Sub
-
-    Private Sub GestionarDocentes_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
-
     End Sub
 End Class
 
