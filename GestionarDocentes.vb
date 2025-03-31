@@ -152,7 +152,7 @@ Public Class GestionarDocentes
             For Each docente In filteredDocentes
                 Dim card As New Panel With {
                     .Size = New Size(300, 100),
-                    .BackColor = ColorTranslator.FromHtml("#074788"),
+                    .BackColor = ColorTranslator.FromHtml("#E83F25"),
                     .Margin = New Padding(10),
                     .BorderStyle = BorderStyle.FixedSingle
                 }

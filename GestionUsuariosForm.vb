@@ -49,9 +49,9 @@ Public Class LoginForm
 
         ' Icono
         iconoPictureBox = New PictureBox With {
-            .Image = My.Resources.guia_turistico_3,
+            .Image = Image.FromFile("C:\Ucneguide\Resources\logo.jpg"),
             .SizeMode = PictureBoxSizeMode.Zoom,
-            .Size = New Size(100, 100),
+            .Size = New Size(120, 120),
             .Anchor = AnchorStyles.None
         }
 

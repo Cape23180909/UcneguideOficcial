@@ -1,7 +1,9 @@
 ﻿Imports System.Drawing.Drawing2D
+Imports System.IO
 
 Public Class Menu
     Inherits Form
+
 
     Private topPanel As Panel
     Private bottomPanel As Panel
@@ -77,7 +79,7 @@ Public Class Menu
         Me.Controls.Add(flowPanel)
 
         ' Crear tarjetas
-        CreateCard(cardFacultades, imgFacultades, lblFacultades, LoadImage("C:\\Ucneguide\\Resources\\Facultad.png"), "Asignaturas")
+        CreateCard(cardFacultades, imgFacultades, lblFacultades, LoadImage("C:\Ucneguide\Resources\Facultad.png"), "Asignaturas")
         CreateCard(cardSugerencias, imgSugerencias, lblSugerencias, LoadImage("C:\\Ucneguide\\Resources\\Sugerencia.png"), "Comentarios")
         CreateCard(cardMaestros, imgMaestros, lblMaestros, LoadImage("C:\\Ucneguide\\Resources\\Maestro.png"), "Maestros")
 
@@ -152,6 +154,7 @@ Public Class Menu
         End Using
         Return newImage
     End Function
+
 
     ' Método para hacer que los iconos sean responsivos al pasar el mouse
     Private Sub AddMouseHoverEffects(picBox As PictureBox)
