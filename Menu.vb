@@ -79,7 +79,8 @@ Public Class Menu
         Me.Controls.Add(flowPanel)
 
         ' Crear tarjetas
-        CreateCard(cardFacultades, imgFacultades, lblFacultades, LoadImage("C:\Ucneguide\Resources\Facultad.png"), "Asignaturas")
+        CreateCard(cardFacultades, imgFacultades, lblFacultades,
+          LoadImage("C:\Ucneguide\Resources\Facultad.png"), "Asignaturas")
         CreateCard(cardSugerencias, imgSugerencias, lblSugerencias, LoadImage("C:\\Ucneguide\\Resources\\Sugerencia.png"), "Comentarios")
         CreateCard(cardMaestros, imgMaestros, lblMaestros, LoadImage("C:\\Ucneguide\\Resources\\Maestro.png"), "Maestros")
 
@@ -139,7 +140,7 @@ Public Class Menu
     End Sub
 
 
-    ' Método para agregar texto a la imagen
+    'Método para agregar texto a la imagen
     Private Function AddTextToImage(originalImage As Image, text As String) As Image
         Dim newImage As Bitmap = New Bitmap(originalImage)
         Using g As Graphics = Graphics.FromImage(newImage)
@@ -154,7 +155,6 @@ Public Class Menu
         End Using
         Return newImage
     End Function
-
 
     ' Método para hacer que los iconos sean responsivos al pasar el mouse
     Private Sub AddMouseHoverEffects(picBox As PictureBox)
