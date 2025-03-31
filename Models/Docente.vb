@@ -15,6 +15,11 @@ Public Class Docente
     <JsonProperty("carreraId")>
     Public Property carreraId As Integer
 
+    Public ReadOnly Property NombreCompleto As String
+        Get
+            Return $"{nombre} {apellido}"
+        End Get
+    End Property
 End Class
 
 
