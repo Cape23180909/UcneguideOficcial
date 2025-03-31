@@ -64,7 +64,7 @@ Public Class GestionarComentarios
 
         ' Título centrado
         Dim lblTitle As New Label With {
-        .Text = "Historial de comentarios",
+        .Text = "HISTORIAL COMENTARIOS",
         .Font = New Font("Segoe UI", 18, FontStyle.Bold),
         .ForeColor = Color.White,
         .AutoSize = True

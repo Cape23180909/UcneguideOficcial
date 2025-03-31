@@ -62,7 +62,7 @@ Public Class DescripcionAsignaturas
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
 
         Dim lblTitle As New Label With {
-            .Text = "DETALLE ASIGNATURA",
+            .Text = "DESCRIPCION ASIGNATURA",
             .Font = New Font("Segoe UI", 18, FontStyle.Bold),
             .ForeColor = Color.White,
             .AutoSize = True

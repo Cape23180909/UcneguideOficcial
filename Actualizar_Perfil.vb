@@ -60,7 +60,7 @@ Public Class ActualizarPerfil
 
         ' Título centrado - MODIFICACIÓN
         Dim lblTitle As New Label With {
-        .Text = "Actualizar Perfil",
+        .Text = "ACTUALIZAR PERFIL",
         .Font = New Font("Segoe UI", 18, FontStyle.Bold),
         .ForeColor = Color.White,
         .AutoSize = True

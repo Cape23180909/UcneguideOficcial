@@ -24,7 +24,7 @@ Public Class Menu
 
     Public Sub New()
         ' Configuración del formulario
-        Me.Text = "Menú"
+        Me.Text = "MENU"
         Me.WindowState = FormWindowState.Maximized
         Me.FormBorderStyle = FormBorderStyle.None
         Me.BackColor = Color.White
@@ -50,7 +50,7 @@ Public Class Menu
 
         ' Título del menú
         lblTitulo = New Label With {
-            .Text = "Menú",
+            .Text = "MENU",
             .ForeColor = Color.White,
             .Font = New Font("Arial", 18, FontStyle.Bold),
             .AutoSize = True,
