@@ -90,11 +90,21 @@ Public Class DescripcionAsignaturas
         mainPanel.Location = New Point((Me.ClientSize.Width - mainPanel.Width) \ 2, (Me.ClientSize.Height - mainPanel.Height) \ 2)
         AddHandler Me.Resize, AddressOf AjustarPanelCentrado
 
-        ' Labels
+
+
+        ' Labels con color azul
         LblNombreAsignatura = CrearLabel("Nombre: ", 20, 20, 500)
+        LblNombreAsignatura.ForeColor = Color.Black
+
         LblCodigoAsignatura = CrearLabel("Código: ", 20, 50, 500)
+        LblCodigoAsignatura.ForeColor = Color.Black
+
         LblDescripcionAsignatura = CrearLabel("Descripción: ", 20, 80, 500)
+        LblDescripcionAsignatura.ForeColor = Color.Black
+
         LblNombreDocenteCompleto = CrearLabel("Docente: ", 20, 110, 500)
+        LblNombreDocenteCompleto.ForeColor = Color.Black
+
 
         ' ListBox para comentarios
         LstComentarios = New ListBox With {
@@ -137,7 +147,8 @@ Public Class DescripcionAsignaturas
             .Location = New Point(x, y),
             .AutoSize = True,
             .Width = width,
-            .Font = New Font("Arial", 10, FontStyle.Bold)
+            .Font = New Font("Arial", 10, FontStyle.Bold),
+            .ForeColor = Color.White
         }
     End Function
 

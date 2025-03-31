@@ -127,6 +127,7 @@ Public Class ActualizarPerfil
                              Dim lbl = New Label With {
                                  .Text = labelText,
                                  .Font = New Font("Arial", 9),
+                                   .ForeColor = Color.Blue, ' Establece el color azul
                                  .Location = New Point(0, yPosition),
                                  .AutoSize = True
                              }

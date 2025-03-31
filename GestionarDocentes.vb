@@ -143,7 +143,7 @@ Public Class GestionarDocentes
             Dim lblMensaje As New Label With {
                 .Text = "No hay docentes registrados.",
                 .Font = New Font("Arial", 12),
-                .ForeColor = Color.Gray,
+                .ForeColor = Color.White,
                 .TextAlign = ContentAlignment.MiddleCenter,
                 .Dock = DockStyle.Fill
             }
@@ -152,7 +152,7 @@ Public Class GestionarDocentes
             For Each docente In filteredDocentes
                 Dim card As New Panel With {
                     .Size = New Size(300, 100),
-                    .BackColor = Color.White,
+                    .BackColor = ColorTranslator.FromHtml("#074788"),
                     .Margin = New Padding(10),
                     .BorderStyle = BorderStyle.FixedSingle
                 }
@@ -172,7 +172,7 @@ Public Class GestionarDocentes
                     .Text = $"{docente.rol}",
                     .Top = 25,
                     .AutoSize = True,
-                    .ForeColor = Color.DimGray
+                    .ForeColor = Color.White
                 }
 
                 infoPanel.Controls.Add(nameLabel)

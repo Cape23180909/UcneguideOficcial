@@ -298,20 +298,21 @@ Public Class RegistroForm
         Me.Controls.Add(mainPanel)
 
         ' Campos de entrada
-        Dim lblNombre As New Label With {.Text = "Nombre:", .Location = New Point(50, 50)}
+        Dim lblNombre As New Label With {.Text = "Nombre:", .Location = New Point(50, 50), .ForeColor = Color.Blue}
         txtNombre = New TextBox With {.Size = New Size(250, 30), .Location = New Point(50, 70)}
 
-        Dim lblEmail As New Label With {.Text = "Email:", .Location = New Point(50, 110)}
+        Dim lblEmail As New Label With {.Text = "Email:", .Location = New Point(50, 110), .ForeColor = Color.Blue}
         txtEmail = New TextBox With {.Size = New Size(250, 30), .Location = New Point(50, 130)}
 
-        Dim lblPassword As New Label With {.Text = "Contraseña:", .Location = New Point(50, 170)}
+        Dim lblPassword As New Label With {.Text = "Contraseña:", .Location = New Point(50, 170), .ForeColor = Color.Blue}
         txtPassword = New TextBox With {.Size = New Size(250, 30), .Location = New Point(50, 190), .UseSystemPasswordChar = True}
 
-        Dim lblFacultad As New Label With {.Text = "Facultad:", .Location = New Point(50, 230)}
+        Dim lblFacultad As New Label With {.Text = "Facultad:", .Location = New Point(50, 230), .ForeColor = Color.Blue}
         cmbFacultad = New ComboBox With {.Size = New Size(250, 30), .Location = New Point(50, 250), .DropDownStyle = ComboBoxStyle.DropDownList}
 
-        Dim lblCarrera As New Label With {.Text = "Carrera:", .Location = New Point(50, 290)}
+        Dim lblCarrera As New Label With {.Text = "Carrera:", .Location = New Point(50, 290), .ForeColor = Color.Blue}
         cmbCarrera = New ComboBox With {.Size = New Size(250, 30), .Location = New Point(50, 310), .DropDownStyle = ComboBoxStyle.DropDownList}
+
 
         btnRegistrar = New Button With {
             .Text = "Registrar",
