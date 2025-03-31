@@ -266,22 +266,22 @@ Public Class RegistroForm
 
         ' Icono centrado en el panel azul
         iconoPictureBox = New PictureBox With {
-        .Image = My.Resources.guia_turistico_3,
-        .SizeMode = PictureBoxSizeMode.Zoom,
-        .Size = New Size(100, 100),
-        .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 100) \ 2 + 40), ' Ajustada posición Y
-        .Anchor = AnchorStyles.None
-    }
+            .Image = My.Resources.guia_turistico_3,
+            .SizeMode = PictureBoxSizeMode.Zoom,
+            .Size = New Size(100, 100),
+            .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 100) \ 2 + 40),
+            .Anchor = AnchorStyles.None
+        }
 
         ' Texto "Sign Up" arriba del icono
         Dim lblSignUp As New Label With {
-        .Text = "SIGN UP",
-        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
-        .ForeColor = Color.White,
-        .AutoSize = True,
-        .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 150) \ 2),
-        .Anchor = AnchorStyles.None
-    }
+            .Text = "SIGN UP",
+            .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+            .ForeColor = Color.White,
+            .AutoSize = True,
+            .Location = New Point((topPanel.Width - 100) \ 2, (topPanel.Height - 150) \ 2),
+            .Anchor = AnchorStyles.None
+        }
 
         ' Ajustar posición X para centrar correctamente
         lblSignUp.Location = New Point((topPanel.Width - lblSignUp.Width) \ 2, lblSignUp.Location.Y)
@@ -297,22 +297,74 @@ Public Class RegistroForm
         }
         Me.Controls.Add(mainPanel)
 
-        ' Campos de entrada
-        Dim lblNombre As New Label With {.Text = "Nombre:", .Location = New Point(50, 50), .ForeColor = Color.Blue}
-        txtNombre = New TextBox With {.Size = New Size(250, 30), .Location = New Point(50, 70)}
+        ' Campos de entrada con estilo corporativo
+        Dim lblNombre As New Label With {
+            .Text = "Nombre:",
+            .Location = New Point(50, 50),
+            .Font = New Font("Arial", 11, FontStyle.Bold),
+            .ForeColor = ColorTranslator.FromHtml("#074788"),
+            .AutoSize = True
+        }
 
-        Dim lblEmail As New Label With {.Text = "Email:", .Location = New Point(50, 110), .ForeColor = Color.Blue}
-        txtEmail = New TextBox With {.Size = New Size(250, 30), .Location = New Point(50, 130)}
+        txtNombre = New TextBox With {
+            .Size = New Size(250, 30),
+            .Location = New Point(50, 70)
+        }
 
-        Dim lblPassword As New Label With {.Text = "Contraseña:", .Location = New Point(50, 170), .ForeColor = Color.Blue}
-        txtPassword = New TextBox With {.Size = New Size(250, 30), .Location = New Point(50, 190), .UseSystemPasswordChar = True}
+        Dim lblEmail As New Label With {
+            .Text = "Email:",
+            .Location = New Point(50, 110),
+            .Font = New Font("Arial", 11, FontStyle.Bold),
+            .ForeColor = ColorTranslator.FromHtml("#074788"),
+            .AutoSize = True
+        }
 
-        Dim lblFacultad As New Label With {.Text = "Facultad:", .Location = New Point(50, 230), .ForeColor = Color.Blue}
-        cmbFacultad = New ComboBox With {.Size = New Size(250, 30), .Location = New Point(50, 250), .DropDownStyle = ComboBoxStyle.DropDownList}
+        txtEmail = New TextBox With {
+            .Size = New Size(250, 30),
+            .Location = New Point(50, 130)
+        }
 
-        Dim lblCarrera As New Label With {.Text = "Carrera:", .Location = New Point(50, 290), .ForeColor = Color.Blue}
-        cmbCarrera = New ComboBox With {.Size = New Size(250, 30), .Location = New Point(50, 310), .DropDownStyle = ComboBoxStyle.DropDownList}
+        Dim lblPassword As New Label With {
+            .Text = "Contraseña:",
+            .Location = New Point(50, 170),
+            .Font = New Font("Arial", 11, FontStyle.Bold),
+            .ForeColor = ColorTranslator.FromHtml("#074788"),
+            .AutoSize = True
+        }
 
+        txtPassword = New TextBox With {
+            .Size = New Size(250, 30),
+            .Location = New Point(50, 190),
+            .UseSystemPasswordChar = True
+        }
+
+        Dim lblFacultad As New Label With {
+            .Text = "Facultad:",
+            .Location = New Point(50, 230),
+            .Font = New Font("Arial", 11, FontStyle.Bold),
+            .ForeColor = ColorTranslator.FromHtml("#074788"),
+            .AutoSize = True
+        }
+
+        cmbFacultad = New ComboBox With {
+            .Size = New Size(250, 30),
+            .Location = New Point(50, 250),
+            .DropDownStyle = ComboBoxStyle.DropDownList
+        }
+
+        Dim lblCarrera As New Label With {
+            .Text = "Carrera:",
+            .Location = New Point(50, 290),
+            .Font = New Font("Arial", 11, FontStyle.Bold),
+            .ForeColor = ColorTranslator.FromHtml("#074788"),
+            .AutoSize = True
+        }
+
+        cmbCarrera = New ComboBox With {
+            .Size = New Size(250, 30),
+            .Location = New Point(50, 310),
+            .DropDownStyle = ComboBoxStyle.DropDownList
+        }
 
         btnRegistrar = New Button With {
             .Text = "Registrar",
@@ -320,11 +372,19 @@ Public Class RegistroForm
             .Size = New Size(250, 40),
             .BackColor = ColorTranslator.FromHtml("#074788"),
             .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Arial", 11, FontStyle.Bold)
         }
         AddHandler btnRegistrar.Click, AddressOf BtnRegistrar_Click
 
-        mainPanel.Controls.AddRange({lblNombre, txtNombre, lblEmail, txtEmail, lblPassword, txtPassword, lblFacultad, cmbFacultad, lblCarrera, cmbCarrera, btnRegistrar})
+        mainPanel.Controls.AddRange({
+            lblNombre, txtNombre,
+            lblEmail, txtEmail,
+            lblPassword, txtPassword,
+            lblFacultad, cmbFacultad,
+            lblCarrera, cmbCarrera,
+            btnRegistrar
+        })
 
         ' Cargar datos desde la API
         CargarFacultades()

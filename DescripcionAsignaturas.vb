@@ -33,21 +33,19 @@ Public Class DescripcionAsignaturas
         InitializeForm()
     End Sub
 
-    ' Método para inicializar componentes visuales
     Private Sub InitializeForm()
         Me.Text = "Descripción de Asignatura"
         Me.WindowState = FormWindowState.Maximized
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.FormBorderStyle = FormBorderStyle.None
 
-        ' Panel superior azul
+        ' Panel superior
         topPanel = New Panel With {
             .Dock = DockStyle.Top,
             .Height = 100,
             .BackColor = ColorTranslator.FromHtml("#074788")
         }
 
-        ' Línea amarilla debajo del panel azul
         Dim bottomBorder As New Panel With {
             .Dock = DockStyle.Top,
             .Height = 5,
@@ -62,26 +60,24 @@ Public Class DescripcionAsignaturas
             .Cursor = Cursors.Hand
         }
         AddHandler iconoPictureBox.Click, Sub(sender, e) Me.Close()
-        topPanel.Controls.Add(iconoPictureBox)
-        ' Título centrado
-        Dim lblTitle As New Label With {
-        .Text = "DETALLE ASIGNATURA",
-        .Font = New Font("Segoe UI", 18, FontStyle.Bold),
-        .ForeColor = Color.White,
-        .AutoSize = True
-    }
 
-        ' Posicionamiento dinámico del título
+        Dim lblTitle As New Label With {
+            .Text = "DETALLE ASIGNATURA",
+            .Font = New Font("Segoe UI", 18, FontStyle.Bold),
+            .ForeColor = Color.White,
+            .AutoSize = True
+        }
+
         AddHandler topPanel.Resize, Sub()
                                         lblTitle.Location = New Point(
-                                        (topPanel.Width - lblTitle.Width) \ 2,
-                                        (topPanel.Height - lblTitle.Height) \ 2)
+                (topPanel.Width - lblTitle.Width) \ 2,
+                (topPanel.Height - lblTitle.Height) \ 2)
                                     End Sub
 
-        topPanel.Controls.Add(lblTitle)
-        lblTitle.BringToFront() ' Asegurar que está sobre el borde
+        topPanel.Controls.AddRange({iconoPictureBox, lblTitle})
+        lblTitle.BringToFront()
 
-        ' Panel principal para centrar contenido
+        ' Panel principal
         mainPanel = New Panel With {
             .Size = New Size(600, 500),
             .BackColor = Color.White,
@@ -90,48 +86,91 @@ Public Class DescripcionAsignaturas
         mainPanel.Location = New Point((Me.ClientSize.Width - mainPanel.Width) \ 2, (Me.ClientSize.Height - mainPanel.Height) \ 2)
         AddHandler Me.Resize, AddressOf AjustarPanelCentrado
 
+        ' Configuración de estilos
+        Dim estiloTitulo As New Font("Arial", 10, FontStyle.Bold)
+        Dim estiloValor As New Font("Arial", 10)
+        Dim colorTitulo As Color = ColorTranslator.FromHtml("#074788")
+        Dim colorTexto As Color = Color.Black
 
+        ' Función para crear títulos
+        Dim CrearTitulo = Function(texto As String, y As Integer) As Label
+                              Return New Label With {
+                .Text = texto,
+                .Location = New Point(20, y),
+                .AutoSize = True,
+                .Font = estiloTitulo,
+                .ForeColor = colorTitulo
+            }
+                          End Function
 
-        ' Labels con color azul
-        LblNombreAsignatura = CrearLabel("Nombre: ", 20, 20, 500)
-        LblNombreAsignatura.ForeColor = Color.Black
+        ' Función para crear valores
+        Dim CrearValor = Function(y As Integer) As Label
+                             Return New Label With {
+                .Location = New Point(120, y),
+                .AutoSize = True,
+                .Font = estiloValor,
+                .ForeColor = colorTexto,
+                .Width = 450
+            }
+                         End Function
 
-        LblCodigoAsignatura = CrearLabel("Código: ", 20, 50, 500)
-        LblCodigoAsignatura.ForeColor = Color.Black
+        ' Crear controles
+        Dim posY As Integer = 20
+        Dim lblNombreTitulo = CrearTitulo("Nombre:", posY)
+        LblNombreAsignatura = CrearValor(posY)
+        posY += 25
 
-        LblDescripcionAsignatura = CrearLabel("Descripción: ", 20, 80, 500)
-        LblDescripcionAsignatura.ForeColor = Color.Black
+        Dim lblCodigoTitulo = CrearTitulo("Código:", posY)
+        LblCodigoAsignatura = CrearValor(posY)
+        posY += 25
 
-        LblNombreDocenteCompleto = CrearLabel("Docente: ", 20, 110, 500)
-        LblNombreDocenteCompleto.ForeColor = Color.Black
-
-
-        ' ListBox para comentarios
-        LstComentarios = New ListBox With {
-            .Location = New Point(20, 150),
-            .Size = New Size(550, 150),
-            .Font = New Font("Arial", 9)
+        Dim lblDescTitulo = CrearTitulo("Descripción:", posY)
+        LblDescripcionAsignatura = New Label With {
+            .Location = New Point(20, posY + 25),
+            .Size = New Size(550, 40),
+            .Font = estiloValor,
+            .ForeColor = colorTexto
         }
+        posY += 65
 
-        ' TextBox y botón para comentarios
+        Dim lblDocenteTitulo = CrearTitulo("Docente:", posY)
+        LblNombreDocenteCompleto = CrearValor(posY)
+        posY += 35
+
+        ' ListBox y controles de comentarios
+        LstComentarios = New ListBox With {
+            .Location = New Point(20, posY),
+            .Size = New Size(550, 150),
+            .Font = estiloValor,
+            .ForeColor = colorTexto
+        }
+        posY += 160
+
         TxtComentario = New TextBox With {
-            .Location = New Point(20, 320),
+            .Location = New Point(20, posY),
             .Size = New Size(400, 30),
-            .Font = New Font("Arial", 9)
+            .Font = estiloValor
         }
 
         BtnEnviarComentario = New Button With {
             .Text = "Enviar Comentario",
-            .Location = New Point(430, 320),
+            .Location = New Point(430, posY),
             .Size = New Size(140, 30),
             .BackColor = ColorTranslator.FromHtml("#074788"),
             .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Arial", 9, FontStyle.Bold)
         }
-        AddHandler BtnEnviarComentario.Click, AddressOf EnviarComentario
 
         ' Agregar controles
-        mainPanel.Controls.AddRange({LblNombreAsignatura, LblCodigoAsignatura, LblDescripcionAsignatura, LblNombreDocenteCompleto, LstComentarios, TxtComentario, BtnEnviarComentario})
+        mainPanel.Controls.AddRange({
+            lblNombreTitulo, LblNombreAsignatura,
+            lblCodigoTitulo, LblCodigoAsignatura,
+            lblDescTitulo, LblDescripcionAsignatura,
+            lblDocenteTitulo, LblNombreDocenteCompleto,
+            LstComentarios, TxtComentario, BtnEnviarComentario
+        })
+
         Me.Controls.AddRange({topPanel, bottomBorder, mainPanel})
     End Sub
 

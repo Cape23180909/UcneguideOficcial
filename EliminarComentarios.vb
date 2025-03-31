@@ -180,7 +180,7 @@ Public Class EliminarComentarios
         Return New Label With {
         .Text = texto,
         .Font = New Font("Arial", 11, FontStyle.Bold),
-        .ForeColor = Color.FromArgb(64, 64, 64),
+       .ForeColor = ColorTranslator.FromHtml("#074788"), ' Color azul corporativo
         .TextAlign = ContentAlignment.MiddleRight,
         .Dock = DockStyle.Fill,
         .Margin = New Padding(0, 0, 15, 0)
@@ -190,7 +190,7 @@ Public Class EliminarComentarios
     Private Function CrearEtiquetaValor() As Label
         Return New Label With {
         .Font = New Font("Segoe UI", 11),
-        .ForeColor = Color.FromArgb(7, 71, 136),
+        .ForeColor = Color.Black,
         .TextAlign = ContentAlignment.MiddleLeft,
         .Dock = DockStyle.Fill,
         .Margin = New Padding(15, 0, 0, 0)

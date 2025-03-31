@@ -126,8 +126,8 @@ Public Class ActualizarPerfil
         Dim AddControl = Sub(ctrl As Control, labelText As String)
                              Dim lbl = New Label With {
                                  .Text = labelText,
-                                 .Font = New Font("Arial", 9),
-                                   .ForeColor = Color.Blue, ' Establece el color azul
+                                 .Font = New Font("Arial", 11, FontStyle.Bold),
+                                   .ForeColor = ColorTranslator.FromHtml("#074788"),
                                  .Location = New Point(0, yPosition),
                                  .AutoSize = True
                              }
