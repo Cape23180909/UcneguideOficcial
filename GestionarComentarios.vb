@@ -18,6 +18,8 @@ Public Class GestionarComentarios
     Private iconoPictureBox As PictureBox
     Private WithEvents btnEditar As Button
     Private btnEliminar As Button
+
+    Private WithEvents refreshTimer As Timer ' Timer para actualizaciones automáticas
     Private Sub GestionarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         InitializeComponents()
         CargarDatosIniciales()
@@ -32,8 +34,16 @@ Public Class GestionarComentarios
         ' Crear controles en el orden correcto
         CrearPanelSuperior()
         CrearContenidoPrincipal()
-    End Sub
 
+        ' Configurar Timer para actualizaciones automáticas
+        refreshTimer = New Timer()
+        refreshTimer.Interval = 3000 ' 5 minutos (en milisegundos)
+        refreshTimer.Start()
+    End Sub
+    ' Evento del Timer para refrescar datos
+    Private Async Sub RefreshTimer_Tick(sender As Object, e As EventArgs) Handles refreshTimer.Tick
+        Await CargarComentarios()
+    End Sub
     Private Sub CrearPanelSuperior()
         topPanel = New Panel With {
             .Dock = DockStyle.Top,
@@ -266,6 +276,7 @@ Public Class GestionarComentarios
         Try
             ' Asegurar que las asignaturas y docentes están cargados
             If asignaturas Is Nothing OrElse docentes Is Nothing Then
+                refreshTimer.Stop() ' Detener temporizador durante la actualización
                 Await CargarAsignaturasYDocentes()
             End If
 
@@ -314,6 +325,7 @@ Public Class GestionarComentarios
             End Using
         Catch ex As Exception
             MessageBox.Show($"Error crítico: {ex.Message}")
+            refreshTimer.Start() ' Reanudar temporizador
         End Try
     End Function
 
@@ -410,9 +422,19 @@ Public Class GestionarComentarios
     End Sub
 
 
-    Private Sub AbrirGenerarComentarios(sender As Object, e As EventArgs)
-        Dim formGenerar As New GenerarComentarios()
-        formGenerar.ShowDialog()
+    ' Modificar método para refrescar después de crear
+    Private Async Sub AbrirGenerarComentarios(sender As Object, e As EventArgs)
+        Using formGenerar As New GenerarComentarios()
+            If formGenerar.ShowDialog() = DialogResult.OK Then
+                Await CargarComentarios()
+            End If
+        End Using
+    End Sub
+
+    ' Detener Timer al cerrar el formulario
+    Private Sub GestionarComentarios_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+        refreshTimer.Stop()
+        refreshTimer.Dispose()
     End Sub
 
 End Class
