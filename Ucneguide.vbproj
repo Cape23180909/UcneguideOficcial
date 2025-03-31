@@ -282,6 +282,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\asignaturasgt.jpg" />
+    <Content Include="Resources\dani.jpg" />
     <Content Include="Resources\Facultad.png" />
     <Content Include="Resources\Inicio.png" />
     <Content Include="Resources\logo.jpg" />
