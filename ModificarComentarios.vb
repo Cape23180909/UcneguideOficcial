@@ -225,9 +225,6 @@ Public Class ModificarComentarios
 
     Private Async Function LoadInitialData() As Task
         Try
-            ' Obtener carrera del usuario desde la sesión
-            Dim carreraIdUsuario As Integer = UserSession.carreraId
-
             ' Cargar comentario
             Dim response = Await httpClient.GetAsync($"{ApiUrlComentarios}/{comentarioId}")
             If response.IsSuccessStatusCode Then
@@ -237,27 +234,27 @@ Public Class ModificarComentarios
                 If comentarioActual Is Nothing Then
                     MessageBox.Show("El comentario no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Me.Close()
+                    Return
                 End If
             End If
 
-            ' Cargar asignaturas filtradas por carrera
-            Dim responseAsignaturas = Await httpClient.GetAsync($"{ApiUrlAsignaturas}?carreraId={carreraIdUsuario}")
-            If responseAsignaturas.IsSuccessStatusCode Then
-                Dim jsonAsignaturas = Await responseAsignaturas.Content.ReadAsStringAsync()
-                asignaturas = JsonConvert.DeserializeObject(Of List(Of Asignaturas))(jsonAsignaturas)
+            ' Obtener carrera ID del comentario a través de la asignatura
+            Dim responseAsignatura = Await httpClient.GetAsync($"{ApiUrlAsignaturas}/{comentarioActual.AsignaturaId}")
+            If responseAsignatura.IsSuccessStatusCode Then
+                Dim jsonAsignatura = Await responseAsignatura.Content.ReadAsStringAsync()
+                Dim asignaturaComentario = JsonConvert.DeserializeObject(Of Asignaturas)(jsonAsignatura)
 
-                ' Filtro adicional por carrera (si el API no lo hace)
-                asignaturas = asignaturas.Where(Function(a) a.CarreraId = carreraIdUsuario).ToList()
-            End If
+                ' Cargar asignaturas de LA MISMA CARRERA que el comentario
+                Dim responseAsignaturas = Await httpClient.GetAsync($"{ApiUrlAsignaturas}?carreraId={asignaturaComentario.CarreraId}")
+                If responseAsignaturas.IsSuccessStatusCode Then
+                    asignaturas = JsonConvert.DeserializeObject(Of List(Of Asignaturas))(Await responseAsignaturas.Content.ReadAsStringAsync())
+                End If
 
-            ' Cargar docentes filtrados por carrera
-            Dim responseDocentes = Await httpClient.GetAsync($"{ApiUrlDocentes}?carreraId={carreraIdUsuario}")
-            If responseDocentes.IsSuccessStatusCode Then
-                Dim jsonDocentes = Await responseDocentes.Content.ReadAsStringAsync()
-                docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(jsonDocentes)
-
-                ' Filtro adicional por carrera
-                docentes = docentes.Where(Function(d) d.carreraId = carreraIdUsuario).ToList()
+                ' Cargar docentes de LA MISMA CARRERA que el comentario
+                Dim responseDocentes = Await httpClient.GetAsync($"{ApiUrlDocentes}?carreraId={asignaturaComentario.CarreraId}")
+                If responseDocentes.IsSuccessStatusCode Then
+                    docentes = JsonConvert.DeserializeObject(Of List(Of Docente))(Await responseDocentes.Content.ReadAsStringAsync())
+                End If
             End If
 
         Catch ex As Exception
@@ -266,29 +263,28 @@ Public Class ModificarComentarios
         End Try
     End Function
 
+
     Private Sub ConfigureControls()
         Try
-            ' Asignaturas
+            ' Configurar ComboBox de docentes con nombre completo
+            cmbDocentes.DataSource = docentes
+            cmbDocentes.DisplayMember = "NombreCompleto" ' Asegurar que la clase Docente tenga esta propiedad
+            cmbDocentes.ValueMember = "docenteId"
+            cmbDocentes.SelectedValue = comentarioActual.DocenteId
+
+            ' Configurar ComboBox de asignaturas
             cmbAsignaturas.DataSource = asignaturas
             cmbAsignaturas.DisplayMember = "NombreAsignatura"
             cmbAsignaturas.ValueMember = "AsignaturaId"
             cmbAsignaturas.SelectedValue = comentarioActual.AsignaturaId
 
-            ' Docentes
-            cmbDocentes.DataSource = docentes
-            cmbDocentes.DisplayMember = "Nombre"
-            cmbDocentes.ValueMember = "DocenteId"
-            cmbDocentes.SelectedValue = comentarioActual.DocenteId
-
             ' Otros controles
             lblFecha.Text = $"Fecha: {comentarioActual.FechaComentario:dd/MM/yyyy HH:mm}"
             txtComentario.Text = comentarioActual.Comentario
-
         Catch ex As Exception
             MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
     Private Async Sub btnActualizar_Click(sender As Object, e As EventArgs) Handles btnActualizar.Click
         If Not ValidateInputs() Then Return
 

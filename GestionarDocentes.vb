@@ -199,5 +199,9 @@ Public Class GestionarDocentes
 
         RenderizarDocentes()
     End Sub
+
+    Private Sub GestionarDocentes_Load_1(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
 End Class
 
