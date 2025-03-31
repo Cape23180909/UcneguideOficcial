@@ -161,7 +161,8 @@ Public Class DescripcionAsignaturas
             .FlatStyle = FlatStyle.Flat,
             .Font = New Font("Arial", 9, FontStyle.Bold)
         }
-
+        ' Agregar manejador de evento al botón
+        AddHandler BtnEnviarComentario.Click, AddressOf EnviarComentario
         ' Agregar controles
         mainPanel.Controls.AddRange({
             lblNombreTitulo, LblNombreAsignatura,
@@ -173,6 +174,7 @@ Public Class DescripcionAsignaturas
 
         Me.Controls.AddRange({topPanel, bottomBorder, mainPanel})
     End Sub
+
 
     ' Ajustar el panel cuando se redimensiona la ventana
     Private Sub AjustarPanelCentrado(sender As Object, e As EventArgs)

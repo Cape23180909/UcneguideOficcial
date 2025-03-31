@@ -212,17 +212,29 @@ Public Class GestionarAsignaturas
 
     Private Sub ConfigurarDataGridView()
         dgvAsignaturas = New DataGridView With {
-        .Dock = DockStyle.Fill,
-        .AllowUserToAddRows = False,
-        .AllowUserToDeleteRows = False,
-        .ReadOnly = True,
-        .AutoGenerateColumns = False,
-        .DataSource = bindingSource,
-        .SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-        .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-        .BackgroundColor = Color.White,
-        .BorderStyle = BorderStyle.None
-    }
+            .Dock = DockStyle.Fill,
+            .AllowUserToAddRows = False,
+            .AllowUserToDeleteRows = False,
+            .ReadOnly = True,
+            .AutoGenerateColumns = False,
+            .DataSource = bindingSource,
+            .SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+            .BackgroundColor = Color.White,
+            .BorderStyle = BorderStyle.None,
+        .ColumnHeadersDefaultCellStyle = New DataGridViewCellStyle With {
+                .ForeColor = Color.White,
+                .BackColor = ColorTranslator.FromHtml("#074788"),
+                .Font = New Font("Segoe UI", 12, FontStyle.Bold),
+                .Alignment = DataGridViewContentAlignment.MiddleCenter
+            },
+            .EnableHeadersVisualStyles = False,
+            .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing,
+            .ColumnHeadersHeight = 40,
+            .RowTemplate = New DataGridViewRow With {
+                .Height = 35
+            }
+        }
 
         ' Columnas con DataPropertyName en PascalCase (igual que el DataTable)
         dgvAsignaturas.Columns.AddRange({
