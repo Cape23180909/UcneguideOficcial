@@ -242,9 +242,18 @@ Public Class EliminarComentarios
     End Sub
 
     Private Sub MostrarDatos()
-        lblAsignaturaValor.Text = If(asignaturaData?.NombreAsignatura, "N/A")
-        lblDocenteValor.Text = If(docenteData?.nombre & " " & docenteData.apellido, "N/A")
-        lblFechaValor.Text = comentarioData.FechaComentario.ToString("dd/MM/yyyy HH:mm")
+        ' Verificar si los objetos están inicializados antes de usarlos
+        lblAsignaturaValor.Text = If(asignaturaData?.nombreAsignatura, "N/A")
+
+        ' Usar operador null-conditional en ambas propiedades
+        Dim nombreDocente As String = If(docenteData?.nombre, "")
+        Dim apellidoDocente As String = If(docenteData?.apellido, "")
+        lblDocenteValor.Text = If($"{nombreDocente} {apellidoDocente}".Trim(), "N/A")
+
+        ' Asegurar que comentarioData no sea Nothing y manejar FechaComentario
+        Dim fecha As String = If(comentarioData?.FechaComentario.ToString("dd/MM/yyyy HH:mm"), "N/A")
+        lblFechaValor.Text = fecha
+
         txtComentarioContenido.Text = If(comentarioData?.Comentario, "N/A")
     End Sub
 
