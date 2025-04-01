@@ -331,7 +331,6 @@ Public Class GestionarComentarios
 
 
 
-
     Private Async Function ObtenerDatosAPI(Of T)(url As String) As Task(Of T)
         Using client As New HttpClient()
             Dim response = Await client.GetAsync(url)
