@@ -139,10 +139,12 @@ Public Class Menu
         card.Controls.Add(img)
     End Sub
 
-
-    'Método para agregar texto a la imagen
     Private Function AddTextToImage(originalImage As Image, text As String) As Image
-        Dim newImage As Bitmap = New Bitmap(originalImage)
+        If originalImage Is Nothing Then
+            Return Nothing ' Evita errores si la imagen no se carga
+        End If
+
+        Dim newImage As New Bitmap(originalImage)
         Using g As Graphics = Graphics.FromImage(newImage)
             Dim font As New Font("Arial", 16, FontStyle.Bold)
             Dim brush As New SolidBrush(Color.White)
@@ -182,6 +184,8 @@ Public Class Menu
             Return Nothing
         End If
     End Function
+
+
 
     Private Sub Menu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ResizeElements()
