@@ -241,7 +241,7 @@ Public Class EliminarComentarios
         End If
     End Sub
 
-    Private Sub MostrarDatos()
+    Private Async Sub MostrarDatos()
         ' Verificar si los objetos están inicializados antes de usarlos
         lblAsignaturaValor.Text = If(asignaturaData?.nombreAsignatura, "N/A")
 

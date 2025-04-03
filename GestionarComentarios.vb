@@ -341,7 +341,7 @@ Public Class GestionarComentarios
     Private Async Function CargarAsignaturasYDocentes() As Task
         Dim t1 = httpClient.GetAsync(ApiUrlAsignaturas)
         Dim t2 = httpClient.GetAsync(ApiUrlDocentes)
-        Await Task.WhenAll(t1, t2)
+        Await Task.WhenAll(t1, t2) ' Esperar ambas llamadas
 
         asignaturas = If(t1.Result.IsSuccessStatusCode,
             JsonConvert.DeserializeObject(Of List(Of Asignaturas))(Await t1.Result.Content.ReadAsStringAsync()),
