@@ -22,6 +22,7 @@ Public Class GestionarComentarios
     Private WithEvents refreshTimer As Timer ' Timer para actualizaciones automáticas
     Private Sub GestionarComentarios_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         InitializeComponents()
+        ' Cargar datos después de asegurar que los controles están listos
         CargarDatosIniciales()
     End Sub
 
@@ -31,19 +32,24 @@ Public Class GestionarComentarios
         Me.FormBorderStyle = FormBorderStyle.None
         Me.BackColor = Color.White
 
-        ' Crear controles en el orden correcto
         CrearPanelSuperior()
         CrearContenidoPrincipal()
 
-        ' Configurar Timer para actualizaciones automáticas
-        refreshTimer = New Timer()
-        refreshTimer.Interval = 3000 ' 5 minutos (en milisegundos)
-        refreshTimer.Start()
+        ' Configurar Timer solo si el control ya está creado
+        If Not IsDisposed Then
+            refreshTimer = New Timer()
+            refreshTimer.Interval = 3000 ' 5 minutos (corregido a 300,000 ms)
+            AddHandler refreshTimer.Tick, AddressOf RefreshTimer_Tick
+            refreshTimer.Start()
+        End If
     End Sub
     ' Evento del Timer para refrescar datos
-    Private Async Sub RefreshTimer_Tick(sender As Object, e As EventArgs) Handles refreshTimer.Tick
-        Await CargarComentarios()
+    Private Async Sub RefreshTimer_Tick(sender As Object, e As EventArgs)
+        If Not IsDisposed AndAlso dgvComentarios.IsHandleCreated Then
+            Await CargarComentarios()
+        End If
     End Sub
+
     Private Sub CrearPanelSuperior()
         topPanel = New Panel With {
             .Dock = DockStyle.Top,
@@ -330,7 +336,16 @@ Public Class GestionarComentarios
     End Function
 
 
-
+    Private Sub ActualizarGrid(comentarios As List(Of Comentarios))
+        Try
+            dgvComentarios.SuspendLayout()
+            dgvComentarios.DataSource = Nothing
+            dgvComentarios.DataSource = comentarios
+            ConfigurarColumnas()
+        Finally
+            dgvComentarios.ResumeLayout()
+        End Try
+    End Sub
     Private Async Function ObtenerDatosAPI(Of T)(url As String) As Task(Of T)
         Using client As New HttpClient()
             Dim response = Await client.GetAsync(url)
@@ -430,10 +445,11 @@ Public Class GestionarComentarios
         End Using
     End Sub
 
-    ' Detener Timer al cerrar el formulario
     Private Sub GestionarComentarios_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
-        refreshTimer.Stop()
-        refreshTimer.Dispose()
+        If refreshTimer IsNot Nothing Then
+            refreshTimer.Stop()
+            refreshTimer.Dispose()
+        End If
     End Sub
 
 End Class
